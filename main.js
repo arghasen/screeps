@@ -1,6 +1,7 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
-const roleBuilder = require('./role.builder');
+var roleBuilder = require('role.builder');
+var AiConstants = require('constants');
 
 module.exports.loop = function () {
 
@@ -14,7 +15,7 @@ module.exports.loop = function () {
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
     console.log('Harvesters: ' + harvesters.length);
 
-    if(harvesters.length < 2) {
+    if(harvesters.length < AiConstants.maxHarvesters) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
         Game.spawns['Sp1'].spawnCreep([WORK,CARRY,MOVE], newName, 
@@ -24,11 +25,21 @@ module.exports.loop = function () {
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     console.log('upgraders: ' + upgraders.length);
 
-    if(upgraders.length < 1) {
+    if(upgraders.length < AiConstants.maxUpgraders) {
         var newName = 'upgrader' + Game.time;
         console.log('Spawning new upgrader: ' + newName);
         Game.spawns['Sp1'].spawnCreep([WORK,CARRY,MOVE], newName, 
             {memory: {role: 'upgrader'}});
+    }
+
+    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+    console.log('builders: ' + upgraders.length);
+
+    if(builders.length < AiConstants.maxBuilders) {
+        var newName = 'builder' + Game.time;
+        console.log('Spawning new builder: ' + newName);
+        Game.spawns['Sp1'].spawnCreep([WORK,CARRY,MOVE], newName, 
+            {memory: {role: 'builder'}});
     }
 
     if(Game.spawns['Sp1'].spawning) { 
@@ -49,7 +60,7 @@ module.exports.loop = function () {
             roleUpgrader.run(creep);
         }
         if(creep.memory.role == 'builder'){
-            roleBuilder.run(builder);
+            roleBuilder.run(creep);
         }
     }
 }

@@ -1,5 +1,7 @@
-var Constants = {
-    MaxHarvesters = 2,
-    MaxUpgraders = 1,
-    MaxBuilders = 1
+var AiConstants = {
+    "maxHarvesters":1,
+    "maxUpgraders" : 1,
+    "maxBuilders" :1
 };
+
+module.exports = AiConstants;
