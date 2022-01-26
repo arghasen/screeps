@@ -32,6 +32,7 @@ var roleHarvester = {
         else if (creep.memory.repairing) {
             var closestDamagedStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => structure.hits < structure.hitsMax
+                    && (structure.structureType != STRUCTURE_WALL || structure.hits < 5000)
             });
             if (closestDamagedStructure) {
                 if (creep.repair(closestDamagedStructure) == ERR_NOT_IN_RANGE) {
