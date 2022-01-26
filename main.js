@@ -1,5 +1,6 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
+const roleBuilder = require('./role.builder');
 
 module.exports.loop = function () {
 
@@ -20,6 +21,16 @@ module.exports.loop = function () {
             {memory: {role: 'harvester'}});
     }
 
+    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+    console.log('upgraders: ' + upgraders.length);
+
+    if(upgraders.length < 1) {
+        var newName = 'upgrader' + Game.time;
+        console.log('Spawning new upgrader: ' + newName);
+        Game.spawns['Sp1'].spawnCreep([WORK,CARRY,MOVE], newName, 
+            {memory: {role: 'upgrader'}});
+    }
+
     if(Game.spawns['Sp1'].spawning) { 
         var spawningCreep = Game.creeps[Game.spawns['Sp1'].spawning.name];
         Game.spawns['Sp1'].room.visual.text(
@@ -36,6 +47,9 @@ module.exports.loop = function () {
         }
         if(creep.memory.role == 'upgrader') {
             roleUpgrader.run(creep);
+        }
+        if(creep.memory.role == 'builder'){
+            roleBuilder.run(builder);
         }
     }
 }

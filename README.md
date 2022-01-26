@@ -1,4 +1,4 @@
 # Screeps 
 
-Code for my screeps ai
+Code for my screeps AI. 
  
