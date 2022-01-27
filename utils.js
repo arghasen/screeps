@@ -1,26 +1,26 @@
-
 /** @param {Creep}  creep **/
 function getClosestEnergySource(creep) {
-    var droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
-    var structures = creep.room.find(FIND_STRUCTURES);
-    console.log(structures);
-    var energyResources = _.filter(
-        droppedResources,
-        (droppedResource) => droppedResource.resourceType == RESOURCE_ENERGY &&
-            droppedResource.amount >= creep.store.getFreeCapacity()
-    );
-    var containers = _.filter(
-        structures,
-        (structure) => structure.structureType == STRUCTURE_CONTAINER &&
-            structure.store.getUsedCapacity() >= creep.store.getFreeCapacity()
-    );
-    var allEnergy = droppedResources.concat(containers);
-    console.log(allEnergy);
-    var closestSource = creep.pos.findClosestByPath(allEnergy);
-    console.log(creep.name + closestSource);
-    return closestSource;
+  var droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
+  var structures = creep.room.find(FIND_STRUCTURES);
+  console.log(structures);
+  var energyResources = _.filter(
+    droppedResources,
+    (droppedResource) =>
+      droppedResource.resourceType == RESOURCE_ENERGY &&
+      droppedResource.amount >= creep.store.getFreeCapacity()
+  );
+  var containers = _.filter(
+    structures,
+    (structure) =>
+      structure.structureType == STRUCTURE_CONTAINER &&
+      structure.store.getUsedCapacity() >= creep.store.getFreeCapacity()
+  );
+  var allEnergy = droppedResources.concat(containers);
+  console.log(allEnergy);
+  var closestSource = creep.pos.findClosestByPath(allEnergy);
+  console.log(creep.name + closestSource);
+  return closestSource;
 }
-
 
 var utils = {
   /** @param {Creep}  creep **/
@@ -57,7 +57,28 @@ var utils = {
       }
     }
   },
+
+  pickupDroppedEnergy: function (creep) {
+    var droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
+    var energyResources = _.filter(
+      droppedResources,
+      (droppedResource) =>
+        droppedResource.resourceType == RESOURCE_ENERGY &&
+        droppedResource.amount >= creep.store.getFreeCapacity()
+    );
+    var closestSource = creep.pos.findClosestByPath(energyResources);
+    console.log(creep.name + closestSource);
+
+    if (closestSource) {
+      if (closestSource instanceof Resource) {
+        if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
+          var res = creep.moveTo(closestSource, {
+            visualizePathStyle: { stroke: "#ffaa00" },
+          });
+        }
+      }
+    }
+  },
 };
 
 module.exports = utils;
-

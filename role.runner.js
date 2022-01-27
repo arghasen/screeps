@@ -1,4 +1,41 @@
-const { pickupEnergy } = require("./utils");
+const { pickupDroppedEnergy } = require("./utils");
+
+function getStructuresNeedingEnergy(creep) {
+  var structures = creep.room.find(FIND_STRUCTURES);
+  var targets = _.filter(structures, (structure) => {
+    return (
+      (structure.structureType == STRUCTURE_EXTENSION ||
+        structure.structureType == STRUCTURE_SPAWN ||
+        structure.structureType == STRUCTURE_TOWER) &&
+      structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+    );
+  });
+  console.log(creep.name + targets);
+  var target = creep.pos.findClosestByPath(targets);
+  console.log(target);
+  return target;
+}
+
+function getStorgesWithFreeCapacity(creep, target) {
+  var structures = creep.room.find(FIND_STRUCTURES);
+  var targets = _.filter(structures, (structure) => {
+    return (
+      (structure.structureType == STRUCTURE_CONTAINER ||
+        structure.structureType == STRUCTURE_STORAGE) &&
+      structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+    );
+  });
+  console.log(creep.name + targets);
+  var target = creep.pos.findClosestByPath(targets);
+  console.log(target);
+  return target;
+}
+
+function transferEnergy(creep, target) {
+  if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
+  }
+}
 
 var roleRunner = {
   /** @param {Creep} creep **/
@@ -13,25 +50,20 @@ var roleRunner = {
     }
 
     if (creep.memory.running) {
-      var structures = creep.room.find(FIND_STRUCTURES);
-      var targets = _.filter(structures, (structure) => {
-        return (
-          (structure.structureType == STRUCTURE_EXTENSION ||
-            structure.structureType == STRUCTURE_SPAWN ||
-            structure.structureType == STRUCTURE_TOWER) &&
-          structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-        );
-      });
-      console.log(creep.name + targets);
-      var target = creep.pos.findClosestByPath(targets);
-      console.log(target);
+      var target = getStructuresNeedingEnergy(creep);
       if (target) {
-        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
+        transferEnergy(creep, target);
+      } // no target exist, then transfer energy to stores
+      else {
+        var target = getStorgesWithFreeCapacity(creep, target);
+        if (target) {
+          transferEnergy(creep, target);
+        } else {
+          creep.memory.running = false;
         }
       }
     } else {
-      pickupEnergy(creep);
+      pickupDroppedEnergy(creep);
     }
   },
 };
