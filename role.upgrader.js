@@ -19,7 +19,7 @@ var roleUpgrader = {
             }
         }
         else {
-            utils.harvestEnergy(creep);
+            utils.pickupEnergy(creep);
         }
     }
 };
