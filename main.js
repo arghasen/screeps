@@ -53,11 +53,17 @@ function informSpawing() {
     }
 }
 
+/**@param  {String} role*/
 function findCurrentCreeps(role) {
     var creep = _.filter(Game.creeps, (creep) => creep.memory.role == role);
     console.log(role + ': ' + creep.length);
     return creep;
 }
+
+/** @param {Array} body
+ * @param {String} role
+ * @param {AiConstants} maxCount
+ */
 
 function createWorkerCreep(body,role,maxCount) {
     var creeps = findCurrentCreeps(role);
