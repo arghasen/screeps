@@ -16,12 +16,19 @@ var utils = {
       // var sources = creep.room.find(FIND_SOURCES)
       //  var allEnergy = droppedResources.concat(sources)
         var source = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES,
-            {filter:(sources)=>sources.resourceType==RESOURCE_ENERGY && sources.amount > 150});
+            {filter:(sources)=>sources.resourceType==RESOURCE_ENERGY && sources.amount >= 150});
         if (source) {
             if (creep.pickup(source) == ERR_NOT_IN_RANGE) {
                 var res = creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
             }
         } 
+        else
+        {
+            // if(creep.memory.role =='harvester')
+            // {
+            //     utils.harvestEnergy(creep);
+            // }
+        }
     }
 };
 

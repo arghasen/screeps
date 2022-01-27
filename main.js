@@ -4,67 +4,17 @@ var roleBuilder = require('role.builder');
 var roleContHarvester = require('role.continuousHarvester')
 var AiConstants = require('constants');
 
-module.exports.loop = function () {
-
+function cleanupDeadCreeps() {
     for (var name in Memory.creeps) {
         if (!Game.creeps[name]) {
             delete Memory.creeps[name];
             console.log('Clearing non-existing creep memory:', name);
         }
     }
+    return name;
+}
 
-    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    //console.log('Harvesters: ' + harvesters.length);
-
-    if (harvesters.length < AiConstants.maxHarvesters) {
-        var newName = 'Harvester' + Game.time;
-        console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Sp1'].spawnCreep([WORK,CARRY, CARRY, MOVE,MOVE], newName,
-            { memory: { role: 'harvester', source:_.random(0,1) } });
-    }
-
-    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-    //console.log('upgraders: ' + upgraders.length);
-
-    if (upgraders.length < AiConstants.maxUpgraders) {
-        var newName = 'upgrader' + Game.time;
-        console.log('Spawning new upgrader: ' + newName);
-        Game.spawns['Sp1'].spawnCreep([WORK,CARRY, CARRY, CARRY, MOVE], newName,
-            { memory: { role: 'upgrader', source:_.random(0,1) } });
-    }
-
-    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-    //console.log('builders: ' + upgraders.length);
-
-    if (builders.length < AiConstants.maxBuilders) {
-        var newName = 'builder' + Game.time;
-        console.log('Spawning new builder: ' + newName);
-        Game.spawns['Sp1'].spawnCreep([WORK,CARRY, CARRY, CARRY, MOVE], newName,
-            { memory: { role: 'builder', source:_.random(0,1) } });
-    }
-    var contHarvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'cont_harvester');
-    console.log('ContHarvesters: ' + contHarvesters.length);
-
-    if (contHarvesters.length < AiConstants.maxContHarvesters) {
-        var newName = 'ContHarvester' + Game.time;
-        console.log('Spawning new continious harvester: ' + newName);
-        var res = Game.spawns['Sp1'].spawnCreep([WORK,WORK, WORK, MOVE], newName,
-            { memory: { role: 'cont_harvester', source:Memory.count % 2 } });
-        if(res == OK)
-        {
-            Memory.count = Memory.count + 1;
-        }
-    }
-
-    if (Game.spawns['Sp1'].spawning) {
-        var spawningCreep = Game.creeps[Game.spawns['Sp1'].spawning.name];
-        Game.spawns['Sp1'].room.visual.text(
-            '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Sp1'].pos.x + 1,
-            Game.spawns['Sp1'].pos.y,
-            { align: 'left', opacity: 0.8 });
-    }
-
+function runCreeps() {
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         if (creep.memory.role == 'harvester') {
@@ -80,4 +30,73 @@ module.exports.loop = function () {
             roleContHarvester.run(creep);
         }
     }
+    return name;
+}
+
+function autoSpawnCreeps() {
+    createContinousHarverster();
+    createHarvester();
+    createUpgrader();
+    createBuilder();
+    
+    informSpawing();
+}
+
+function informSpawing() {
+    if (Game.spawns['Sp1'].spawning) {
+        var spawningCreep = Game.creeps[Game.spawns['Sp1'].spawning.name];
+        Game.spawns['Sp1'].room.visual.text(
+            '🛠️' + spawningCreep.memory.role,
+            Game.spawns['Sp1'].pos.x + 1,
+            Game.spawns['Sp1'].pos.y,
+            { align: 'left', opacity: 0.8 });
+    }
+}
+
+function findCurrentCreeps(role) {
+    var creep = _.filter(Game.creeps, (creep) => creep.memory.role == role);
+    console.log(role + ': ' + creep.length);
+    return creep;
+}
+
+function createWorkerCreep(body,role,maxCount) {
+    var creeps = findCurrentCreeps(role);
+    if (creeps.length < maxCount ) {
+        var newName = role + Game.time;
+        console.log('Spawning new' + role + ': ' + newName);
+        Game.spawns['Sp1'].spawnCreep(body, newName,
+            { memory: { role: role } });
+    }
+}
+
+function createUpgrader() {
+    createWorkerCreep([WORK, WORK, CARRY, CARRY, CARRY, MOVE],'upgrader', AiConstants.maxUpgraders);
+}
+
+function createBuilder() {
+    createWorkerCreep([WORK, WORK, CARRY, CARRY, CARRY, MOVE],'builder',AiConstants.maxBuilders);
+}
+
+function createHarvester() {
+    createWorkerCreep([WORK, CARRY, CARRY, CARRY, MOVE, MOVE],'harvester',AiConstants.maxHarvesters);
+}
+
+function createContinousHarverster() {
+    var contHarvesters = findCurrentCreeps('cont_harvester');
+
+    if (contHarvesters.length < AiConstants.maxContHarvesters) {
+        var newName = 'ContHarvester' + Game.time;
+        console.log('Spawning new continious harvester: ' + newName);
+        var res = Game.spawns['Sp1'].spawnCreep([WORK, WORK, WORK, WORK, MOVE], newName,
+            { memory: { role: 'cont_harvester', source: Memory.count } });
+        if (res == OK) {
+            Memory.count = (Memory.count + 1) % 2;
+        }
+    }
+}
+
+module.exports.loop = function () {
+    cleanupDeadCreeps();
+    autoSpawnCreeps();
+    runCreeps();
 }
