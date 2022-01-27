@@ -82,7 +82,7 @@ function createWorkerCreep(body, role, maxCount) {
 
 function createUpgrader() {
   createWorkerCreep(
-    [WORK, WORK, CARRY, CARRY, CARRY, MOVE],
+    [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE],
     "upgrader",
     AiConstants.maxUpgraders
   );
@@ -90,7 +90,7 @@ function createUpgrader() {
 
 function createBuilder() {
   createWorkerCreep(
-    [WORK, WORK, CARRY, CARRY, CARRY, MOVE],
+    [WORK, WORK, CARRY, CARRY, CARRY,CARRY,MOVE, MOVE],
     "builder",
     AiConstants.maxBuilders
   );
@@ -111,7 +111,7 @@ function createContinousHarverster() {
     var newName = "ContHarvester" + Game.time;
     console.log("Spawning new continious harvester: " + newName);
     var res = Game.spawns["Sp1"].spawnCreep(
-      [WORK, WORK, WORK, WORK, MOVE],
+      [WORK, WORK, WORK, WORK,WORK, MOVE],
       newName,
       { memory: { role: "cont_harvester", source: Memory.count } }
     );
@@ -123,7 +123,7 @@ function createContinousHarverster() {
 
 function createRunner(){
     createWorkerCreep(
-        [ CARRY,CARRY, CARRY, CARRY,MOVE, MOVE],
+        [ CARRY,CARRY, CARRY,CARRY, CARRY,CARRY,MOVE, MOVE,MOVE],
         "runner",
         AiConstants.maxRunners
       );

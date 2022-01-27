@@ -32,9 +32,9 @@ var roleHarvester = {
         FIND_STRUCTURES,
         {
           filter: (structure) =>
-            structure.hits < structure.hitsMax &&
+            (structure.hits < structure.hitsMax &&
             (structure.structureType != STRUCTURE_WALL ||
-              structure.hits < 5000),
+              structure.hits < 5000)) && structure.structureType!=STRUCTURE_RAMPART,
         }
       );
       if (closestDamagedStructure) {
