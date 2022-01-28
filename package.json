@@ -2,15 +2,14 @@
     "name": "screeps-slowdeath-ai",
     "version": "1.0.0",
     "main": "index.js",
-    "scripts": {
-
-    },
+    "scripts": {},
     "author": "Argha Sen",
     "license": "Unlicense",
     "devDependencies": {
-
+        "@types/lodash": "^3.10.4",
+        "@types/screeps": "^3.2.4",
+        "lodash": "^3.10.1",
+        "typescript": "^4.5.5"
     },
-    "dependencies": {
-        
-    }
+    "dependencies": {}
 }
