@@ -90,7 +90,7 @@ function createUpgrader() {
 
 function createBuilder() {
   createWorkerCreep(
-    [WORK, WORK, CARRY, CARRY, CARRY,CARRY,MOVE, MOVE],
+    [WORK, WORK, WORK,CARRY, CARRY, CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE, MOVE],
     "builder",
     AiConstants.maxBuilders
   );

@@ -2,9 +2,7 @@ var utils = require("utils");
 const { pickupEnergy } = require("./utils");
 
 const CONSTUCTION_SITE = "constructionSite";
-const MAX_RAMPART_HEALTH = 8000;
-const SUCCESS = true;
-const FAILURE = false;
+const MAX_RAMPART_HEALTH = 5000;
 
 /**
  * @param {Creep} creep
@@ -13,7 +11,7 @@ const FAILURE = false;
 function repairRamparts(creep, target) {
   var res = creep.repair(target);
   if (res == OK) {
-    console.log(creep.name+"here");
+    console.log(creep.name + "here");
     if (target.hits >= MAX_RAMPART_HEALTH) {
       invalidateCreepTargetMemory(creep);
     }
@@ -29,6 +27,21 @@ function repairRamparts(creep, target) {
 function construct(creep, target) {
   var res = creep.build(target);
   handleCreepActionFailure(res, creep, target);
+}
+
+function storeTargetInCreepMemory(creep, id, type) {
+  creep.memory.target = id;
+  creep.memory.targetType = type;
+}
+
+function findDamagedRamparts(creep) {
+  var structures = creep.room.find(FIND_MY_STRUCTURES);
+  var ramparts = _.filter(
+    structures,
+    (structure) =>
+      structure.structureType == STRUCTURE_RAMPART && structure.hits < 2000
+  );
+  return ramparts;
 }
 
 /**
@@ -74,27 +87,19 @@ var roleBuilder = {
         }
       }
 
-      if (creep.room.controller.level > 1) {
-        var structures = creep.room.find(FIND_MY_STRUCTURES);
-        var ramparts = _.filter(
-          structures,
-          (structure) =>
-            structure.structureType == STRUCTURE_RAMPART &&
-            structure.hits < 5000
-        );
-        if (ramparts) {
-          var target = creep.pos.findClosestByPath(ramparts);
-          if (target) {
-            creep.memory.target = target.id;
-            creep.memory.targetType = STRUCTURE_RAMPART;
-            return repairRamparts(creep, target);
-          }
-        }
-      }
+    //   if (creep.room.controller.level > 1) {
+    //     var ramparts = findDamagedRamparts(creep);
+    //     if (ramparts) {
+    //       var target = creep.pos.findClosestByPath(ramparts);
+    //       if (target) {
+    //         storeTargetInCreepMemory(creep, target.id, STRUCTURE_RAMPART);
+    //         return repairRamparts(creep, target);
+    //       }
+    //     }
+    //   }
       var target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
       if (target) {
-        creep.memory.target = target.id;
-        creep.memory.targetType = CONSTUCTION_SITE;
+        storeTargetInCreepMemory(creep, target.id, CONSTUCTION_SITE);
         return construct(creep, target);
       }
     } else {

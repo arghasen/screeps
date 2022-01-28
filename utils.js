@@ -15,11 +15,27 @@ function getClosestEnergySource(creep) {
       structure.structureType == STRUCTURE_CONTAINER &&
       structure.store.getUsedCapacity() >= creep.store.getFreeCapacity()
   );
-  var allEnergy = droppedResources.concat(containers);
+  var allEnergy = energyResources.concat(containers);
   console.log(allEnergy);
   var closestSource = creep.pos.findClosestByPath(allEnergy);
   console.log(creep.name + closestSource);
   return closestSource;
+}
+
+function withdraw(creep, closestSource) {
+    if (creep.withdraw(closestSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(closestSource, {
+            visualizePathStyle: { stroke: "#ffaa00" },
+        });
+    }
+}
+
+function pickup(creep, closestSource) {
+    if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(closestSource, {
+            visualizePathStyle: { stroke: "#ffaa00" },
+        });
+    }
 }
 
 var utils = {
@@ -41,19 +57,9 @@ var utils = {
 
     if (closestSource) {
       if (closestSource instanceof Resource) {
-        if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
-          var res = creep.moveTo(closestSource, {
-            visualizePathStyle: { stroke: "#ffaa00" },
-          });
-        }
+         pickup(creep, closestSource);
       } else if (closestSource instanceof Structure) {
-        if (
-          creep.withdraw(closestSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE
-        ) {
-          var res = creep.moveTo(closestSource, {
-            visualizePathStyle: { stroke: "#ffaa00" },
-          });
-        }
+        withdraw(creep, closestSource);
       }
     }
   },
@@ -63,22 +69,35 @@ var utils = {
     var energyResources = _.filter(
       droppedResources,
       (droppedResource) =>
-        droppedResource.resourceType == RESOURCE_ENERGY &&
-        droppedResource.amount >= creep.store.getFreeCapacity()
+        droppedResource.resourceType == RESOURCE_ENERGY 
+        // storeTargetInCreepMemory&&
+        // droppedResource.amount >= creep.store.getFreeCapacity()
     );
-    var closestSource = creep.pos.findClosestByPath(energyResources);
-    console.log(creep.name + closestSource);
-
-    if (closestSource) {
-      if (closestSource instanceof Resource) {
-        if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
-          var res = creep.moveTo(closestSource, {
-            visualizePathStyle: { stroke: "#ffaa00" },
-          });
+    if(energyResources)
+    {
+        var closestSource = creep.pos.findClosestByPath(energyResources);
+        console.log(creep.name + closestSource);
+    
+        if (closestSource) {
+          if (closestSource instanceof Resource) {
+            pickup(creep,closestSource)
+          }
         }
-      }
+    }
+    else
+    {
+        var structures = creep.room.find(FIND_STRUCTURES);
+        var containers = _.filter(
+            structures,
+            (structure) =>
+              structure.structureType == STRUCTURE_CONTAINER &&
+              structure.store.getUsedCapacity() >= creep.store.getFreeCapacity()
+          );
+          var closestSource = creep.pos.findClosestByPath(containers);
     }
   },
 };
 
 module.exports = utils;
+
+
