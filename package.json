@@ -1,0 +1,16 @@
+{
+    "name": "screeps-slowdeath-ai",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+
+    },
+    "author": "Argha Sen",
+    "license": "Unlicense",
+    "devDependencies": {
+
+    },
+    "dependencies": {
+        
+    }
+}
