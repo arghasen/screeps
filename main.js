@@ -97,8 +97,17 @@ function createBuilder() {
 }
 
 function createHarvester() {
+  body=[]
+  if(Memory.creeps.length==0)
+    {
+        body =[WORK, CARRY, CARRY, MOVE, MOVE]
+    }
+  else
+    {
+        body = [WORK, CARRY, CARRY, CARRY, MOVE, MOVE]
+    }
   createWorkerCreep(
-    [WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
+    body,
     "harvester",
     AiConstants.maxHarvesters
   );
