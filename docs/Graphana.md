@@ -14,3 +14,5 @@ Windows agent config
         password: <API Key>
         username: 316522
       url: <Cloud URL>
+
+graphana agent port 12345
