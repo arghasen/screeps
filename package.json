@@ -10,6 +10,7 @@
     "author": "Argha Sen",
     "license": "Unlicense",
     "devDependencies": {
+        "@brainwart/screeps-prometheus-game": "^1.0.1",
         "@rollup/plugin-commonjs": "^21.0.1",
         "@rollup/plugin-node-resolve": "^13.1.3",
         "@types/lodash": "^3.10.4",
