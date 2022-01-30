@@ -1,5 +1,4 @@
 import { Manager } from './Manager'
-import _ from "lodash";
 import { Harvester } from 'Harvester';
 
 export class RoomManager extends Manager {
