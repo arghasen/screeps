@@ -1,6 +1,7 @@
 interface Memory {
     stats: any;
     version: string;
+    energy: number;
 }
 
 interface CreepMemory

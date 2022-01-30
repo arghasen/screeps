@@ -39,10 +39,15 @@ export class Stats {
                 //FIXME : Use Source Capacity to generlize mining 
                 var totalEnergy = 6000 - sources.reduce((prev, cur) => prev + cur.energy, 0);
                 var lastTotalEnergy = Memory.stats.roomSummary[roomName].value.mining.energy ? Memory.stats.roomSummary[roomName].value.mining.energy.value : 0;
-                if (lastTotalEnergy > totalEnergy) {
-                    totalEnergy = lastTotalEnergy + totalEnergy
+                var lastTickEnergy = Memory.energy;
+                if (lastTickEnergy > totalEnergy) {
+                    var thisTickEnergy = totalEnergy
                 }
-                mining.add(Gauge, 'energy', totalEnergy)
+                else {
+                    thisTickEnergy = totalEnergy - lastTickEnergy;
+                }
+                Memory.energy = totalEnergy;
+                mining.add(Gauge, 'energy', lastTotalEnergy + thisTickEnergy)
             }
         }
 
