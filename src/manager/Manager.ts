@@ -1,6 +1,6 @@
 
 // base class for Managers
-export class Manager
+export abstract class Manager
 {
-
+    init = (room:Room)=>{}
 }

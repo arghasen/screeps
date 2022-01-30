@@ -15,10 +15,10 @@ export class Slowdeath {
             if (roomControllerLevel == 0) {
                 console.log("AI doesnt have capability to work with controller level 0 rooms");
             }
-            else if (roomControllerLevel == 1) {
-                console.log("Room Level 1...starting to work")
-               this.roomManager_ = new RoomManager(); 
-               this.roomManager_.init(room)
+            else if (roomControllerLevel <= 2) {
+                console.log("Room Level " + roomControllerLevel + "...starting to work")
+                this.roomManager_ = new RoomManager();
+                this.roomManager_.init(room)
             }
             else {
                 console.log("AI doesnt have capability to work with controller level 0 rooms");
@@ -28,6 +28,6 @@ export class Slowdeath {
 
     static run() {
         this.roomManager_.run();
-}
+    }
 }
 

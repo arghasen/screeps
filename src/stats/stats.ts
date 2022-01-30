@@ -32,12 +32,17 @@ export class Stats {
                 storage.add(Gauge, 'energy', room.energyAvailable);
                 storage.add(Gauge, 'storage', room.storage ? room.storage.store.energy : 0);
                 storage.add(Gauge, 'terminal', room.terminal ? room.terminal.store.energy : 0);
-                
-                //TODO: add mining gauges
-                // const mining = roomSummary.add(Prefix, 'mining');
-                // for(source in room.)
-                // mining.add(Gauge, 'energy')
 
+                var sources = room.find(FIND_SOURCES);
+                const mining = roomSummary.add(Prefix, 'mining');
+
+                //FIXME : Use Source Capacity to generlize mining 
+                var totalEnergy = 6000 - sources.reduce((prev, cur) => prev + cur.energy, 0);
+                var lastTotalEnergy = Memory.stats.roomSummary[roomName].value.mining.energy ? Memory.stats.roomSummary[roomName].value.mining.energy.value : 0;
+                if (lastTotalEnergy > totalEnergy) {
+                    totalEnergy = lastTotalEnergy + totalEnergy
+                }
+                mining.add(Gauge, 'energy', totalEnergy)
             }
         }
 
