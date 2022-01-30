@@ -32,6 +32,11 @@ export class Stats {
                 storage.add(Gauge, 'energy', room.energyAvailable);
                 storage.add(Gauge, 'storage', room.storage ? room.storage.store.energy : 0);
                 storage.add(Gauge, 'terminal', room.terminal ? room.terminal.store.energy : 0);
+                
+                //TODO: add mining gauges
+                // const mining = roomSummary.add(Prefix, 'mining');
+                // for(source in room.)
+                // mining.add(Gauge, 'energy')
 
             }
         }
