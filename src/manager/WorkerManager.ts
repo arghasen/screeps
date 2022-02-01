@@ -30,7 +30,8 @@ export class WorkerManager extends Manager {
     this.getWorkerCounts();
     var energyAvailable = room.energyAvailable;
 
-    if (this.myCreeps.length < this.sources.length*4) {
+        if(this.spawns[0].spawning){
+    if (this.myCreeps.length < this.sources.length) {
       this.createCreep(energyAvailable, Role.ROLE_HARVESTER);
     }
     if (room.controller?.level == 2) {
@@ -52,6 +53,7 @@ export class WorkerManager extends Manager {
               this.createCreep(energyAvailable, Role.ROLE_HAULER);
             }
     }
+  }
   };
 
   run = () => {

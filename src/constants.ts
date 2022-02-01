@@ -3,7 +3,7 @@ export const controllerConsts = {
 };
 
 export const maxRolePopulation = {
-  harvesters: 2,
+  harvesters: 6,
   builders: 1,
   upgrader: 1,
   haulers: 0,
