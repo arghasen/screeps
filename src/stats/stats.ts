@@ -69,7 +69,7 @@ export class Stats {
           : 0;
         var lastTickEnergy = Memory.energy;
 
-        var thisTickEnergy = totalEnergy - lastTickEnergy;
+        var thisTickEnergy = (lastTickEnergy<totalEnergy)?totalEnergy - lastTickEnergy:totalEnergy;
 
         Memory.energy = totalEnergy;
         mining.add(Gauge, 'energy', lastTotalEnergy + thisTickEnergy);

@@ -6,6 +6,7 @@ export const maxRolePopulation = {
   harvesters: 2,
   builders: 1,
   upgrader: 1,
+  haulers: 0,
   total: 4
 };
 

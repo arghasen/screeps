@@ -19,17 +19,6 @@ export class RoomManager extends Manager {
     //     var energyAvailable = room.energyAvailable
     //     this.createCreep(energyAvailable, Role.)
     // }
-    if (room.controller?.level == 2) {
-      for (var i = 0; i < controllerConsts.lvl2extensions; i++) {
-        var res = room.createConstructionSite(
-          this.spawns[0].pos.x + i,
-          this.spawns[0].pos.y + i,
-          STRUCTURE_EXTENSION
-        );
-        console.log('result for creation', res);
-        //if(res)
-      }
-    }
   };
 
   run = () => {};

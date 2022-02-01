@@ -1,5 +1,5 @@
 import { Manager } from './Manager';
-import { Role } from '../constants';
+import { maxRolePopulation, Role } from '../constants';
 import { Harvester } from '../workers/Harvester';
 import { Hauler } from '../workers/Hauler';
 import { Builder } from '../workers/Builder';
@@ -9,10 +9,12 @@ export class WorkerManager extends Manager {
   spawns: StructureSpawn[] = [];
   myCreeps: Creep[] = [];
   sources: Source[] = [];
+  
   numHarversters: number = 0;
   numBuilders: number = 0;
   numHaulers: number = 0;
   numUpgraders: number = 0;
+
   init = (room: Room) => {
     var gameSpawns = Game.spawns;
     for (var spawnName in gameSpawns) {
@@ -25,13 +27,30 @@ export class WorkerManager extends Manager {
     console.log(this.myCreeps);
     this.sources = room.find(FIND_SOURCES);
 
-    getWorkerCounts();
-    if (this.myCreeps.length < this.sources.length) {
-      var energyAvailable = room.energyAvailable;
+    this.getWorkerCounts();
+    var energyAvailable = room.energyAvailable;
+
+    if (this.myCreeps.length < this.sources.length*4) {
       this.createCreep(energyAvailable, Role.ROLE_HARVESTER);
     }
     if (room.controller?.level == 2) {
-      this.createCreep(energyAvailable, Role.ROLE_BUILDER);
+        if(this.numHarversters< maxRolePopulation.harvesters)
+            {
+              this.createCreep(energyAvailable, Role.ROLE_HARVESTER);
+            }
+
+        if(this.numHarversters< maxRolePopulation.builders)
+            {
+              this.createCreep(energyAvailable, Role.ROLE_BUILDER);
+            }
+        if(this.numHarversters< maxRolePopulation.upgrader)
+            {
+              this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
+            }
+        if(this.numHarversters< maxRolePopulation.haulers)
+            {
+              this.createCreep(energyAvailable, Role.ROLE_HAULER);
+            }
     }
   };
 
@@ -50,11 +69,13 @@ export class WorkerManager extends Manager {
     }
   };
   createCreep = (energyAvailable: any, role: Role) => {
+    //var body = getBody();
     this.spawns[0].spawnCreep([WORK, CARRY, MOVE], 'creep' + Game.time, {
       memory: { role: role }
     });
   };
 
+ //getBody =(energyAvailable)
   getWorkerCounts = () => {
     for (var creep of this.myCreeps) {
       switch (creep.memory.role) {
@@ -63,9 +84,9 @@ export class WorkerManager extends Manager {
         case Role.ROLE_HAULER:
           this.numHaulers = this.numHaulers + 1;
         case Role.ROLE_BUILDER:
-          this.numBuilders = this.numBuilders;
+          this.numBuilders = this.numBuilders +1;
         case Role.ROLE_UPGRADER:
-          this.numUpgraders = this.numUpgraders;
+          this.numUpgraders = this.numUpgraders +1;
       }
     }
   };
