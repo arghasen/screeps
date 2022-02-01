@@ -1,5 +1,3 @@
 export class Hauler {
-    static run = (creep: Creep) => {
-
-    }
+  static run = (creep: Creep) => {};
 }

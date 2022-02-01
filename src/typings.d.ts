@@ -1,4 +1,5 @@
 import _ from 'lodash';
+
 declare global {
-    const _: typeof _;
+  const _: typeof _;
 }

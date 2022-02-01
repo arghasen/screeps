@@ -1,5 +1,3 @@
 export class Upgrader {
-    static run = (creep: Creep) => {
-
-    }
+  static run = (creep: Creep) => {};
 }
