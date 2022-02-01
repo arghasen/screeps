@@ -59,7 +59,9 @@ export class Stats {
 
         var sources = room.find(FIND_SOURCES);
         const mining = roomSummary.add(Prefix, 'mining');
-
+        
+        if(Memory.stats.roomSummary)
+            {
         //FIXME : Use Source Capacity to generlize mining
         var totalEnergy =
           6000 - sources.reduce((prev, cur) => prev + cur.energy, 0);
@@ -69,12 +71,15 @@ export class Stats {
           : 0;
         var lastTickEnergy = Memory.energy;
 
-        var thisTickEnergy = (lastTickEnergy<totalEnergy)?totalEnergy - lastTickEnergy:totalEnergy;
+        var thisTickEnergy = (lastTickEnergy<=totalEnergy)?totalEnergy - lastTickEnergy:0;
 
         Memory.energy = totalEnergy;
+        console.log("thistickene" + thisTickEnergy);
+        console.log("energy:"+ totalEnergy + "lastTick"+ lastTickEnergy + "com" + lastTotalEnergy+thisTickEnergy +" lasttot"+ lastTotalEnergy);
         mining.add(Gauge, 'energy', lastTotalEnergy + thisTickEnergy);
+        
       }
-    }
+    }}
 
     const GlobalController = prom.add(Prefix, 'global_controller');
     GlobalController.add(
