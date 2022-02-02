@@ -1,0 +1,29 @@
+{
+    "name": "screeps-slowdeath-ai",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "build": "rollup -c",
+        "push-pserver": "rollup -c --environment DEST:pserver",
+        "watch-pserver": "rollup -cw --environment DEST:pserver"
+    },
+    "author": "Argha Sen",
+    "license": "Unlicense",
+    "devDependencies": {
+        "@brainwart/screeps-prometheus-game": "^1.0.1",
+        "@rollup/plugin-commonjs": "^21.0.1",
+        "@rollup/plugin-node-resolve": "^13.1.3",
+        "@types/lodash": "^3.10.4",
+        "@types/screeps": "^3.2.4",
+        "lodash": "^3.10.1",
+        "rollup": "^2.66.1",
+        "rollup-plugin-clear": "^2.0.7",
+        "rollup-plugin-screeps": "^1.0.1",
+        "rollup-plugin-typescript2": "^0.31.1",
+        "typescript": "^4.5.5",
+        "typescript-language-server": "^0.9.5"
+    },
+    "dependencies": {
+        "sourcemap": "^0.1.0"
+    }
+}
