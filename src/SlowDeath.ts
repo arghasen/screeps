@@ -2,15 +2,17 @@
 // A screeps AI
 //
 
-import { RoomManager } from 'manager/RoomManager';
-import { BuildingManager } from 'manager/BuildingManager';
-import { WorkerManager } from 'manager/WorkerManager';
+import { RoomManager } from './manager/RoomManager';
+import { BuildingManager } from './manager/BuildingManager';
+import { WorkerManager } from './manager/WorkerManager';
+import { version } from './utils/version'
 
 export class Slowdeath {
   static roomManager_: RoomManager;
   static buildingManager_: BuildingManager;
   static workerManager_: WorkerManager;
   static init() {
+    Memory.version = version;
     var rooms = Game.rooms;
     for (var roomName in rooms) {
       var room = rooms[roomName];

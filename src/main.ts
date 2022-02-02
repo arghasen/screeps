@@ -1,10 +1,10 @@
 console.log('hello screeps');
 
+import { VERSION } from 'lodash';
 import { Slowdeath } from 'SlowDeath';
 import { Stats } from './stats/stats';
 
 export function loop() {
-  Memory.version = 'valphatest2';
   if(!Memory.count){
       Memory.count =0;
   }
