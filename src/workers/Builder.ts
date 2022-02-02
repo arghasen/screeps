@@ -22,15 +22,18 @@ export class Builder {
       } else {
         var myStructures = creep.room.find(FIND_STRUCTURES);
         var targetStructures = myStructures.filter(
-          (structure) => structure.hits < structure.hitsMax
+          (structure) =>
+            structure.hits < structure.hitsMax &&
+            structure.structureType != STRUCTURE_WALL
         );
         var targetStructure = creep.pos.findClosestByRange(targetStructures);
-        if(targetStructure)
-        {
-        if (creep.repair(targetStructure) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(targetStructure, { visualizePathStyle: { stroke: '#ffaa00' } });
+        if (targetStructure) {
+          if (creep.repair(targetStructure) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(targetStructure, {
+              visualizePathStyle: { stroke: '#ffaa00' }
+            });
+          }
         }
-    }
       }
     } else {
       if (Memory.continuousHarvestingStarted) {
