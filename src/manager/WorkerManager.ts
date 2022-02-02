@@ -4,7 +4,6 @@ import { Harvester } from '../workers/Harvester';
 import { Hauler } from '../workers/Hauler';
 import { Builder } from '../workers/Builder';
 import { Upgrader } from '../workers/Upgrader';
-import { indexOf } from 'lodash';
 
 export class WorkerManager extends Manager {
   spawns: StructureSpawn[] = [];
@@ -17,6 +16,7 @@ export class WorkerManager extends Manager {
   numUpgraders: number = 0;
 
   init = (room: Room) => {
+
     var gameSpawns = Game.spawns;
     for (var spawnName in gameSpawns) {
       if (gameSpawns[spawnName].room.name == room.name) {
@@ -29,16 +29,7 @@ export class WorkerManager extends Manager {
     this.sources = room.find(FIND_SOURCES);
 
     this.getWorkerCounts();
-    console.log(
-      'Workers:, harv:' +
-        this.numHarversters +
-        ' build: ' +
-        this.numBuilders +
-        ' upgrade: ' +
-        this.numUpgraders +
-        ' haul:' +
-        this.numHaulers
-    );
+
     //var energyAvailable = room.energyAvailable;
     var energyAvailable = room.energyCapacityAvailable;
 
@@ -66,23 +57,8 @@ export class WorkerManager extends Manager {
 
   createCreep = (energyAvailable: any, role: Role) => {
     //var body = getBody();
-    var body = [WORK, WORK, CARRY, MOVE];
-    if (energyAvailable == 250) {
-      body = [WORK, CARRY, MOVE, MOVE];
-    }
-    if (energyAvailable == 350) {
-      body = [WORK, WORK, CARRY, CARRY, MOVE];
-    }
-    if (role == Role.ROLE_CONTINUOUS_HARVESTER) {
-      if (energyAvailable == 350) {
-        body = [WORK, WORK, WORK, MOVE];
-      } else if (energyAvailable == 450) {
-        body = [WORK, WORK, WORK, WORK, MOVE];
-      } else if (energyAvailable >= 550) {
-        body = [WORK, WORK, WORK, WORK, WORK, MOVE];
-      }
-    }
-    
+    var body = this.getBody(energyAvailable, role);
+
     var ret = this.spawns[0].spawnCreep(body, roleNames[role] + Game.time, {
       memory: { role: role }
     });
@@ -116,7 +92,37 @@ export class WorkerManager extends Manager {
           break;
       }
     }
+    console.log(
+        'Workers:, harv:' +
+          this.numHarversters +
+          ' build: ' +
+          this.numBuilders +
+          ' upgrade: ' +
+          this.numUpgraders +
+          ' haul:' +
+          this.numHaulers
+      );
   };
+
+    private getBody(energyAvailable: any, role: Role) {
+        var body = [WORK, WORK, CARRY, MOVE];
+        if (energyAvailable == 250) {
+            body = [WORK, CARRY, MOVE, MOVE];
+        }
+        if (energyAvailable == 350) {
+            body = [WORK, WORK, CARRY, CARRY, MOVE];
+        }
+        if (role == Role.ROLE_CONTINUOUS_HARVESTER) {
+            if (energyAvailable == 350) {
+                body = [WORK, WORK, WORK, MOVE];
+            } else if (energyAvailable == 450) {
+                body = [WORK, WORK, WORK, WORK, MOVE];
+            } else if (energyAvailable >= 550) {
+                body = [WORK, WORK, WORK, WORK, WORK, MOVE];
+            }
+        }
+        return body;
+    }
 
   private creapCreator(room: Room, energyAvailable: number) {
     if (!this.spawns[0].spawning) {
