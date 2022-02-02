@@ -1,7 +1,6 @@
 console.log('hello screeps');
 
-import { VERSION } from 'lodash';
-import { Slowdeath } from 'SlowDeath';
+import { Slowdeath } from './SlowDeath';
 import { Stats } from './stats/stats';
 
 export function loop() {
@@ -14,4 +13,5 @@ export function loop() {
   if (Game.cpu.bucket == 10000) {
     Game.cpu.generatePixel();
   }
+  console.log("End of Tick:" + Game.time + " Cpu: "+ Game.cpu.getUsed());
 }

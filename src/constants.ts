@@ -35,6 +35,14 @@ export enum actions {
   ACTION_REPAIR,
   ACTION_TRANSFER
 }
+export const directionsArray =[[1, 1],
+[1, -1],
+[-1, -1],
+[-1, 1],
+[1, 0],
+[0, 1],
+[-1, 0],
+[0, -1]]
 
 export const extensionLoc = {
   2: [
