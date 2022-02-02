@@ -62,7 +62,7 @@ export class WorkerManager extends Manager {
     }
   };
 
-  createCreep = (energyAvailable: any, role: Role) => {
+  createCreep = (energyAvailable: number, role: Role) => {
     //var body = getBody();
     var body = this.getBody(energyAvailable, role);
 
@@ -113,7 +113,7 @@ export class WorkerManager extends Manager {
     );
   };
 
-  private getBody(energyAvailable: any, role: Role) {
+  private getBody(energyAvailable: number, role: Role) {
     var body = [WORK, WORK, CARRY, MOVE];
     if (energyAvailable == 250) {
       body = [WORK, CARRY, MOVE, MOVE];
@@ -121,6 +121,10 @@ export class WorkerManager extends Manager {
     if (energyAvailable == 350) {
       body = [WORK, WORK, CARRY, CARRY, MOVE];
     }
+    if(energyAvailable >=500 && role==Role.ROLE_UPGRADER)
+        {
+            body=[WORK,WORK,WORK,CARRY,CARRY,CARRY,MOVE]
+        }
     if (role == Role.ROLE_CONTINUOUS_HARVESTER) {
       body = this.getContinuousHarvesterBody(energyAvailable, body);
     }
@@ -132,21 +136,21 @@ export class WorkerManager extends Manager {
   }
 
   private getHaulerBody(
-    energyAvailable: any,
+    energyAvailable: number,
     body: ('work' | 'carry' | 'move')[]
   ) {
     if (energyAvailable == 300) {
       body = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
     } else if (energyAvailable == 400) {
       body = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
-    } else if (energyAvailable == 500) {
+    } else if (energyAvailable >= 500) {
       body = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     }
     return body;
   }
 
   private getContinuousHarvesterBody(
-    energyAvailable: any,
+    energyAvailable: number,
     body: ('work' | 'carry' | 'move')[]
   ) {
     if (energyAvailable == 350) {
@@ -182,6 +186,10 @@ export class WorkerManager extends Manager {
             );
             return;
           }
+          if(res ==OK)
+              {
+                  Memory.count =Memory.count+1;
+              }
         } else {
           this.createCreep(250, Role.ROLE_HARVESTER);
         }
@@ -207,22 +215,42 @@ export class WorkerManager extends Manager {
         return;
       }
       if (res == OK) {
+          Memory.count = Memory.count+1;
         return;
       }
     }
-    if (this.numHaulers < maxRolePopulation.haulers) {
+    if (this.numHaulers < maxRolePopulation.haulers&& Memory.continuousHarvestingStarted) {
       this.createCreep(energyAvailable, Role.ROLE_HAULER);
     }
 
     if (this.numHarversters < maxRolePopulation.harvesters) {
       this.createCreep(energyAvailable, Role.ROLE_HARVESTER);
     }
-
-    if (this.numBuilders < maxRolePopulation.builders) {
+    
+    if(Memory.focus == "build"){
+    if (this.numBuilders < maxRolePopulation.builders+4) {
       this.createCreep(energyAvailable, Role.ROLE_BUILDER);
     }
+  }
+  else
+      {
+    if (this.numBuilders < maxRolePopulation.builders) {
+      this.createCreep(energyAvailable, Role.ROLE_BUILDER);
+      }
+      }
+  
+    if(Memory.focus == "upgrade"){
     if (this.numUpgraders < maxRolePopulation.upgrader) {
       this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
     }
+    
+  }
+  else
+      {
+
+    if (this.numUpgraders < maxRolePopulation.upgrader-4) {
+      this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
+      }
+}
   }
 }

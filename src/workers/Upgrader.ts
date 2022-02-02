@@ -1,4 +1,4 @@
-import {pickupDroppedEnergy} from './CommonActions'
+import { pickupDroppedEnergy } from './CommonActions';
 export class Upgrader {
   static run = (creep: Creep) => {
     if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
@@ -17,21 +17,17 @@ export class Upgrader {
         });
       }
     } else {
-        if(Memory.continuousHarvestingStarted)
-        {
-            pickupDroppedEnergy(creep);
+      if (Memory.continuousHarvestingStarted) {
+        pickupDroppedEnergy(creep);
+      } else {
+        var source = creep.pos.findClosestByPath(FIND_SOURCES);
+        if (source) {
+          if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+            _.keys(creep);
+          }
         }
-        else
-        {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES);
-            if (source) {
-              if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
-                _.keys(creep);
-              }
-            }
-        }
-
+      }
     }
   };
 }

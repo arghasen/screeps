@@ -1,4 +1,4 @@
-import { pickupDroppedEnergy } from "./CommonActions";
+import { pickupDroppedEnergy } from './CommonActions';
 
 export class Builder {
   static run = (creep: Creep) => {
@@ -19,23 +19,30 @@ export class Builder {
             visualizePathStyle: { stroke: '#ffffff' }
           });
         }
+      } else {
+        var myStructures = creep.room.find(FIND_STRUCTURES);
+        var targetStructures = myStructures.filter(
+          (structure) => structure.hits < structure.hitsMax
+        );
+        var targetStructure = creep.pos.findClosestByRange(targetStructures);
+        if(targetStructure)
+        {
+        if (creep.repair(targetStructure) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(targetStructure, { visualizePathStyle: { stroke: '#ffaa00' } });
+        }
+    }
       }
     } else {
-        if(Memory.continuousHarvestingStarted)
-        {
-            pickupDroppedEnergy(creep);
+      if (Memory.continuousHarvestingStarted) {
+        pickupDroppedEnergy(creep);
+      } else {
+        var source = creep.pos.findClosestByPath(FIND_SOURCES);
+        if (source) {
+          if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+          }
         }
-        else
-        {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES);
-            if (source) {
-              if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
-                _.keys(creep);
-              }
-            }
-        }
-
+      }
     }
   };
 }

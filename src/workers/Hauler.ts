@@ -1,4 +1,6 @@
-import {pickupDroppedEnergy} from './CommonActions'
+import { pickupDroppedEnergy } from './CommonActions';
+import {Role} from '../constants'
+
 export class Hauler {
   private static getStructuresNeedingEnergy(creep: Creep) {
     var structures = creep.room.find(FIND_STRUCTURES);
@@ -6,26 +8,18 @@ export class Hauler {
       return (
         (structure.structureType == STRUCTURE_EXTENSION ||
           structure.structureType == STRUCTURE_SPAWN ||
+          structure.structureType == STRUCTURE_CONTAINER ||
           structure.structureType == STRUCTURE_TOWER) &&
         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       );
     });
     console.log(creep.name + targets);
     var target = creep.pos.findClosestByPath(targets);
-    console.log(target);
+    console.log("closestStructure:" +target);
     return target;
   }
 
-  private static pickup(
-    creep: Creep,
-    closestSource: Resource<ResourceConstant>
-  ) {
-    if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
-      creep.moveTo(closestSource, {
-        visualizePathStyle: { stroke: '#ffaa00' }
-      });
-    }
-  }
+
 
   private static transferEnergy(
     creep: Creep,
@@ -37,8 +31,7 @@ export class Hauler {
   }
 
   static run = (creep: Creep) => {
-
-    if ( creep.memory.running && creep.store[RESOURCE_ENERGY] == 0) {
+    if (creep.memory.running && creep.store[RESOURCE_ENERGY] == 0) {
       creep.memory.running = false;
       creep.say('🔄 harvest');
     }
@@ -54,24 +47,21 @@ export class Hauler {
         if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
           creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
         } // no target exist, then transfer energy to creeps
-        else {
+      }else {
           var targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
-            filter: (creep) => creep.store.getFreeCapacity() > 0
+            filter: (creep) => creep.memory.role!=Role.ROLE_HAULER && creep.store.getFreeCapacity() > 0 
           });
+          console.log("targetCreep:"+targetCreep);
           if (targetCreep) {
             this.transferEnergy(creep, targetCreep);
           } else {
             creep.memory.running = false;
           }
         }
-      } else {
+    }
+    else {
         creep.memory.running = false;
         pickupDroppedEnergy(creep);
-      }
-    }else
-    {
-        creep.memory.running = false;
-        this.pickupDroppedEnergy(creep);
     }
-  }
+  };
 }

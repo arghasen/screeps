@@ -26,12 +26,18 @@ export class BuildingManager extends Manager {
     );
 
     if (room.controller?.level == 2) {
+      if(this.extensionsCreated.length!= controllerConsts.lvl2extensions)
+          {
+              Memory.focus = "build"
+          }
+     else
+         {
+             Memory.focus = "upgrade"
+         }
       if (this.getTotalExtensions() < controllerConsts.lvl2extensions) {
         this.createExtensions(room);
-      }
-      else
-      {
-          // TODO: Add Containers
+      } else {
+        // TODO: Add Containers
       }
     }
   };

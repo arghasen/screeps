@@ -5,6 +5,9 @@ import { Stats } from './stats/stats';
 
 export function loop() {
   Memory.version = 'valphatest2';
+  if(!Memory.count){
+      Memory.count =0;
+  }
   Slowdeath.init();
   Slowdeath.run();
   Stats.run();
