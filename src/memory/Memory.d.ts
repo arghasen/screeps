@@ -7,5 +7,6 @@ interface Memory {
 interface CreepMemory {
   upgrading?: boolean;
   building?: boolean;
+  running?: boolean;
   role: any;
 }
