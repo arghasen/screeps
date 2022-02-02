@@ -25,11 +25,14 @@ export class BuildingManager extends Manager {
       (site) => site.structureType == STRUCTURE_EXTENSION
     );
 
-    if (
-      room.controller?.level == 2 &&
-      this.getTotalExtensions() == controllerConsts.lvl2extensions
-    ) {
-      this.createExtensions(room);
+    if (room.controller?.level == 2) {
+      if (this.getTotalExtensions() < controllerConsts.lvl2extensions) {
+        this.createExtensions(room);
+      }
+      else
+      {
+          // TODO: Add Containers
+      }
     }
   };
 

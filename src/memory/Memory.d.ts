@@ -1,4 +1,5 @@
 interface Memory {
+  continuousHarvestingStarted: boolean;
   stats: any;
   version: string;
   energy: number;
