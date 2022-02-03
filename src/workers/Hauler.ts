@@ -9,6 +9,7 @@ export class Hauler {
         (structure.structureType == STRUCTURE_EXTENSION ||
           structure.structureType == STRUCTURE_SPAWN ||
           structure.structureType == STRUCTURE_CONTAINER ||
+          structure.structureType == STRUCTURE_STORAGE ||
           structure.structureType == STRUCTURE_TOWER) &&
         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       );
@@ -49,7 +50,7 @@ export class Hauler {
         var targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
           filter: (creep) =>
             creep.memory.role != Role.ROLE_HAULER &&
-            creep.store.getFreeCapacity() < 0.9*creep.store.getCapacity();
+            creep.store.getFreeCapacity() < 0.9*creep.store.getCapacity()
         });
         console.log('targetCreep:' + targetCreep);
         if (targetCreep) {
