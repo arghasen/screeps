@@ -6,7 +6,7 @@ export const maxRolePopulation = {
   continuous_harvester: 2,
   harvesters: 1,
   builders: 2,
-  upgrader: 4,
+  upgrader: 2,
   haulers: 2,
   total: 7
 };

@@ -23,8 +23,11 @@ export class Builder {
         var myStructures = creep.room.find(FIND_STRUCTURES);
         var targetStructures = myStructures.filter(
           (structure) =>
-            structure.hits < structure.hitsMax &&
-            structure.structureType != STRUCTURE_WALL
+            (structure.hits < structure.hitsMax &&
+              structure.structureType != STRUCTURE_WALL &&
+              structure.structureType != STRUCTURE_RAMPART) ||
+            (structure.structureType == STRUCTURE_RAMPART &&
+              structure.hits < 500000)
         );
         var targetStructure = creep.pos.findClosestByRange(targetStructures);
         if (targetStructure) {

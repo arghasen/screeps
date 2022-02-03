@@ -13,8 +13,11 @@ export function pickupDroppedEnergy(creep: Creep) {
       // storeTargetInCreepMemory&&
       // droppedResource.amount >= creep.store.getFreeCapacity()
     );
-    if (energyResources) {
+    if (energyResources.length >=1) {
+    if(energyResources.length ==1)
+    {
       var energyResources = energyResources.sort((a,b)=>a.amount-b.amount);
+    }
       var closestSource = null;
       if(energyResources[0].amount>2000)
       {

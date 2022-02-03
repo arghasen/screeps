@@ -9,7 +9,6 @@ export class Hauler {
         (structure.structureType == STRUCTURE_EXTENSION ||
           structure.structureType == STRUCTURE_SPAWN ||
           structure.structureType == STRUCTURE_CONTAINER ||
-          structure.structureType == STRUCTURE_STORAGE ||
           structure.structureType == STRUCTURE_TOWER) &&
         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       );
@@ -56,6 +55,12 @@ export class Hauler {
         if (targetCreep) {
           this.transferEnergy(creep, targetCreep);
         } else {
+            var storage = creep.room.storage;
+            if(storage){
+                if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storage, { visualizePathStyle: { stroke: '#ffffff' } });
+                  }
+            }
           creep.memory.running = false;
         }
       }

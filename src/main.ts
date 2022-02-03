@@ -12,9 +12,9 @@ export function loop() {
   Slowdeath.run();
   console.log("Pre Stats Tick:" + Game.time + " Cpu: "+ Game.cpu.getUsed());
   Stats.run();
-  console.log("Post Stats Ti")
+  console.log("Post Stats Tick",Game.time, "Cpu: ", Game.cpu.getUsed());
   if (Game.cpu.bucket == 10000) {
     Game.cpu.generatePixel();
   }
-  console.log("End of Tick:" + Game.time + " Cpu: "+ Game.cpu.getUsed());
+  console.log("End of Tick:", Game.time , " Cpu: ", Game.cpu.getUsed());
 }
