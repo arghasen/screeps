@@ -7,6 +7,17 @@ import { BuildingManager } from './manager/BuildingManager';
 import { WorkerManager } from './manager/WorkerManager';
 import { git_version } from './utils/version'
 
+function defendRoom(roomName:string) {
+    var hostiles = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
+    if(hostiles.length > 0) {
+        //var username = hostiles[0].owner.username;
+        Game.notify(`enemy spotted in room ${roomName}`);
+        var towers = Game.rooms[roomName].find(
+            FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_TOWER}});
+        towers.forEach(tower => tower.structureType ==STRUCTURE_TOWER? tower.attack(hostiles[0]):_.noop);
+    }
+}
+
 export class Slowdeath {
   static roomManager_: RoomManager;
   static buildingManager_: BuildingManager;
@@ -15,6 +26,7 @@ export class Slowdeath {
     Memory.version = git_version;
     var rooms = Game.rooms;
     for (var roomName in rooms) {
+        defendRoom(roomName)
       var room = rooms[roomName];
       console.log(JSON.stringify(room));
       var roomControllerLevel = room.controller ? room.controller.level : 0;

@@ -4,7 +4,7 @@ import { Harvester } from '../workers/Harvester';
 import { Hauler } from '../workers/Hauler';
 import { Builder } from '../workers/Builder';
 import { Upgrader } from '../workers/Upgrader';
-import { ContinuousHarvester } from 'workers/ContinuousHarvester';
+import { ContinuousHarvester } from '../workers/ContinuousHarvester';
 
 export class WorkerManager extends Manager {
   spawns: StructureSpawn[] = [];
@@ -16,7 +16,7 @@ export class WorkerManager extends Manager {
   numHaulers: number = 0;
   numUpgraders: number = 0;
   numContinuousHarvesters: number = 0;
-  room: Room;
+  room!: Room;
 
   init = (room: Room) => {
     this.room = room;
@@ -152,9 +152,9 @@ export class WorkerManager extends Manager {
     energyAvailable: number,
     body: ('work' | 'carry' | 'move')[]
   ) {
-    if (energyAvailable == 350) {
+    if (energyAvailable == 350 || energyAvailable == 400) {
       body = [WORK, WORK, WORK, MOVE];
-    } else if (energyAvailable == 450) {
+    } else if (energyAvailable == 450 || energyAvailable == 500) {
       body = [WORK, WORK, WORK, WORK, MOVE];
     } else if (energyAvailable >= 550) {
       body = [WORK, WORK, WORK, WORK, WORK, MOVE];
@@ -237,7 +237,7 @@ export class WorkerManager extends Manager {
     if (this.room.controller) {
       if (this.room.controller.level > 1) {
         if (Memory.focus == 'upgrade') {
-          if (this.numUpgraders < maxRolePopulation.upgrader) {
+          if (this.numUpgraders < maxRolePopulation.upgrader + 4) {
             this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
           }
         } else {
@@ -246,11 +246,12 @@ export class WorkerManager extends Manager {
           }
         }
       }
-    } else {
-      if (this.numUpgraders < maxRolePopulation.upgrader) {
-        this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
+      else {
+        if (this.numUpgraders < maxRolePopulation.upgrader) {
+          this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
+        }
       }
-    }
+    } 
   }
 
   private createHarvesters(energyAvailable: number) {
