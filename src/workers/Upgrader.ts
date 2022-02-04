@@ -1,4 +1,5 @@
 import { harvest, pickupDroppedEnergy } from './CommonActions';
+
 export class Upgrader {
   public static  run = (creep: Creep):void => {
     if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] === 0) {
@@ -20,15 +21,15 @@ export class Upgrader {
       let structures = creep.room.find(FIND_STRUCTURES);
       let stores = structures.filter(
         (structure) =>
-          (structure.structureType == STRUCTURE_CONTAINER ||
-          structure.structureType == STRUCTURE_STORAGE ) &&
+          (structure.structureType === STRUCTURE_CONTAINER ||
+          structure.structureType === STRUCTURE_STORAGE ) &&
           structure.store.getUsedCapacity(RESOURCE_ENERGY)> creep.store.getCapacity()
       );
       console.log("upgrader",creep.name, "energy stores:" ,stores);
       if (stores.length>=1) {
         let store = creep.pos.findClosestByPath(stores);
         if (store) {
-          if (creep.withdraw(store, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+          if (creep.withdraw(store, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             creep.moveTo(store, { visualizePathStyle: { stroke: '#ffaa00' } });
             return;
         }

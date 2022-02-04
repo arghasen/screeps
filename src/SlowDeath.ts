@@ -5,7 +5,7 @@
 import { BuildingManager } from './manager/BuildingManager';
 import { RoomManager } from './manager/RoomManager';
 import { WorkerManager } from './manager/WorkerManager';
-import { git_version } from './utils/version';
+import { gitVersion } from './utils/version';
 
 function defendRoom(roomName: string): void {
   const hostiles:Creep[] = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
@@ -29,7 +29,7 @@ export class Slowdeath {
   public static buildingManager: BuildingManager;
   public static workerManager: WorkerManager;
   public static init(): void{
-    Memory.version = git_version;
+    Memory.version = gitVersion;
 
     for (const roomName of Object.keys(Game.rooms)) {
       defendRoom(roomName);
@@ -41,7 +41,7 @@ export class Slowdeath {
         console.log(
           'AI doesnt have capability to work with controller level 0 rooms'
         );
-      } else if (roomControllerLevel <= 4) {
+      } else if (roomControllerLevel <= 5) {
         console.log('Room Level %d ...starting to work', roomControllerLevel);
         this.roomManager = new RoomManager();
 

@@ -18,7 +18,7 @@ export function pickupDroppedEnergy(creep: Creep) {
     {
      energyResources.sort((a,b)=>a.amount-b.amount);
     }
-      let closestSource = null;
+      let closestSource = undefined;
       if(energyResources[0].amount>2000)
       {
           closestSource = energyResources[0];
