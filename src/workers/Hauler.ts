@@ -47,9 +47,9 @@ export class Hauler {
         } // no target exist, then transfer energy to creeps
       } else {
         var targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
-          filter: (creep) =>
-            creep.memory.role != Role.ROLE_HAULER &&
-            creep.store.getFreeCapacity() < 0.9*creep.store.getCapacity()
+          filter: (creepTo) =>
+            creepTo.memory.role != Role.ROLE_HAULER &&
+            creepTo.store.getFreeCapacity() < 0.9*creepTo.store.getCapacity()
         });
         console.log('targetCreep:' + targetCreep);
         if (targetCreep) {

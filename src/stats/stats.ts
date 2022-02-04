@@ -60,7 +60,7 @@ export class Stats {
         var sources = room.find(FIND_SOURCES);
         const mining = roomSummary.add(Prefix, 'mining');
         
-        if(Memory.stats.roomSummary)
+        if(Memory.stats.roomSummary && Memory.stats.roomSummary[roomName])
             {
         //FIXME : Use Source Capacity to generlize mining
         var totalEnergy =

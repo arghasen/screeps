@@ -1,4 +1,5 @@
 interface Memory {
+  roadsDone: boolean;
   continuousHarvestingStarted: boolean;
   stats: any;
   version: string;
