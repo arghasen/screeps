@@ -17,15 +17,15 @@ export class BuildingManager extends Manager {
 
     var myStructures = room.find(FIND_MY_STRUCTURES);
     this.extensionsCreated = myStructures.filter(
-      (structure) => structure.structureType == STRUCTURE_EXTENSION
+      (structure) => structure.structureType === STRUCTURE_EXTENSION
     );
 
     var constructionSites = room.find(FIND_CONSTRUCTION_SITES);
     this.extensionsUnderConstruction = constructionSites.filter(
-      (site) => site.structureType == STRUCTURE_EXTENSION
+      (site) => site.structureType === STRUCTURE_EXTENSION
     );
 
-    if (room.controller?.level == 2) {
+    if (room.controller?.level === 2) {
       if(this.extensionsCreated.length!= controllerConsts.lvl2extensions)
           {
               Memory.focus = "build"
@@ -73,7 +73,7 @@ export class BuildingManager extends Manager {
         }
     }
 
-  private getTotalExtensions() {
+  private getTotalExtensions():number {
     return (
       this.extensionsUnderConstruction.length + this.extensionsCreated.length
     );
@@ -82,7 +82,7 @@ export class BuildingManager extends Manager {
   private createExtensions(room: Room) {
     var loc = _.cloneDeep(extensionLoc[2]);
     for (
-      var i = this.getTotalExtensions();
+      var i:number = this.getTotalExtensions();
       i < controllerConsts.lvl2extensions;
       i++
     ) {
@@ -93,7 +93,7 @@ export class BuildingManager extends Manager {
         STRUCTURE_EXTENSION
       );
       console.log('result for creation', res);
-      if (res != 0) {
+      if (res !== 0) {
         loc.splice(i, 1);
         --i;
       }

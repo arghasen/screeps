@@ -1,12 +1,12 @@
-import { pickupDroppedEnergy } from './CommonActions';
+import { harvest, pickupDroppedEnergy, repair } from './CommonActions';
 
 export class Builder {
-  static run = (creep: Creep) => {
-    if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
+  public static run = (creep: Creep):void => {
+    if (creep.memory.building && creep.store[RESOURCE_ENERGY] === 0) {
       creep.memory.building = false;
       creep.say('🔄 harvest');
     }
-    if (!creep.memory.building && creep.store.getFreeCapacity() == 0) {
+    if (!creep.memory.building && creep.store.getFreeCapacity() === 0) {
       creep.memory.building = true;
       creep.say('🚧 build');
     }
@@ -24,31 +24,25 @@ export class Builder {
         var targetStructures = myStructures.filter(
           (structure) =>
             (structure.hits < structure.hitsMax &&
-              structure.structureType != STRUCTURE_WALL &&
-              structure.structureType != STRUCTURE_RAMPART) ||
-            (structure.structureType == STRUCTURE_RAMPART &&
+              structure.structureType !== STRUCTURE_WALL &&
+              structure.structureType !== STRUCTURE_RAMPART) ||
+            (structure.structureType === STRUCTURE_RAMPART &&
               structure.hits < 500000)
         );
-        var targetStructure = creep.pos.findClosestByRange(targetStructures);
-        if (targetStructure) {
-          if (creep.repair(targetStructure) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(targetStructure, {
-              visualizePathStyle: { stroke: '#ffaa00' }
-            });
-          }
+        const targetStructure:AnyStructure|null = creep.pos.findClosestByRange(targetStructures);
+        if (targetStructure !== null) {
+          repair(creep, targetStructure);
         }
       }
     } else {
       if (Memory.continuousHarvestingStarted) {
         pickupDroppedEnergy(creep);
       } else {
-        var source = creep.pos.findClosestByPath(FIND_SOURCES);
-        if (source) {
-          if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
-          }
-        }
+        const source = creep.pos.findClosestByPath(FIND_SOURCES);
+        harvest(source, creep);
       }
     }
   };
 }
+
+

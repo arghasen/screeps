@@ -1,4 +1,4 @@
 // base class for Managers
 export abstract class Manager {
-  init = (room: Room) => {};
+  public static init = (room: Room):void => {};
 }

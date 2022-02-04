@@ -1,34 +1,8 @@
-import { pickupDroppedEnergy } from './CommonActions';
 import { Role } from '../constants';
+import { pickupDroppedEnergy } from './CommonActions';
 
 export class Hauler {
-  private static getStructuresNeedingEnergy(creep: Creep) {
-    var structures = creep.room.find(FIND_STRUCTURES);
-    var targets = _.filter(structures, (structure) => {
-      return (
-        (structure.structureType == STRUCTURE_EXTENSION ||
-          structure.structureType == STRUCTURE_SPAWN ||
-          structure.structureType == STRUCTURE_CONTAINER ||
-          structure.structureType == STRUCTURE_TOWER) &&
-        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-      );
-    });
-    console.log(creep.name + targets);
-    var target = creep.pos.findClosestByPath(targets);
-    console.log('closestStructure:' + target);
-    return target;
-  }
-
-  private static transferEnergy(
-    creep: Creep,
-    target: AnyCreep | Structure<StructureConstant>
-  ) {
-    if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
-    }
-  }
-
-  static run = (creep: Creep) => {
+  public static run = (creep: Creep): void => {
     if (creep.memory.running && creep.store[RESOURCE_ENERGY] == 0) {
       creep.memory.running = false;
       creep.say('🔄 harvest');
@@ -49,18 +23,20 @@ export class Hauler {
         var targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
           filter: (creepTo) =>
             creepTo.memory.role != Role.ROLE_HAULER &&
-            creepTo.store.getFreeCapacity() < 0.9*creepTo.store.getCapacity()
+            creepTo.store.getFreeCapacity() <  creepTo.store.getCapacity() *0.9
         });
         console.log('targetCreep:' + targetCreep);
         if (targetCreep) {
           this.transferEnergy(creep, targetCreep);
         } else {
-            var storage = creep.room.storage;
-            if(storage){
-                if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(storage, { visualizePathStyle: { stroke: '#ffffff' } });
-                  }
+          var storage = creep.room.storage;
+          if (storage) {
+            if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+              creep.moveTo(storage, {
+                visualizePathStyle: { stroke: '#ffffff' }
+              });
             }
+          }
           creep.memory.running = false;
         }
       }
@@ -69,4 +45,30 @@ export class Hauler {
       pickupDroppedEnergy(creep);
     }
   };
+
+  private static getStructuresNeedingEnergy(creep: Creep): AnyStructure|null {
+    var structures = creep.room.find(FIND_STRUCTURES);
+    var targets = _.filter(structures, (structure) => {
+      return (
+        (structure.structureType === STRUCTURE_EXTENSION ||
+          structure.structureType === STRUCTURE_SPAWN ||
+          structure.structureType === STRUCTURE_CONTAINER ||
+          structure.structureType === STRUCTURE_TOWER) &&
+        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+      );
+    });
+    console.log(creep.name + targets);
+    const target = creep.pos.findClosestByPath(targets);
+    console.log(`closestStructure:  ${target}`);
+    return target;
+  }
+
+  private static transferEnergy(
+    creep: Creep,
+    target: AnyCreep | Structure
+  ) {
+    if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
+    }
+  }
 }

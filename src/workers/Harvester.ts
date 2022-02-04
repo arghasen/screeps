@@ -1,17 +1,13 @@
-import { pickupDroppedEnergy } from './CommonActions';
+import { harvest, pickupDroppedEnergy } from './CommonActions';
 
 export class Harvester {
-  static run = (creep: Creep) => {
+  public static run = (creep: Creep):void => {
     if (creep.store.getFreeCapacity() > 0) {
       if (Memory.continuousHarvestingStarted) {
         pickupDroppedEnergy(creep);
       } else {
         var source = creep.pos.findClosestByPath(FIND_SOURCES);
-        if (source) {
-          if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
-          }
-        }
+        harvest( source, creep);
       }
     } else {
       var targets = creep.room.find(FIND_STRUCTURES, {

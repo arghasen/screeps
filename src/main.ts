@@ -4,13 +4,13 @@ import { Slowdeath } from './SlowDeath';
 import { Stats } from './stats/stats';
 
 
-export function loop() {
-  if(!Memory.count){
+export function loop():void {
+  if(Memory.count === undefined){
       Memory.count =0;
   }
   Slowdeath.init();
   Slowdeath.run();
-  console.log("Pre Stats Tick:" + Game.time + " Cpu: "+ Game.cpu.getUsed());
+  console.log("Pre Stats Tick: %d Cpu: %d",Game.time, Game.cpu.getUsed());
   Stats.run();
   console.log("Post Stats Tick",Game.time, "Cpu: ", Game.cpu.getUsed());
 //   if (Game.cpu.bucket == 10000) {

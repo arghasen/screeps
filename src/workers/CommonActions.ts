@@ -1,4 +1,4 @@
-export function pickup(creep:Creep, closestSource:Resource<ResourceConstant>) {
+export function pickup(creep:Creep, closestSource:Resource) {
     if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
         creep.moveTo(closestSource, {
             visualizePathStyle: { stroke: "#ffaa00" },
@@ -6,19 +6,19 @@ export function pickup(creep:Creep, closestSource:Resource<ResourceConstant>) {
     }
 }
 export function pickupDroppedEnergy(creep: Creep) {
-    var droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
-    var energyResources = _.filter(
+    const droppedResources  = creep.room.find(FIND_DROPPED_RESOURCES);
+    const energyResources = _.filter(
       droppedResources,
       (droppedResource) => droppedResource.resourceType == RESOURCE_ENERGY
       // storeTargetInCreepMemory&&
       // droppedResource.amount >= creep.store.getFreeCapacity()
     );
     if (energyResources.length >=1) {
-    if(energyResources.length ==1)
+    if(energyResources.length ===1)
     {
-      var energyResources = energyResources.sort((a,b)=>a.amount-b.amount);
+     energyResources.sort((a,b)=>a.amount-b.amount);
     }
-      var closestSource = null;
+      let closestSource = null;
       if(energyResources[0].amount>2000)
       {
           closestSource = energyResources[0];
@@ -27,7 +27,7 @@ export function pickupDroppedEnergy(creep: Creep) {
       {
           closestSource = creep.pos.findClosestByPath(energyResources);
       }
-      console.log(creep.name + closestSource);
+      console.log(`${creep.name}  ${closestSource}`);
 
       if (closestSource) {
         if (closestSource instanceof Resource) {
@@ -45,3 +45,20 @@ export function pickupDroppedEnergy(creep: Creep) {
       //   var closestSource = creep.pos.findClosestByPath(containers);
     }
   }
+  export function harvest(source: Source | null, creep: Creep) {
+    if (source) {
+        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(source, {
+                visualizePathStyle: { stroke: '#ffaa00' }
+            });
+        }
+    }
+}
+
+export function repair(creep: Creep, targetStructure: AnyStructure) {
+    if (creep.repair(targetStructure) === ERR_NOT_IN_RANGE) {
+        creep.moveTo(targetStructure, {
+            visualizePathStyle: { stroke: '#ffaa00' }
+        });
+    }
+}

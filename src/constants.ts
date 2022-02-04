@@ -1,8 +1,8 @@
-export const controllerConsts = {
+export const controllerConsts: any = {
   lvl2extensions: 5
 };
 
-export const maxRolePopulation = {
+export const maxRolePopulation: any = {
   continuous_harvester: 2,
   harvesters: 1,
   builders: 2,
@@ -19,8 +19,8 @@ export enum Role {
   ROLE_CONTINUOUS_HARVESTER
 }
 
-type roleNames = { [key in Role]: any };
-export const roleNames = {
+type RoleNames = { [key in Role]: string };
+export const roleNames: RoleNames = {
   [Role.ROLE_HARVESTER]: 'harvester',
   [Role.ROLE_UPGRADER]: 'upgrader',
   [Role.ROLE_HAULER]: 'hauler',
@@ -35,16 +35,19 @@ export enum actions {
   ACTION_REPAIR,
   ACTION_TRANSFER
 }
-export const directionsArray =[[1, 1],
-[1, -1],
-[-1, -1],
-[-1, 1],
-[1, 0],
-[0, 1],
-[-1, 0],
-[0, -1]]
+export const directionsArray: number[][] = [
+  [1, 1],
+  [1, -1],
+  [-1, -1],
+  [-1, 1],
+  [1, 0],
+  [0, 1],
+  [-1, 0],
+  [0, -1]
+];
 
-export const extensionLoc = {
+
+export const extensionLoc: any = {
   2: [
     [1, 1],
     [1, -1],
