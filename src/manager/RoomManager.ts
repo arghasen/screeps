@@ -3,12 +3,12 @@ import { Manager } from './Manager';
 import { controllerConsts, maxRolePopulation, Role } from '../constants';
 
 export class RoomManager extends Manager {
-  spawns: StructureSpawn[] = [];
-  myCreeps: Creep[] = [];
-  sources: Source[] = [];
-  init = (room: Room) => {
-    var gameSpawns = Game.spawns;
-    for (var spawnName in gameSpawns) {
+  public spawns: StructureSpawn[] = [];
+  public myCreeps: Creep[] = [];
+  public sources: Source[] = [];
+  public init = (room: Room):void => {
+    let gameSpawns = Game.spawns;
+    for (let spawnName in gameSpawns) {
       if (gameSpawns[spawnName].room.name == room.name) {
         this.spawns.push(gameSpawns[spawnName]);
       }
@@ -21,5 +21,5 @@ export class RoomManager extends Manager {
     // }
   };
 
-  run = () => {};
+  public run = () => {};
 }

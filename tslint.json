@@ -1,0 +1,14 @@
+{
+    "extends": [
+      "tslint:recommended",
+      "tslint-eslint-rules",
+      "tslint-microsoft-contrib",
+      "tslint-consistent-codestyle",
+      "tslint-config-prettier"
+    ],
+    "rules": {
+        "no-cond-assign": "error",
+        "no-console": false,
+        "completed-docs":false
+    }
+}

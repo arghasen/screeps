@@ -1,7 +1,12 @@
 interface Memory {
+  roadsDone: boolean;
+  continuousHarvestingStarted: boolean;
   stats: any;
   version: string;
   energy: number;
+  focus: string;
+  count: number;
+  source:Id<Source>
 }
 
 interface CreepMemory {
@@ -9,4 +14,5 @@ interface CreepMemory {
   building?: boolean;
   running?: boolean;
   role: any;
+  source?:any;
 }
