@@ -1,5 +1,7 @@
+import { logger } from "utils/logger";
+
 export function pickup(creep:Creep, closestSource:Resource) {
-    if (creep.pickup(closestSource) == ERR_NOT_IN_RANGE) {
+    if (creep.pickup(closestSource) === ERR_NOT_IN_RANGE) {
         creep.moveTo(closestSource, {
             visualizePathStyle: { stroke: "#ffaa00" },
         });
@@ -9,7 +11,7 @@ export function pickupDroppedEnergy(creep: Creep) {
     const droppedResources  = creep.room.find(FIND_DROPPED_RESOURCES);
     const energyResources = _.filter(
       droppedResources,
-      (droppedResource) => droppedResource.resourceType == RESOURCE_ENERGY
+      (droppedResource) => droppedResource.resourceType === RESOURCE_ENERGY
       // storeTargetInCreepMemory&&
       // droppedResource.amount >= creep.store.getFreeCapacity()
     );
@@ -18,7 +20,7 @@ export function pickupDroppedEnergy(creep: Creep) {
     {
      energyResources.sort((a,b)=>a.amount-b.amount);
     }
-      let closestSource = undefined;
+      let closestSource;
       if(energyResources[0].amount>2000)
       {
           closestSource = energyResources[0];
@@ -27,7 +29,7 @@ export function pickupDroppedEnergy(creep: Creep) {
       {
           closestSource = creep.pos.findClosestByPath(energyResources);
       }
-      console.log(`${creep.name}  ${closestSource}`);
+      logger.info(`creep: ${creep.name} closest source: ${closestSource} of dropped energy`);
 
       if (closestSource) {
         if (closestSource instanceof Resource) {
@@ -47,7 +49,7 @@ export function pickupDroppedEnergy(creep: Creep) {
   }
   export function harvest(source: Source | null, creep: Creep) {
     if (source) {
-        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+        if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
             creep.moveTo(source, {
                 visualizePathStyle: { stroke: '#ffaa00' }
             });

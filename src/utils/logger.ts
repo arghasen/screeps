@@ -43,6 +43,7 @@ export class Logger {
       }
     });
   }
+  
   get level(): number {
     return Memory.settings.log.level;
   }
