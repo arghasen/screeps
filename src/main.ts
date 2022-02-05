@@ -1,21 +1,21 @@
-console.log('hello screeps');
-
 import { Slowdeath } from './SlowDeath';
 import { Stats } from './stats/stats';
+import { logger } from './utils/logger';
+import { onPublicServer } from './utils/utils';
 
+export function loop(): void {
+  logger.info(`Begin of Tick Cpu: ${Game.cpu.getUsed()}`);
 
-export function loop():void {
-    console.log("Begin of Tick:", Game.time , " Cpu: ", Game.cpu.getUsed());
-  if(Memory.count === undefined){
-      Memory.count =0;
-  }
   Slowdeath.init();
-  Slowdeath.run();
-  console.log("Pre Stats Tick: %d Cpu: %d",Game.time, Game.cpu.getUsed());
+  Slowdeath.plan();
+  Slowdeath.execute();
+  Slowdeath.review();
+  logger.info(`Pre Stats Tick Cpu: ${Game.cpu.getUsed()}`);
   Stats.run();
-  console.log("Post Stats Tick",Game.time, "Cpu: ", Game.cpu.getUsed());
-  if (Game.cpu.bucket === 10000) {
+  logger.info(`Post Stats Tick Cpu: ${Game.cpu.getUsed()}`);
+  
+  if (onPublicServer() && Game.cpu.bucket === 10000) {
     Game.cpu.generatePixel();
   }
-  console.log("End of Tick:", Game.time , " Cpu: ", Game.cpu.getUsed());
+  logger.info(`End of Tick Cpu: ${Game.cpu.getUsed()}`);
 }

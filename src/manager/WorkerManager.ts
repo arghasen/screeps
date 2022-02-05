@@ -34,7 +34,7 @@ export class WorkerManager extends Manager {
     if (this.numContinuousHarvesters > 1) {
       Memory.continuousHarvestingStarted = true;
     }
-    //var energyAvailable = room.energyAvailable;
+    // var energyAvailable = room.energyAvailable;
     const energyAvailable:number = room.energyCapacityAvailable;
 
     this.creapCreator(room, energyAvailable); // Early returns are possible in this function, so be careful in putting code below.
@@ -64,10 +64,10 @@ export class WorkerManager extends Manager {
   };
 
   public createCreep = (energyAvailable: number, role: Role) : ScreepsReturnCode=> {
-    //var body = getBody();
     const body:BodyPartConstant[] = this.getBody(energyAvailable, role);
 
     const ret:ScreepsReturnCode = this.spawns[0].spawnCreep(body, roleNames[role] + Game.time, {
+
       memory: { role: role }
     });
     console.log(

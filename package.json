@@ -3,7 +3,10 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "build": "rollup -c",
+        "build": "tsc -p .",
+        "lint": "tslint --project tsconfig.json \"src/**/*.ts\"",
+        "clean": "rm -rf tsc-out && rm -rf dist",
+        "compile": "rollup -c",
         "push-main": "bash src/utils/version.sh && rollup -c --environment DEST:main",
         "push-pserver": "rollup -c --environment DEST:pserver",
         "watch-pserver": "rollup -cw --environment DEST:pserver"

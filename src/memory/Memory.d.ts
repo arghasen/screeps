@@ -6,7 +6,8 @@ interface Memory {
   energy: number;
   focus: string;
   count: number;
-  source:Id<Source>
+  source:Id<Source>;
+  settings:any;
 }
 
 interface CreepMemory {
