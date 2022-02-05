@@ -2,6 +2,9 @@ import { Kernel } from 'os/kernel';
 import { Stats } from './stats/stats';
 import { logger } from './utils/logger';
 import { onPublicServer } from './utils/utils';
+import {loader} from 'os/loader'
+
+
 
 export function loop(): void {
   logger.info(`Begin of Tick Cpu: ${Game.cpu.getUsed()}`);

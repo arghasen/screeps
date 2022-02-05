@@ -29,8 +29,14 @@ export class Kernel {
         `kernel:running process  pid: ${currentProcessPid}`
       );
 
-      const currentProcess = this.scheduler.getProcessForPid();
+      const currentProcess = this.scheduler.getProcessForPid(currentProcessPid);
+      try{
       currentProcess.run();
+      }
+      catch(e: unknown)
+      {
+        logger.error(`Kernel: error while running process pid:${currentProcessPid} name:${currentProcess.name}"`)
+      }
     }
   }
 
