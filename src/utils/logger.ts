@@ -43,7 +43,7 @@ export class Logger {
       }
     });
   }
-  
+
   get level(): number {
     return Memory.settings.log.level;
   }
@@ -207,5 +207,6 @@ export class Logger {
     return out;
   }
 }
+
 
 export const logger: Logger = new Logger();
