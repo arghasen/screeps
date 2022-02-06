@@ -6,7 +6,7 @@ export const maxRolePopulation: any = {
   continuous_harvester: 2,
   harvesters: 1,
   builders: 2,
-  upgrader: 2,
+  upgrader: 1,
   haulers: 2,
   total: 7
 };
@@ -16,7 +16,8 @@ export enum Role {
   ROLE_UPGRADER,
   ROLE_HAULER,
   ROLE_BUILDER,
-  ROLE_CONTINUOUS_HARVESTER
+  ROLE_CONTINUOUS_HARVESTER,
+  ROLE_REM_UPGRADER
 }
 
 type RoleNames = { [key in Role]: string };
@@ -25,7 +26,8 @@ export const roleNames: RoleNames = {
   [Role.ROLE_UPGRADER]: 'upgrader',
   [Role.ROLE_HAULER]: 'hauler',
   [Role.ROLE_BUILDER]: 'builder',
-  [Role.ROLE_CONTINUOUS_HARVESTER]: 'continuous_harvester'
+  [Role.ROLE_CONTINUOUS_HARVESTER]: 'continuous_harvester',
+  [Role.ROLE_REM_UPGRADER]: 'remUpgrader'
 };
 
 export enum actions {

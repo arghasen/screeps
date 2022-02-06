@@ -1,3 +1,4 @@
+import { RemUpgrader } from 'workers/remoteUpgrader';
 import { maxRolePopulation, Role, roleNames } from '../constants';
 import { Builder } from '../workers/Builder';
 import { ContinuousHarvester } from '../workers/ContinuousHarvester';
@@ -57,6 +58,10 @@ export class WorkerManager extends Manager {
           break;
         case Role.ROLE_CONTINUOUS_HARVESTER:
           ContinuousHarvester.run(creep);
+          break;
+        case Role.ROLE_REM_UPGRADER:
+          RemUpgrader.run(creep);
+
         default:
           _.noop();
       }
@@ -68,6 +73,8 @@ export class WorkerManager extends Manager {
     role: Role
   ): ScreepsReturnCode => {
     //var body = getBody();
+    if(this.spawns.length<1)
+    return ERR_RCL_NOT_ENOUGH;
     const body: BodyPartConstant[] = this.getBody(energyAvailable, role);
 
     const ret: ScreepsReturnCode = this.spawns[0].spawnCreep(
@@ -142,6 +149,17 @@ export class WorkerManager extends Manager {
     if (role === Role.ROLE_HAULER) {
       body = this.getHaulerBody(energyAvailable);
     }
+    if(role == Role.ROLE_BUILDER)
+    {
+        if(Memory.focus =="build")
+        {
+            body = [WORK,MOVE,WORK,MOVE,CARRY,MOVE,CARRY,CARRY, MOVE]
+        }
+        else{
+
+            body = [WORK,CARRY,CARRY, MOVE]
+        }
+    }
     return body;
   }
 
@@ -172,7 +190,7 @@ export class WorkerManager extends Manager {
   }
 
   private creapCreator(room: Room, energyAvailable: number) {
-    if (!this.spawns[0].spawning) {
+    if (this.spawns[0] && !this.spawns[0].spawning) {
       // FIXME : We can probably have better logic for restart in emergency
       if (this.myCreeps.length === 0 || this.numHarversters === 0) {
         this.createCreep(250, Role.ROLE_HARVESTER);

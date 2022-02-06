@@ -34,8 +34,13 @@ export class BuildingManager extends Manager {
          {
              Memory.focus = "upgrade"
          }
-      if (this.getTotalExtensions() < controllerConsts.lvl2extensions) {
+         if(this.spawns.length<1)
+         {
+             return;
+         }
+      if (this.getTotalExtensions() < controllerConsts.lvl2extensions ) {
         this.createExtensions(room);
+
       } else if(!Memory.roadsDone){
         var sources = this.spawns[0].room.find(FIND_SOURCES);
         for (var j = 0; j < sources.length; j++)
@@ -47,7 +52,7 @@ export class BuildingManager extends Manager {
             }
         }
         Memory.roadsDone = true;
-        this.setupMineContainers(room);
+        //this.setupMineContainers(room);
       }
     }
   };
