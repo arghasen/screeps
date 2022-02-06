@@ -4,6 +4,7 @@ import { Scheduler } from 'os/scheduler';
 export class Kernel {
   scheduler: Scheduler;
   constructor() {
+    global.kernel = this;
     if(!Memory.os)
     {
         Memory.os = {}

@@ -91,7 +91,7 @@ export class Scheduler {
         this.memory.processes.index[pid].n
       );
       logger.info(
-        `Creating ${ProgramClass} for pid : ${this.memory.processes.index[pid].n}`
+        `Creating ${ProgramClass.type} for pid : ${pid}`
       );
       try {
         this.processCache[pid] = new ProgramClass(
