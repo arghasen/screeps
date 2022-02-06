@@ -99,6 +99,7 @@ export class WorkerManager extends Manager {
   public getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
       console.log('worker counting:' + creep);
+      if(creep.room.name === this.room.name){
       switch (creep.memory.role) {
         case Role.ROLE_HARVESTER:
           this.numHarversters = this.numHarversters + 1;
@@ -119,6 +120,7 @@ export class WorkerManager extends Manager {
           console.log('Invalid role: %s', creep.memory.role);
       }
     }
+}
     console.log(
       'Workers:, harv:' +
         this.numHarversters +
@@ -129,6 +131,7 @@ export class WorkerManager extends Manager {
         ' haul:' +
         this.numHaulers
     );
+    
   };
 
   private getBody(energyAvailable: number, role: Role): BodyPartConstant[] {

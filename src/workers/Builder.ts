@@ -2,14 +2,14 @@ import { harvest, pickupDroppedEnergy, repair } from './CommonActions';
 
 export class Builder {
   public static run = (creep: Creep):void => {
-    if (creep.room.name !== 'W29N19') {
-        var target = new RoomPosition(12, 33, 'W29N19');
-        const ret = creep.moveTo(target, {
-          visualizePathStyle: { stroke: '#90ffff' }
-        });
-        console.log("REM Builder",ret);
-        return;
-      }
+    // if (creep.room.name !== 'W29N19') {
+    //     var target = new RoomPosition(12, 33, 'W29N19');
+    //     const ret = creep.moveTo(target, {
+    //       visualizePathStyle: { stroke: '#90ffff' }
+    //     });
+    //     console.log("REM Builder",ret);
+    //     return;
+    //   }
     if (creep.memory.building && creep.store[RESOURCE_ENERGY] === 0) {
       creep.memory.building = false;
       creep.say('🔄 harvest');
