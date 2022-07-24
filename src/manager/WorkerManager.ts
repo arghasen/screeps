@@ -154,7 +154,7 @@ export class WorkerManager extends Manager {
     }
     if(role == Role.ROLE_BUILDER)
     {
-        if(Memory.focus =="build")
+        if(Memory.focus =="build" && energyAvailable >=550)
         {
             body = [WORK,MOVE,WORK,MOVE,CARRY,MOVE,CARRY,CARRY, MOVE]
         }
