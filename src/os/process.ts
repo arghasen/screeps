@@ -5,13 +5,13 @@ export abstract class Process {
   data: any;
   parent?: Process;
   className: string = 'Process';
-  constructor(pid: Pid, name: string, data = {}, parent?: Process) {
+  constructor(pid: Pid, name: string, data:{[key: string]: any} = {}, parent?: Process) {
     this.pid = pid;
     this.name = name;
     this.data = data;
     this.parent = parent;
   }
-  launchChildProcess (tag:string, name:string, data = {}) {
+  launchChildProcess (tag:string, name:string, data:{[key: string]: any} = {}) {
     if (!this.data.children) {
       this.data.children = {}
     }

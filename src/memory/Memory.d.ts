@@ -7,14 +7,20 @@ interface Memory {
   energy: number;
   focus: string;
   count: number;
-  source:Id<Source>;
-  settings:any;
+  source: Id<Source>;
+  settings: any;
 }
 
 interface CreepMemory {
   upgrading?: boolean;
   building?: boolean;
   running?: boolean;
-  role: any;
-  source?:any;
+  role?: any; //FIXME
+  source?: any;
+}
+
+interface CreepDef {
+  body: BodyPartConstant[];
+  memory: CreepMemory;
+  name: string;
 }
