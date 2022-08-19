@@ -42,7 +42,7 @@ export class Scheduler {
     return -1;
   }
 
-  public launch(name: string, data?: object, parent?: Pid): Pid {
+  public launch(name: string, data: object ={}, parent?: Pid ): Pid {
     logger.info(`launching process : ${name} `);
     const pid = this.getNextPid();
     this.memory.processes.index[pid] = {
