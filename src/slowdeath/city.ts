@@ -1,4 +1,4 @@
-import {Process} from 'os/Process'
+import {Process} from 'os/process'
 import { logger } from 'utils/logger';
 
 /**
