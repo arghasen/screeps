@@ -17,3 +17,4 @@ export const processTypes:{[key:string]:any} = {
     "employment": Employment,
     "military": Military
 }
+export var foo = processTypes.slowdeath;

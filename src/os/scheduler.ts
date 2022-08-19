@@ -42,10 +42,13 @@ export class Scheduler {
     return -1;
   }
 
-  public launch(name: string): Pid {
+  public launch(name: string, data?: object, parent?: Pid): Pid {
+    logger.info(`launching process : ${name} `);
     const pid = this.getNextPid();
     this.memory.processes.index[pid] = {
-      n: name
+      n: name, 
+      d: data,
+      p: parent
     };
 
     this.memory.processes.ready.push(pid);
@@ -74,7 +77,7 @@ export class Scheduler {
     if (!this.memory.lastPid) {
       this.memory.lastPid = 0;
     }
-    return this.memory.lastPid++;
+    return ++this.memory.lastPid;
   }
 
   public getProcessCount(): number {
@@ -90,9 +93,7 @@ export class Scheduler {
       const ProgramClass = this.getProgramClass(
         this.memory.processes.index[pid].n
       );
-      logger.info(
-        `Creating ${ProgramClass.type} for pid : ${pid}`
-      );
+      logger.info(`Creating ${ProgramClass.name} for pid : ${pid}`);
       try {
         this.processCache[pid] = new ProgramClass(
           pid,
@@ -101,14 +102,16 @@ export class Scheduler {
           this.memory.processes.index[pid].p
         );
       } catch (e: any) {
-        logger.error(`Scheduler: ${logger.printObject(e)}`);
+        logger.error(`Scheduler: ${e}`);
 
-        throw new Error('Could not create Proces for pid:${pid}');
+        throw new Error('Could not create Process for pid:${pid}');
       }
     }
     return this.processCache[pid];
   }
+
   private getProgramClass(name: string) {
+    logger.info(`Getting program class for : ${name}`);
     return processTypes[name];
   }
 

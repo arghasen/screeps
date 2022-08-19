@@ -6,7 +6,7 @@ declare global {
     namespace NodeJS {
       interface Global {
         log: any;
-        kernel: any;
+        kernel: Kernel;
       }
     }
   }
