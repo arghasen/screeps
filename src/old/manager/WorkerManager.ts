@@ -1,4 +1,4 @@
-import { logger } from '../utils/logger';
+import { logger } from '../../utils/logger';
 import { maxRolePopulation, Role, roleNames } from '../constants';
 import { Builder } from '../workers/Builder';
 import { ContinuousHarvester } from '../workers/ContinuousHarvester';

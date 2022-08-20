@@ -5,8 +5,8 @@
 import { BuildingManager } from './manager/BuildingManager';
 import { RoomManager } from './manager/RoomManager';
 import { WorkerManager } from './manager/WorkerManager';
-import { logger } from './utils/logger';
-import { gitVersion } from './utils/version';
+import { logger } from '../utils/logger';
+import { gitVersion } from '../utils/version';
 
 function defendRoom(roomName: string): void {
   const hostiles: Creep[] = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);

@@ -1,5 +1,6 @@
 import { Process, Pid } from 'os/process';
 import { logger } from 'utils/logger';
+import { Slowdeath } from 'old/SlowDeath';
 
 /**
  * Colonies comprise of a city and the dominions of the city.
@@ -17,23 +18,35 @@ export class Colony extends Process {
       return; //this.suicide()
     }
 
-    const maxspawns =
-      CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][this.room.controller.level];
-    const spawns = this.room.find(FIND_MY_SPAWNS, {
-      filter: (s:any, i:any, c:any) => c.length <= maxspawns || s.isActive()
-    });
+    // TODO: this should be the way to do this
+    // const spawns = this.findSpawnsInRoom(this.room);
+    // const creep: CreepDef = {
+    //   body: [WORK, CARRY, MOVE],
+    //   name: 'creep' + Game.time,
+    //   memory: { role: 'harvester' }
+    // };
+    // this.createCreep(spawns, creep);
 
+    Slowdeath.init();
+    Slowdeath.execute();
+  }
+
+  private findSpawnsInRoom(room: Room) {
+    const maxspawns =
+      CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][room.controller!.level];
+    const spawns = this.room.find(FIND_MY_SPAWNS, {
+      filter: (s: any, i: any, c: any) => c.length <= maxspawns || s.isActive()
+    });
+    return spawns;
+  }
+
+  private createCreep(spawns: StructureSpawn[], creep: CreepDef) {
+    if (!creep) {
+      return;
+    }
     for (let spawn of spawns) {
       if (spawn.spawning) {
         continue;
-      }
-      const creep: CreepDef = {
-        body: [WORK, CARRY, MOVE],
-        name: 'creep'+ Game.time,
-        memory: {}
-      };
-      if (!creep) {
-        break;
       }
       const ret = spawn.spawnCreep(creep.body, creep.name);
       if (Number.isInteger(ret)) {
