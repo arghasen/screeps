@@ -8,6 +8,7 @@ export class City extends Process {
     
     className: string = 'city';
     public main(){
-        logger.info(`${this.className}: Starting city`);
+        logger.info(`${this.className}: Starting city for ${this.data.roomName}`);
+        this.launchChildProcess(`infrastructure-${this.data.roomName}`,"infrastructure",{})
     }
 }
