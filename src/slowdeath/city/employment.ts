@@ -9,9 +9,14 @@ import { logger } from "../../utils/logger";
 
 export class Employment extends Process {
   protected className = "employment";
-  public myCreeps: Creep[] = [];
-  public sources: Source[] = [];
-  public room!: Room;
+  private myCreeps: Creep[] = [];
+  private sources: Source[] = [];
+  private numHarversters = 0;
+  private numBuilders = 0;
+  private numHaulers = 0;
+  private numUpgraders = 0;
+  private numContinuousHarvesters = 0;
+  private room!: Room;
   private metadata?: CityData;
 
   public main() {
@@ -20,6 +25,41 @@ export class Employment extends Process {
     logger.info(`${this.className}: Starting employment`);
     this.myCreeps = _.values(Game.creeps);
 
+    this.runCreepActions();
+    this.getWorkerCounts();
+  }
+
+  public getWorkerCounts = () => {
+    for (const creep of this.myCreeps) {
+      if (creep.room.name === this.room.name) {
+        logger.debug(`worker counting:${creep}`);
+        switch (creep.memory.role) {
+          case Role.ROLE_HARVESTER:
+            this.numHarversters = this.numHarversters + 1;
+            break;
+          case Role.ROLE_UPGRADER:
+            this.numUpgraders = this.numUpgraders + 1;
+            break;
+          case Role.ROLE_HAULER:
+            this.numHaulers = this.numHaulers + 1;
+            break;
+          case Role.ROLE_BUILDER:
+            this.numBuilders = this.numBuilders + 1;
+            break;
+          case Role.ROLE_CONTINUOUS_HARVESTER:
+            this.numContinuousHarvesters = this.numContinuousHarvesters + 1;
+            break;
+          default:
+            logger.error("Invalid role: %s", creep.memory.role);
+        }
+      }
+      logger.info(
+        `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}`
+      );
+    }
+  };
+
+  private runCreepActions() {
     for (const creep of this.myCreeps) {
       switch (creep.memory.role) {
         case Role.ROLE_HARVESTER:

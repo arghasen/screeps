@@ -55,35 +55,7 @@ export class WorkerManager extends Manager {
     return ret;
   };
 
-  public getWorkerCounts = () => {
-    for (const creep of this.myCreeps) {
-      if (creep.room.name === this.room.name) {
-        logger.debug(`worker counting:${creep}`);
-        switch (creep.memory.role) {
-          case Role.ROLE_HARVESTER:
-            this.numHarversters = this.numHarversters + 1;
-            break;
-          case Role.ROLE_UPGRADER:
-            this.numUpgraders = this.numUpgraders + 1;
-            break;
-          case Role.ROLE_HAULER:
-            this.numHaulers = this.numHaulers + 1;
-            break;
-          case Role.ROLE_BUILDER:
-            this.numBuilders = this.numBuilders + 1;
-            break;
-          case Role.ROLE_CONTINUOUS_HARVESTER:
-            this.numContinuousHarvesters = this.numContinuousHarvesters + 1;
-            break;
-          default:
-            logger.error("Invalid role: %s", creep.memory.role);
-        }
-      }
-      logger.info(
-        `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}`
-      );
-    }
-  };
+
 
   private getBody(energyAvailable: number, role: Role): BodyPartConstant[] {
     let body: BodyPartConstant[] = [WORK, WORK, CARRY, MOVE];

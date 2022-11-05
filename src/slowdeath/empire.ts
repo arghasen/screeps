@@ -10,6 +10,7 @@ export class Empire extends Process {
     logger.info(`${this.className}: Starting Empire`);
     logger.info(`${this.className}: launching colonies`);
     for (const room of Object.keys(Game.rooms)) {
+      console.log(room);
       this.launchChildProcess(`colony-${room}`, "colony", { roomName: room });
     }
   }
