@@ -1,7 +1,7 @@
 import { Process } from "../../os/process";
 import { Role } from "../creepActions/constants";
 import { logger } from "../../utils/logger";
-import { spawnsInRoom } from "../../utils/utils";
+import { spawnsInRoom } from "../../utils/screeps-fns";
 
 export class Spawns extends Process {
   protected className = "spawns";

@@ -1,20 +1,20 @@
-import stubConstants from "./constants";
 import stubCreep, { CreepOptions } from "./creep";
+import stubRoom, { StubRoomOptions } from "./room";
+import stubConstants from "./constants";
 import stubGame from "./game";
 import stubMemory from "./memory";
-import stubRoom, { StubRoomOptions } from "./room";
 
 interface StubOptions {
   creeps?: CreepOptions[];
-  rooms?: { [roomName: string]: StubRoomOptions };
+  rooms: { [roomName: string]: StubRoomOptions };
 }
 
-export default function stub(options: StubOptions = {}) {
+export default function stub(options: StubOptions) {
   stubConstants();
   stubMemory();
 
-  let creeps = [];
-  let rooms = [];
+  let creeps: Creep[] = [];
+  let rooms: Room[] = [];
 
   if (options.creeps) {
     creeps = options.creeps.map(stubCreep);
