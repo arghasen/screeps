@@ -1,5 +1,5 @@
-import { Scheduler } from "os/scheduler";
-import { logger } from "utils/logger";
+import { Scheduler } from "./scheduler";
+import { logger } from "../utils/logger";
 
 export class Kernel {
   private scheduler: Scheduler;
@@ -17,7 +17,7 @@ export class Kernel {
   }
 
   public run(): void {
-    while (this.continueRunning()) {
+    while (this.canContinueRunning()) {
       const currentProcessPid = this.scheduler.getNextProcess();
 
       if (currentProcessPid < 0) {
@@ -30,15 +30,17 @@ export class Kernel {
       const currentProcess = this.scheduler.getProcessForPid(currentProcessPid);
       try {
         currentProcess.run();
-      } catch (e: any) {
+      } catch (e) {
         logger.error(
-          `Kernel: error while running process pid:${currentProcessPid} name:${currentProcess.name} errorType: ${e}" `
+          `Kernel: error while running process pid:${currentProcessPid} name:${currentProcess.getName()} errorType: ${
+            (e as Error).message
+          }" `
         );
       }
     }
   }
 
-  private continueRunning() {
+  private canContinueRunning() {
     return true;
   }
 

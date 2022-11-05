@@ -47,3 +47,11 @@ interface CreepMemory {
 interface ProcessData {
   children?: Record<string, Pid>;
 }
+
+interface ColonyData extends ProcessData {
+  roomName: string;
+}
+
+interface CityData extends ProcessData {
+  roomName: string;
+}

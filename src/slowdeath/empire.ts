@@ -1,5 +1,5 @@
-import { Process } from "os/process";
-import { logger } from "utils/logger";
+import { Process } from "../os/process";
+import { logger } from "../utils/logger";
 
 /**
  * Empire overlooks the entire empire and takes high level decisions

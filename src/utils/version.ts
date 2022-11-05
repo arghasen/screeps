@@ -1,1 +1,1 @@
-export const gitVersion: string="2022.02.04-v1-4-g56b002a"
+export const gitVersion = "2022.01.05";

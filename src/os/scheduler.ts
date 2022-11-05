@@ -12,7 +12,7 @@ export class Scheduler {
   }
 
   public getNextProcess(): Pid {
-    if (this.memory.processes.running) {
+    if (this.memory.processes.running !== NOT_RUNNING) {
       this.memory.processes.completed.push(this.memory.processes.running);
       this.memory.processes.running = NOT_RUNNING;
     }

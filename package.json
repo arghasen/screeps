@@ -8,6 +8,7 @@
         "clean": "rm -rf tsc-out && rm -rf dist",
         "compile": "rollup -c",
         "push-main": "bash src/utils/version.sh && rollup -c --environment DEST:main",
+        "push-sim":  "bash src/utils/version.sh && rollup -c --environment DEST:sim",
         "push-pserver": "rollup -c --environment DEST:pserver",
         "watch-pserver": "rollup -cw --environment DEST:pserver"
     },

@@ -28,6 +28,7 @@ module.exports = {
         typescript: {}
       }
     },
+    "ignorePatterns": ["**/dist/*.js"],
     rules: {
       "@typescript-eslint/array-type": "error",
       "@typescript-eslint/consistent-type-assertions": "error",

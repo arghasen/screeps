@@ -1,5 +1,5 @@
-import { Pid, Process } from "os/process";
-import { logger } from "utils/logger";
+import { Pid, Process } from "../os/process";
+import { logger } from "../utils/logger";
 
 /**
  *  Top level AI module that launches all processes.
