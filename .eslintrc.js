@@ -28,7 +28,7 @@ module.exports = {
         typescript: {}
       }
     },
-    "ignorePatterns": ["**/dist/*.js"],
+    "ignorePatterns": ["**/dist/*.js", "rollup.config.js", ".eslintrc.js"],
     rules: {
       "@typescript-eslint/array-type": "error",
       "@typescript-eslint/consistent-type-assertions": "error",

@@ -105,4 +105,12 @@ export class Scheduler {
   public getCompletedProcessCount(): number {
     return this.memory.processes.completed.length;
   }
+
+  public kill(pid: Pid) {
+    if (this.memory.processes.index[pid]) {
+      // Process needs to be woken up first
+      // this.wake(pid)
+      delete this.memory.processes.index[pid];
+    }
+  }
 }

@@ -1,6 +1,6 @@
-interface Stats {
-  roomSummary?: any;
-}
+type ScreepsPrometheus = import("@brainwart/screeps-prometheus-game").ScreepsPrometheus;
+type PromDict = ReturnType<ScreepsPrometheus["build"]>;
+
 type Pid = import("os/process").Pid;
 interface SchedulerMemory {
   processes: {
@@ -25,13 +25,18 @@ interface Memory {
   [x: string]: any;
   roadsDone: boolean;
   continuousHarvestingStarted: boolean;
-  stats: Stats;
+  stats: PromDict;
   version: string;
   energy: number;
   focus: string;
   count: number;
   source: Id<Source>;
-  settings: any;
+  settings: {
+    log: {
+      level: import("utils/logger").LogLevels;
+      showTick: boolean;
+    };
+  };
   os: {
     scheduler: SchedulerMemory;
   };

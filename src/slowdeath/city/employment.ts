@@ -1,5 +1,5 @@
-import { Process } from "../os/process";
-import { logger } from "../utils/logger";
+import { Process } from "../../os/process";
+import { logger } from "../../utils/logger";
 
 export class Employment extends Process {
   protected className = "employment";

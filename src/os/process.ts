@@ -35,4 +35,8 @@ export abstract class Process {
   public getName() {
     return this.className;
   }
+
+  public suicide():void{
+    global.kernel.getScheduler().kill(this.pid);
+  }
 }

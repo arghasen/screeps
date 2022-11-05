@@ -8,7 +8,6 @@ export class Stats {
   public static init(): void {
     if (!Memory.stats) {
       Memory.stats = {};
-      Memory.stats.roomSummary = {};
     }
   }
   public static run(): void {
@@ -45,25 +44,6 @@ export class Stats {
           "terminal",
           room.terminal !== undefined ? room.terminal.store.energy : 0
         );
-
-        const sources: Source[] = room.find(FIND_SOURCES);
-        const mining: Prefix = roomSummary.add(Prefix, "mining");
-
-        if (Memory.stats.roomSummary[roomName]) {
-          // FIXME : Use Source Capacity to generlize mining
-          const totalEnergy: number =
-            6000 - sources.reduce((prev: number, cur: Source): number => prev + cur.energy, 0);
-          const lastTotalEnergy: number = Memory.stats.roomSummary[roomName].value.mining.energy
-            ? Memory.stats.roomSummary[roomName].value.mining.energy.value
-            : 0;
-          const lastTickEnergy: number = Memory.energy;
-
-          const thisTickEnergy: number =
-            lastTickEnergy <= totalEnergy ? totalEnergy - lastTickEnergy : 0;
-
-          Memory.energy = totalEnergy;
-          mining.add(Gauge, "energy", lastTotalEnergy + thisTickEnergy);
-        }
       }
     }
 

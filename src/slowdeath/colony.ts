@@ -11,5 +11,8 @@ export class Colony extends Process {
   public main() {
     this.colonyData = this.data as ColonyData;
     logger.info(`${this.className}: Starting colony for ${this.colonyData.roomName}`);
+    this.launchChildProcess(`city-${this.colonyData.roomName}`, "city", {
+      roomName: this.colonyData.roomName
+    });
   }
 }

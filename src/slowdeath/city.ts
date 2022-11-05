@@ -11,5 +11,10 @@ export class City extends Process {
     this.citydata = this.data as CityData;
     logger.info(`${this.className}: Starting city for ${this.citydata.roomName}`);
     this.launchChildProcess(`infrastructure-${this.citydata.roomName}`, "infrastructure", {});
+    this.launchChildProcess(`employment-${this.citydata.roomName}`, "employment", {});
+    this.launchChildProcess(`military-${this.citydata.roomName}`, "military", {});
+    this.launchChildProcess(`spawns-${this.citydata.roomName}`, "spawns", {
+      roomName: this.citydata.roomName
+    });
   }
 }
