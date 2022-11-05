@@ -2,7 +2,7 @@ export const controllerConsts: any = {
   lvl2extensions: 5
 };
 
-export const maxRolePopulation = {
+export const MaxRolePopulation = {
   continuousHarvester: 2,
   harvesters: 1,
   builders: 2,

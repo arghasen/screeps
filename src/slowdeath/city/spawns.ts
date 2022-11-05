@@ -29,7 +29,7 @@ export class Spawns extends Process {
         if (!creep) {
           break;
         }
-        const ret = spawn.spawnCreep(creep.build, creep.name, creep.memory);
+        const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
         if (Number.isInteger(ret)) {
           logger.error(
             `${ret} while spawning creep ${creep.name} in room ${this.metadata.roomName}`
@@ -46,6 +46,6 @@ function getQueuedCreep() {
   return {
     build: [WORK, CARRY, MOVE],
     name: `creep-${Game.time}`,
-    memory: { memory: { role: Role.ROLE_UPGRADER } }
+    options: { memory: {} }
   };
 }

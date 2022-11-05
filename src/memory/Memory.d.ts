@@ -45,7 +45,7 @@ interface CreepMemory {
   upgrading?: boolean;
   building?: boolean;
   running?: boolean;
-  role: any;
+  role?: any;
   source?: any;
 }
 

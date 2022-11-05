@@ -6,15 +6,21 @@ import { logger } from "../utils/logger";
  */
 export class City extends Process {
   protected className = "city";
-  private citydata?: CityData;
+  private metadata?: CityData;
   public main() {
-    this.citydata = this.data as CityData;
-    logger.info(`${this.className}: Starting city for ${this.citydata.roomName}`);
-    this.launchChildProcess(`infrastructure-${this.citydata.roomName}`, "infrastructure", {});
-    this.launchChildProcess(`employment-${this.citydata.roomName}`, "employment", {});
-    this.launchChildProcess(`military-${this.citydata.roomName}`, "military", {});
-    this.launchChildProcess(`spawns-${this.citydata.roomName}`, "spawns", {
-      roomName: this.citydata.roomName
+    this.metadata = this.data as CityData;
+    logger.info(`${this.className}: Starting city for ${this.metadata.roomName}`);
+    this.launchChildProcess(`infrastructure-${this.metadata.roomName}`, "infrastructure", {
+      roomName: this.metadata.roomName
+    });
+    this.launchChildProcess(`employment-${this.metadata.roomName}`, "employment", {
+      roomName: this.metadata.roomName
+    });
+    this.launchChildProcess(`military-${this.metadata.roomName}`, "military", {
+      roomName: this.metadata.roomName
+    });
+    this.launchChildProcess(`spawns-${this.metadata.roomName}`, "spawns", {
+      roomName: this.metadata.roomName
     });
   }
 }

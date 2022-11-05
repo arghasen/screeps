@@ -144,6 +144,10 @@ export class Logger {
     console.log.apply(this, this.buildArguments(LogLevels.DEBUG).concat(JSON.stringify(obj)));
   }
 
+  public json(obj: object): string {
+    return JSON.stringify(obj);
+  }
+
   private buildArguments(level: number): string[] {
     const out: string[] = [];
     switch (level) {
