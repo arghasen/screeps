@@ -9,9 +9,25 @@ export class Infrastructure extends Process {
   private extensionsUnderConstruction: ConstructionSite[] = [];
   private extensionsCreated: AnyOwnedStructure[] = [];
   private spawns: StructureSpawn[] = [];
+  private room!: Room;
   public main() {
+    this.init();
+    this.createExtensions(this.room);
+  }
+
+  private init() {
     this.metadata = this.data as CityData;
-    this.spawns = spawnsInRoom(Game.rooms[this.metadata.roomName]);
+    this.room = Game.rooms[this.metadata.roomName];
+    this.spawns = spawnsInRoom(this.room);
+    const myStructures = this.room.find(FIND_MY_STRUCTURES);
+    this.extensionsCreated = myStructures.filter(
+      structure => structure.structureType === STRUCTURE_EXTENSION
+    );
+
+    const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+    this.extensionsUnderConstruction = constructionSites.filter(
+      site => site.structureType === STRUCTURE_EXTENSION
+    );
     logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
   }
 

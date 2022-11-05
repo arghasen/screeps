@@ -2,7 +2,9 @@ import { color, onPublicServer } from "./utils/utils";
 import { Kernel } from "./os/kernel";
 import { NOT_RUNNING } from "./os/process";
 import { Stats } from "./stats/stats";
+import { gitVersion } from "./utils/version";
 import { logger } from "./utils/logger";
+
 
 export function loop(): void {
   logger.info(`${color("Beginning of new tick", "Magenta")}`);
@@ -37,5 +39,6 @@ function initializeMemory() {
     };
     const scheduler = { processes };
     Memory.os = { scheduler };
+    Memory.version = gitVersion;
   }
 }

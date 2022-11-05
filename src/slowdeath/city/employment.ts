@@ -34,22 +34,41 @@ export class Employment extends Process {
   }
 
   private populationBasedEmployer() {
-    if (this.numHarversters < MaxRolePopulation.harvesters) {
+    const totWorkers =
+      this.numBuilders +
+      this.numHarversters +
+      this.numUpgraders +
+      this.numHaulers +
+      this.unemployed.length;
+    const scale = Math.max(Math.floor(totWorkers / MaxRolePopulation.total), 1);
+
+    if (employ(this.numHarversters, MaxRolePopulation.harvesters)) {
       this.assignRole(Role.ROLE_HARVESTER);
-    } else if (this.numHaulers < MaxRolePopulation.haulers && Memory.continuousHarvestingStarted) {
+    } else if (
+      employ(this.numHaulers, MaxRolePopulation.haulers) &&
+      Memory.continuousHarvestingStarted
+    ) {
       this.assignRole(Role.ROLE_HAULER);
-    } else if (this.numBuilders < MaxRolePopulation.builders) {
+    } else if (employ(this.numBuilders, MaxRolePopulation.builders)) {
       this.assignRole(Role.ROLE_BUILDER);
-    } else if (this.numUpgraders < MaxRolePopulation.upgrader) {
+    } else if (employ(this.numUpgraders, MaxRolePopulation.upgrader)) {
       this.assignRole(Role.ROLE_UPGRADER);
     }
+
+    function employ(cur: number, max: number) {
+      logger.debug(`current employ ${cur}, ${max}, ${scale}`);
+      return cur < max * scale;
+    }
   }
+
   private assignRole(role: Role) {
     const creep = this.unemployed.shift();
     if (creep) {
+      logger.debug(`employing ${creep.name} in role ${role}`);
       creep.memory.role = role;
     }
   }
+
   private getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
       if (creep.room.name === this.room.name) {

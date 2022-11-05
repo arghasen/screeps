@@ -1,5 +1,4 @@
 import { Process } from "../../os/process";
-import { Role } from "../creepActions/constants";
 import { logger } from "../../utils/logger";
 import { spawnsInRoom } from "../../utils/screeps-fns";
 
@@ -26,6 +25,7 @@ export class Spawns extends Process {
         if (!creep) {
           break;
         }
+        //checkEnegy();
         const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
         if (Number.isInteger(ret)) {
           logger.error(

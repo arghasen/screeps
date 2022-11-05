@@ -1,3 +1,4 @@
+import { clearDeadCreepsFromMemory } from "../utils/screeps-fns";
 import { Process } from "../os/process";
 import { logger } from "../utils/logger";
 
@@ -12,6 +13,9 @@ export class Empire extends Process {
     for (const room of Object.keys(Game.rooms)) {
       console.log(room);
       this.launchChildProcess(`colony-${room}`, "colony", { roomName: room });
+    }
+    if (Game.time % 100 === 0) {
+      clearDeadCreepsFromMemory();
     }
   }
 }
