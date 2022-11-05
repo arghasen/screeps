@@ -1,30 +1,31 @@
 export type Pid = number;
-export abstract class Process {
-  pid: number;
-  name: string;
-  data: any;
-  parent?: Process;
-  className: string = 'Process';
 
-  constructor(pid: Pid, name: string, data = {}, parent?: Process) {
+export abstract class Process {
+  private pid: number;
+  private name: string;
+  protected data: any;
+  protected parent?: Process;
+  protected className = "Process";
+
+  public constructor(pid: Pid, name: string, data = {}, parent?: Process) {
     this.pid = pid;
     this.name = name;
     this.data = data;
     this.parent = parent;
   }
 
-  launchChildProcess(tag: string, name: string, data = {}) {
+  public launchChildProcess(tag: string, name: string, data = {}) {
     if (!this.data.children) {
-      this.data.children = {}
+      this.data.children = {};
     }
     if (this.data.children[tag]) {
-      return true
+      return true;
     }
     this.data.children[tag] = global.kernel.scheduler.launch(name, data, this.pid)
-    return this.data.children[tag]
+    return this.data.children[tag];
   }
 
-  abstract main(): void;
+  public abstract main(): void;
 
   public run(): void {
     this.main();

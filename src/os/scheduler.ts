@@ -1,12 +1,12 @@
-import { logger } from 'utils/logger';
-import { Pid, Process } from './process';
-import { processTypes } from './processRegistry';
+import { logger } from "utils/logger";
+import { Pid, Process } from "./process";
+import { processTypes } from "./processRegistry";
 
 export class Scheduler {
   memory: Memory;
   processCache: any;
 
-  constructor() {
+  public constructor() {
     if (!Memory.os.scheduler) {
       Memory.os.scheduler = {};
     }
@@ -14,7 +14,7 @@ export class Scheduler {
     this.processCache = {};
 
     if (!this.memory.processes) {
-      logger.debug('No scheduler process memory found, recreating');
+      logger.debug("No scheduler process memory found, recreating");
       this.memory.processes = {
         running: false,
         ready: [],
@@ -44,11 +44,11 @@ export class Scheduler {
     return -1;
   }
 
-  public launch(name: string, data: object ={}, parent?: Pid ): Pid {
+  public launch(name: string, data: object = {}, parent?: Pid): Pid {
     logger.info(`launching process : ${name} `);
     const pid = this.getNextPid();
     this.memory.processes.index[pid] = {
-      n: name, 
+      n: name,
       d: data,
       p: parent
     };
@@ -92,9 +92,7 @@ export class Scheduler {
 
   public getProcessForPid(pid: Pid): Process {
     if (!this.processCache[pid]) {
-      const ProgramClass = this.getProgramClass(
-        this.memory.processes.index[pid].n
-      );
+      const ProgramClass = this.getProgramClass(this.memory.processes.index[pid].n);
       logger.info(`Creating ${ProgramClass.name} for pid : ${pid}`);
       try {
         this.processCache[pid] = new ProgramClass(
@@ -106,7 +104,7 @@ export class Scheduler {
       } catch (e: any) {
         logger.error(`Scheduler: ${e}`);
 
-        throw new Error('Could not create Process for pid:${pid}');
+        throw new Error("Could not create Process for pid:${pid}");
       }
     }
     return this.processCache[pid];

@@ -1,8 +1,11 @@
+interface Stats{
+
+}
 interface Memory {
   [x: string]: any;
   roadsDone: boolean;
   continuousHarvestingStarted: boolean;
-  stats: any;
+  stats: Stats;
   version: string;
   energy: number;
   focus: string;
