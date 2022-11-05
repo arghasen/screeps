@@ -11,7 +11,7 @@ describe("Sources in Room", () => {
       objectsById: {
         foo: stubObject({
           id: "foo",
-          type: "source"
+          type: "source" 
         }),
         bar: stubObject({
           id: "bar",

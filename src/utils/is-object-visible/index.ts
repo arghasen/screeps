@@ -3,6 +3,6 @@
  * 
  * @param id the id of the object to check
  */
-export default function isObjectVisible(id: string) {
-  return !!Game.getObjectById(id)
+export default function isObjectVisible<T extends _HasId>(id: Id<T>) {
+  return !!Game.getObjectById(id);
 }

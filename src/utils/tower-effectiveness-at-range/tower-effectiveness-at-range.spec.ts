@@ -1,6 +1,6 @@
 import towerEffectivenessAtRange from "./";
 
-import stubConstants from "../../stub/constants";
+import stubConstants from "../stub/constants";
 
 describe("Tower Effectivenes At Range", () => {
   beforeAll(() => {

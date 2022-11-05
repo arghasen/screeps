@@ -5,6 +5,6 @@ import objectsFromIds from "../objects-from-ids";
  *
  * @see objectsFromIds
  */
-export default function inflate<T>(ids: string[]) {
+export default function inflate<T extends _HasId>(ids: Id<T>[]) {
   return objectsFromIds<T>(ids);
 }
