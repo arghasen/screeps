@@ -1,5 +1,5 @@
 import { Manager } from "./Manager";
-import { controllerConsts, directionsArray, extensionLoc } from "../constants";
+import { controllerConsts, directionsArray, extensionLoc } from "../../slowdeath/creepActions/constants";
 
 export class BuildingManager extends Manager {
   spawns: StructureSpawn[] = [];

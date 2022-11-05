@@ -1,4 +1,4 @@
-import { logger } from "utils/logger";
+import { logger } from "../../utils/logger";
 
 export function pickup(creep: Creep, closestSource: Resource) {
   if (creep.pickup(closestSource) === ERR_NOT_IN_RANGE) {

@@ -1,4 +1,5 @@
 import { Process } from "../../os/process";
+import { Role } from "../creepActions/constants";
 import { logger } from "../../utils/logger";
 
 export class Spawns extends Process {
@@ -40,10 +41,11 @@ export class Spawns extends Process {
     }
   }
 }
+
 function getQueuedCreep() {
   return {
     build: [WORK, CARRY, MOVE],
     name: `creep-${Game.time}`,
-    memory: { memory: { role: "upgrader" } }
+    memory: { memory: { role: Role.ROLE_UPGRADER } }
   };
 }

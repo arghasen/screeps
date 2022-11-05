@@ -1,10 +1,7 @@
+import { maxRolePopulation, Role, roleNames } from "../../slowdeath/creepActions/constants";
+import { Upgrader } from "../../slowdeath/creepActions/Upgrader";
 import { logger } from "../../utils/logger";
-import { maxRolePopulation, Role, roleNames } from "../constants";
-import { Builder } from "../workers/Builder";
-import { ContinuousHarvester } from "../workers/ContinuousHarvester";
-import { Harvester } from "../workers/Harvester";
-import { Hauler } from "../workers/Hauler";
-import { Upgrader } from "../workers/Upgrader";
+
 import { Manager } from "./Manager";
 
 export class WorkerManager extends Manager {
@@ -40,30 +37,7 @@ export class WorkerManager extends Manager {
     this.creapCreator(room, energyAvailable); // Early returns are possible in this function, so be careful in putting code below.
   };
 
-  public run = (): void => {
-    for (const creep of this.myCreeps) {
-      switch (creep.memory.role) {
-        case Role.ROLE_HARVESTER:
-          Harvester.run(creep);
-          break;
-        case Role.ROLE_HAULER:
-          Hauler.run(creep);
-          break;
-        case Role.ROLE_BUILDER:
-          Builder.run(creep);
-          break;
-        case Role.ROLE_UPGRADER:
-          Upgrader.run(creep);
-          break;
-        case Role.ROLE_CONTINUOUS_HARVESTER:
-          ContinuousHarvester.run(creep);
-          break;
-
-        default:
-          _.noop();
-      }
-    }
-  };
+  public run = (): void => {};
 
   public createCreep = (energyAvailable: number, role: Role): ScreepsReturnCode => {
     //var body = getBody();

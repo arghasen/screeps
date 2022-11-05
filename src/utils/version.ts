@@ -1,1 +1,1 @@
-export const gitVersion = "2022.01.05-1-gd219ba2";
+export const gitVersion = "2022.01.05-2-ge49f4e4";

@@ -1,5 +1,5 @@
 import { harvest, pickupDroppedEnergy } from "./CommonActions";
-import { logger } from "utils/logger";
+import { logger } from "../../utils/logger";
 
 export class Upgrader {
   public static run = (creep: Creep): void => {

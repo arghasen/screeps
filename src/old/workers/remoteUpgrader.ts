@@ -1,4 +1,4 @@
-import { harvest, pickupDroppedEnergy } from "./CommonActions";
+import { harvest, pickupDroppedEnergy } from "../../slowdeath/creepActions/CommonActions";
 
 export class RemUpgrader {
   public static run = (creep: Creep): void => {

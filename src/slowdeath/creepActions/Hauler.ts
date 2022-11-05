@@ -1,6 +1,6 @@
 import { logger } from "utils/logger";
-import { Role } from "../constants";
-import { pickupDroppedEnergy } from "./CommonActions";
+import { Role } from "../../slowdeath/creepActions/constants";
+import { pickupDroppedEnergy } from "../../slowdeath/creepActions/CommonActions";
 
 export class Hauler {
   public static run = (creep: Creep): void => {

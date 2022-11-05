@@ -1,6 +1,6 @@
 import { Manager } from "./Manager";
 
-import { controllerConsts, maxRolePopulation, Role } from "../constants";
+import { controllerConsts, maxRolePopulation, Role } from "../../slowdeath/creepActions/constants";
 
 export class RoomManager extends Manager {
   public spawns: StructureSpawn[] = [];
