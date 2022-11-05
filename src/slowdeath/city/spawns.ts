@@ -25,14 +25,15 @@ export class Spawns extends Process {
         if (!creep) {
           break;
         }
-        //checkEnegy();
-        const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
-        if (Number.isInteger(ret)) {
-          logger.error(
-            `${ret} while spawning creep ${creep.name} in room ${this.metadata.roomName}`
-          );
-        } else {
-          logger.info(`Spawning creep ${creep.name} from ${this.metadata.roomName}`);
+        if (getSpawnCost(creep.build) >= this.room.energyAvailable) {
+          const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
+          if (Number.isInteger(ret)) {
+            logger.error(
+              `${ret} while spawning creep ${creep.name} in room ${this.metadata.roomName}`
+            );
+          } else {
+            logger.info(`Spawning creep ${creep.name} from ${this.metadata.roomName}`);
+          }
         }
       }
     }
@@ -45,4 +46,12 @@ function getQueuedCreep() {
     name: `creep-${Game.time}`,
     options: { memory: {} }
   };
+}
+
+function getSpawnCost(body: BodyPartConstant[]) {
+  let cost = 0;
+  for (const part of body) {
+    cost += BODYPART_COST[part];
+  }
+  return cost;
 }

@@ -5,3 +5,4 @@ screeps.json
 .idea
 blog/
 coverage/
+src/utils/gitversion.ts

@@ -5,7 +5,6 @@ import { Stats } from "./stats/stats";
 import { gitVersion } from "./utils/version";
 import { logger } from "./utils/logger";
 
-
 export function loop(): void {
   logger.info(`${color("Beginning of new tick", "Magenta")}`);
   logger.info(`Begin of Tick Cpu: ${Game.cpu.getUsed()}`);
