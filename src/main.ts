@@ -1,18 +1,19 @@
-import { Kernel } from 'os/kernel';
-import { Stats } from './stats/stats';
-import { logger } from './utils/logger';
-import { color, onPublicServer } from './utils/utils';
-import { loader } from 'os/loader';
+import { color, onPublicServer } from "./utils/utils";
+import { Kernel } from "os/kernel";
+import { NOT_RUNNING } from "os/process";
+import { Stats } from "./stats/stats";
+import { logger } from "./utils/logger";
 
 export function loop(): void {
-  logger.info(`${color('Beginning of new tick', 'Magenta')}`);
+  logger.info(`${color("Beginning of new tick", "Magenta")}`);
   logger.info(`Begin of Tick Cpu: ${Game.cpu.getUsed()}`);
+  initializeMemory();
 
   const kernel = new Kernel();
   kernel.start();
   kernel.run();
   kernel.shutdown();
-  logger.info(`Pre Stats Tick Cpu: ${color(Game.cpu.getUsed(), 'pink')}`);
+  logger.info(`Pre Stats Tick Cpu: ${color(Game.cpu.getUsed(), "pink")}`);
   Stats.run();
   logger.info(`Post Stats Tick Cpu: ${Game.cpu.getUsed()}`);
 
@@ -20,4 +21,21 @@ export function loop(): void {
     Game.cpu.generatePixel();
   }
   logger.info(`End of Tick Cpu: ${Game.cpu.getUsed()}`);
+}
+
+function initializeMemory() {
+  if (!Memory.os) {
+    logger.info("No kernel memory found, recreating");
+    const processes = {
+      running: NOT_RUNNING,
+      ready: [],
+      completed: [],
+      waiting: [],
+      sleeping: [],
+      index: {},
+      count: 0
+    };
+    const scheduler = { processes };
+    Memory.os = { scheduler };
+  }
 }

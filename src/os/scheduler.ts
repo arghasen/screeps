@@ -1,39 +1,23 @@
+import { NOT_RUNNING, Pid, Process } from "./process";
+import { RunnableProcess, processTypes } from "./processRegistry";
 import { logger } from "utils/logger";
-import { Pid, Process } from "./process";
-import { processTypes } from "./processRegistry";
 
 export class Scheduler {
-  memory: Memory;
-  processCache: any;
+  private memory: SchedulerMemory;
+  private processCache: Record<Pid, Process>;
 
   public constructor() {
-    if (!Memory.os.scheduler) {
-      Memory.os.scheduler = {};
-    }
     this.memory = Memory.os.scheduler;
     this.processCache = {};
-
-    if (!this.memory.processes) {
-      logger.debug("No scheduler process memory found, recreating");
-      this.memory.processes = {
-        running: false,
-        ready: [],
-        completed: [],
-        waiting: [],
-        sleeping: [],
-        index: {},
-        count: 0
-      };
-    }
   }
 
   public getNextProcess(): Pid {
     if (this.memory.processes.running) {
       this.memory.processes.completed.push(this.memory.processes.running);
-      this.memory.processes.running = false;
+      this.memory.processes.running = NOT_RUNNING;
     }
-    //logger.debug(logger.printObject(this.memory))
-    const nextProcess = this.memory.processes.ready.shift();
+    // logger.debug(logger.printObject(this.memory))
+    const nextProcess: Pid | undefined = this.memory.processes.ready.shift();
     if (nextProcess) {
       this.memory.processes.running = nextProcess;
       return this.memory.processes.running;
@@ -44,7 +28,7 @@ export class Scheduler {
     return -1;
   }
 
-  public launch(name: string, data: object = {}, parent?: Pid): Pid {
+  public launch(name: string, data: unknown = {}, parent?: Pid): Pid {
     logger.info(`launching process : ${name} `);
     const pid = this.getNextPid();
     this.memory.processes.index[pid] = {
@@ -61,7 +45,7 @@ export class Scheduler {
     // Add processes that did run back into the system, including any "running" scripts that never completed
     if (this.memory.processes.running) {
       this.memory.processes.completed.push(this.memory.processes.running);
-      this.memory.processes.running = false;
+      this.memory.processes.running = NOT_RUNNING;
     }
     for (const pid of this.memory.processes.completed) {
       // If process is dead do not merge it back into the queue system.
@@ -95,14 +79,9 @@ export class Scheduler {
       const ProgramClass = this.getProgramClass(this.memory.processes.index[pid].n);
       logger.info(`Creating ${ProgramClass.name} for pid : ${pid}`);
       try {
-        this.processCache[pid] = new ProgramClass(
-          pid,
-          this.memory.processes.index[pid].n,
-          this.memory.processes.index[pid].d,
-          this.memory.processes.index[pid].p
-        );
-      } catch (e: any) {
-        logger.error(`Scheduler: ${e}`);
+        this.processCache[pid] = this.getProgram(ProgramClass, pid);
+      } catch (e) {
+        logger.error(`Scheduler: ${(e as Error).message}`);
 
         throw new Error("Could not create Process for pid:${pid}");
       }
@@ -110,6 +89,14 @@ export class Scheduler {
     return this.processCache[pid];
   }
 
+  private getProgram(programClass: RunnableProcess<Process>, pid: Pid) {
+    return new programClass(
+      pid,
+      this.memory.processes.index[pid].n,
+      this.memory.processes.index[pid].d,
+      this.memory.processes.index[pid].p
+    );
+  }
   private getProgramClass(name: string) {
     logger.info(`Getting program class for : ${name}`);
     return processTypes[name];

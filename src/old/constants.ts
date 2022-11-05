@@ -2,8 +2,8 @@ export const controllerConsts: any = {
   lvl2extensions: 5
 };
 
-export const maxRolePopulation: any = {
-  continuous_harvester: 2,
+export const maxRolePopulation = {
+  continuousHarvester: 2,
   harvesters: 1,
   builders: 2,
   upgrader: 1,
@@ -22,12 +22,12 @@ export enum Role {
 
 type RoleNames = { [key in Role]: string };
 export const roleNames: RoleNames = {
-  [Role.ROLE_HARVESTER]: 'harvester',
-  [Role.ROLE_UPGRADER]: 'upgrader',
-  [Role.ROLE_HAULER]: 'hauler',
-  [Role.ROLE_BUILDER]: 'builder',
-  [Role.ROLE_CONTINUOUS_HARVESTER]: 'continuous_harvester',
-  [Role.ROLE_REM_UPGRADER]: 'remUpgrader'
+  [Role.ROLE_HARVESTER]: "harvester",
+  [Role.ROLE_UPGRADER]: "upgrader",
+  [Role.ROLE_HAULER]: "hauler",
+  [Role.ROLE_BUILDER]: "builder",
+  [Role.ROLE_CONTINUOUS_HARVESTER]: "continuous_harvester",
+  [Role.ROLE_REM_UPGRADER]: "remUpgrader"
 };
 
 export enum actions {
@@ -47,7 +47,6 @@ export const directionsArray: number[][] = [
   [-1, 0],
   [0, -1]
 ];
-
 
 export const extensionLoc: any = {
   2: [

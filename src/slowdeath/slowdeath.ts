@@ -7,7 +7,7 @@ import { logger } from "utils/logger";
 export class Slowdeath extends Process {
   protected className = "slowDeath";
 
-  public constructor(pid: Pid, name: string, data: any) {
+  public constructor(pid: Pid, name: string, data: ProcessData) {
     super(pid, name, data);
   }
 

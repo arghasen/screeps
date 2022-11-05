@@ -5,8 +5,8 @@
 import { BuildingManager } from "./manager/BuildingManager";
 import { RoomManager } from "./manager/RoomManager";
 import { WorkerManager } from "./manager/WorkerManager";
-import { logger } from "../utils/logger";
 import { gitVersion } from "../utils/version";
+import { logger } from "../utils/logger";
 
 function defendRoom(roomName: string): void {
   const hostiles: Creep[] = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
@@ -16,7 +16,9 @@ function defendRoom(roomName: string): void {
       filter: { structureType: STRUCTURE_TOWER }
     });
     towers.forEach((tower: AnyOwnedStructure): void => {
-      tower.structureType === STRUCTURE_TOWER ? tower.attack(hostiles[0]) : _.noop();
+      if (tower.structureType === STRUCTURE_TOWER) {
+        tower.attack(hostiles[0]);
+      }
     });
   }
 }
@@ -53,13 +55,10 @@ export class Slowdeath {
       }
     }
   }
-  public static plan(): void {}
 
   public static execute(): void {
     this.roomManager.run();
     this.buildingManager.run();
     this.workerManager.run();
   }
-
-  public static review(): void {}
 }

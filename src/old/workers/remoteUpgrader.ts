@@ -3,7 +3,7 @@ import { harvest, pickupDroppedEnergy } from "./CommonActions";
 export class RemUpgrader {
   public static run = (creep: Creep): void => {
     if (creep.room.name !== "W29N19") {
-      var target = new RoomPosition(12, 33, "W29N19");
+      const target = new RoomPosition(12, 33, "W29N19");
       const ret = creep.moveTo(target, {
         visualizePathStyle: { stroke: "#90ffff" }
       });
@@ -26,8 +26,8 @@ export class RemUpgrader {
         });
       }
     } else {
-      let structures = creep.room.find(FIND_STRUCTURES);
-      let stores = structures.filter(
+      const structures = creep.room.find(FIND_STRUCTURES);
+      const stores = structures.filter(
         structure =>
           (structure.structureType === STRUCTURE_CONTAINER ||
             structure.structureType === STRUCTURE_STORAGE) &&
@@ -35,7 +35,7 @@ export class RemUpgrader {
       );
       console.log("upgrader", creep.name, "energy stores:", stores);
       if (stores.length >= 1) {
-        let store = creep.pos.findClosestByPath(stores);
+        const store = creep.pos.findClosestByPath(stores);
         if (store) {
           if (creep.withdraw(store, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             creep.moveTo(store, { visualizePathStyle: { stroke: "#ffaa00" } });
@@ -43,7 +43,7 @@ export class RemUpgrader {
           }
         }
       } else {
-        let source = creep.pos.findClosestByPath(FIND_SOURCES);
+        const source = creep.pos.findClosestByPath(FIND_SOURCES);
         harvest(source, creep);
       }
     }

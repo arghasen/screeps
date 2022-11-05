@@ -6,9 +6,6 @@ export class Kernel {
 
   public constructor() {
     global.kernel = this;
-    if (!Memory.os) {
-      Memory.os = {};
-    }
     this.scheduler = new Scheduler();
   }
 
@@ -49,5 +46,9 @@ export class Kernel {
     const processCount = this.scheduler.getProcessCount();
     const completedCount = this.scheduler.getCompletedProcessCount();
     logger.info(`Processes Run: ${completedCount}/${processCount}`);
+  }
+
+  public getScheduler(): Scheduler {
+    return this.scheduler;
   }
 }

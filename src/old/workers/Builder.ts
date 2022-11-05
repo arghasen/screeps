@@ -1,14 +1,14 @@
-import { harvest, pickupDroppedEnergy, repair } from './CommonActions';
+import { harvest, pickupDroppedEnergy, repair } from "./CommonActions";
 
 export class Builder {
   public static run = (creep: Creep): void => {
     if (creep.memory.building && creep.store[RESOURCE_ENERGY] === 0) {
       creep.memory.building = false;
-      creep.say('🔄 harvest');
+      creep.say("🔄 harvest");
     }
     if (!creep.memory.building && creep.store.getFreeCapacity() === 0) {
       creep.memory.building = true;
-      creep.say('🚧 build');
+      creep.say("🚧 build");
     }
 
     if (creep.memory.building) {
@@ -16,32 +16,30 @@ export class Builder {
       if (targets.length) {
         if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
           creep.moveTo(targets[0], {
-            visualizePathStyle: { stroke: '#ffffff' }
+            visualizePathStyle: { stroke: "#ffffff" }
           });
         }
       } else {
         const myStructures = creep.room.find(FIND_STRUCTURES);
         const targetStructures = myStructures.filter(
-          (structure) =>
+          structure =>
             (structure.hits < structure.hitsMax &&
               structure.structureType !== STRUCTURE_WALL &&
               structure.structureType !== STRUCTURE_RAMPART) ||
-            (structure.structureType === STRUCTURE_RAMPART &&
-              structure.hits < 500000)
+            (structure.structureType === STRUCTURE_RAMPART && structure.hits < 500000)
         );
-        const targetStructure: AnyStructure | null =
-          creep.pos.findClosestByRange(targetStructures);
+        const targetStructure: AnyStructure | null = creep.pos.findClosestByRange(targetStructures);
         if (targetStructure !== null) {
           repair(creep, targetStructure);
         }
       }
     } else {
-    //   if (Memory.continuousHarvestingStarted) {
-    //     pickupDroppedEnergy(creep);
-    //   } else {
-        const source = creep.pos.findClosestByPath(FIND_SOURCES);
-        harvest(source, creep);
-      //}
+      //   if (Memory.continuousHarvestingStarted) {
+      //     pickupDroppedEnergy(creep);
+      //   } else {
+      const source = creep.pos.findClosestByPath(FIND_SOURCES);
+      harvest(source, creep);
+      // }
     }
   };
 }
