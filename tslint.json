@@ -1,14 +1,17 @@
 {
+    "defaultSeverity": "warning",
     "extends": [
       "tslint:recommended",
       "tslint-eslint-rules",
-      "tslint-microsoft-contrib",
+      "tslint-microsoft-contrib/latest",
       "tslint-consistent-codestyle",
       "tslint-config-prettier"
     ],
     "rules": {
-        "no-cond-assign": "error",
+        "no-conditional-assignment": true,
         "no-console": false,
-        "completed-docs":false
+        "completed-docs":false,
+        "object-literal-shorthand":false,
+        "no-relative-imports":false
     }
 }

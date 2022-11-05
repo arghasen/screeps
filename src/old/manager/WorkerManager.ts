@@ -1,4 +1,5 @@
-import { RemUpgrader } from 'workers/remoteUpgrader';
+
+import { logger } from '../../utils/logger';
 import { maxRolePopulation, Role, roleNames } from '../constants';
 import { Builder } from '../workers/Builder';
 import { ContinuousHarvester } from '../workers/ContinuousHarvester';
@@ -27,15 +28,14 @@ export class WorkerManager extends Manager {
       }
     }
     this.myCreeps = _.values(Game.creeps);
-    console.log(JSON.stringify(Game.creeps));
-    console.log(this.myCreeps);
+    logger.printObject(Game.creeps);
     this.sources = room.find(FIND_SOURCES);
 
     this.getWorkerCounts();
     if (this.numContinuousHarvesters > 1) {
       Memory.continuousHarvestingStarted = true;
     }
-    //var energyAvailable = room.energyAvailable;
+    // var energyAvailable = room.energyAvailable;
     const energyAvailable: number = room.energyCapacityAvailable;
 
     this.creapCreator(room, energyAvailable); // Early returns are possible in this function, so be careful in putting code below.
@@ -59,8 +59,7 @@ export class WorkerManager extends Manager {
         case Role.ROLE_CONTINUOUS_HARVESTER:
           ContinuousHarvester.run(creep);
           break;
-        case Role.ROLE_REM_UPGRADER:
-          RemUpgrader.run(creep);
+
 
         default:
           _.noop();
@@ -92,14 +91,18 @@ export class WorkerManager extends Manager {
         ' result: ' +
         ret
     );
+    logger.info(
+      `Creep creation with body:${body} role: ${roleNames[role]} result: ${ret}`
+    );
+
     return ret;
   };
 
-  //getBody =(energyAvailable)
   public getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
-      console.log('worker counting:' + creep);
+
       if(creep.room.name === this.room.name){
+      logger.debug(`worker counting:${creep}`);
       switch (creep.memory.role) {
         case Role.ROLE_HARVESTER:
           this.numHarversters = this.numHarversters + 1;
@@ -117,21 +120,13 @@ export class WorkerManager extends Manager {
           this.numContinuousHarvesters = this.numContinuousHarvesters + 1;
           break;
         default:
-          console.log('Invalid role: %s', creep.memory.role);
+          logger.error('Invalid role: %s', creep.memory.role);
       }
     }
-}
-    console.log(
-      'Workers:, harv:' +
-        this.numHarversters +
-        ' build: ' +
-        this.numBuilders +
-        ' upgrade: ' +
-        this.numUpgraders +
-        ' haul:' +
-        this.numHaulers
+    logger.info(
+      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}`
     );
-    
+    }
   };
 
   private getBody(energyAvailable: number, role: Role): BodyPartConstant[] {
@@ -205,12 +200,12 @@ export class WorkerManager extends Manager {
           room.controller.level > 1 &&
           room.energyCapacityAvailable >= 350
         ) {
-          let res = this.createCreep(
+          const res = this.createCreep(
             energyAvailable,
             Role.ROLE_CONTINUOUS_HARVESTER
           );
           if (res === ERR_NOT_ENOUGH_ENERGY) {
-            console.log(
+            logger.warning(
               'skipping creation of creeps till energy for continuous harvesters is available'
             );
             return;
@@ -228,16 +223,14 @@ export class WorkerManager extends Manager {
   }
 
   private populationBasedCreepCreator(energyAvailable: number): void {
-    let ret = this.createContinuousHarvester(energyAvailable);
-    if (ret == OK || ret === ERR_NOT_ENOUGH_ENERGY) {
+    const ret = this.createContinuousHarvester(energyAvailable);
+    if (ret === OK || ret === ERR_NOT_ENOUGH_ENERGY) {
       return;
     }
+
     this.createHaulers(energyAvailable);
-
     this.createHarvesters(energyAvailable);
-
     this.createBuilders(energyAvailable);
-
     this.createUpgraders(energyAvailable);
   }
 
@@ -248,12 +241,12 @@ export class WorkerManager extends Manager {
       this.numContinuousHarvesters < maxRolePopulation.continuous_harvester &&
       energyAvailable >= 350
     ) {
-      let res = this.createCreep(
+      const res = this.createCreep(
         energyAvailable,
         Role.ROLE_CONTINUOUS_HARVESTER
       );
       if (res === ERR_NOT_ENOUGH_ENERGY) {
-        console.log(
+        logger.warning(
           'skipping creation of creeps till energy for continuous harvesters is available'
         );
       }
@@ -304,7 +297,7 @@ export class WorkerManager extends Manager {
   private createBuilders(energyAvailable: number) {
     if (this.room.controller) {
       if (this.room.controller.level > 1) {
-        if (Memory.focus == 'build') {
+        if (Memory.focus === 'build') {
           if (this.numBuilders < maxRolePopulation.builders + 4) {
             this.createCreep(energyAvailable, Role.ROLE_BUILDER);
           }

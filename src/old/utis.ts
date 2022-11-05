@@ -1,4 +1,4 @@
-import { directionsArray } from "../constants";
+import { directionsArray } from "./constants";
 
 export function nearbyTerrain(room: Room) : void {
     const sources:Source[] = room.find(FIND_SOURCES);

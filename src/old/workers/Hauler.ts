@@ -1,37 +1,40 @@
+import { logger } from 'utils/logger';
 import { Role } from '../constants';
 import { pickupDroppedEnergy } from './CommonActions';
 
 export class Hauler {
   public static run = (creep: Creep): void => {
-    if (creep.memory.running && creep.store[RESOURCE_ENERGY] == 0) {
+    if (creep.memory.running && creep.store[RESOURCE_ENERGY] === 0) {
       creep.memory.running = false;
       creep.say('🔄 harvest');
     }
-    if (!creep.memory.running && creep.store.getFreeCapacity() == 0) {
+    if (!creep.memory.running && creep.store.getFreeCapacity() === 0) {
       creep.memory.running = true;
       creep.say('🚧 running');
     }
 
     if (creep.memory.running) {
-      var target = this.getStructuresNeedingEnergy(creep);
+        const target = this.getStructuresNeedingEnergy(creep);
       if (target) {
         // TODO: check why this is not working with the func.
-        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        if (creep.transfer(target, RESOURCE_ENERGY) ===ERR_NOT_IN_RANGE) {
           creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
         } // no target exist, then transfer energy to creeps
       } else {
-        var targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
+        const targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
           filter: (creepTo) =>
-            creepTo.memory.role != Role.ROLE_HAULER &&
+            creepTo.memory.role !== Role.ROLE_HAULER &&
             creepTo.store.getFreeCapacity() <  creepTo.store.getCapacity() *0.9
         });
-        console.log('targetCreep:' + targetCreep);
+
+        logger.debug(`targetCreep:${targetCreep} for hauler: ${creep}`);
+        
         if (targetCreep) {
           this.transferEnergy(creep, targetCreep);
         } else {
-          var storage = creep.room.storage;
+            const storage = creep.room.storage;
           if (storage) {
-            if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            if (creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
               creep.moveTo(storage, {
                 visualizePathStyle: { stroke: '#ffffff' }
               });
@@ -47,8 +50,8 @@ export class Hauler {
   };
 
   private static getStructuresNeedingEnergy(creep: Creep): AnyStructure|null {
-    var structures = creep.room.find(FIND_STRUCTURES);
-    var targets = _.filter(structures, (structure) => {
+    const structures = creep.room.find(FIND_STRUCTURES);
+    const targets = _.filter(structures, (structure) => {
       return (
         (structure.structureType === STRUCTURE_EXTENSION ||
           structure.structureType === STRUCTURE_SPAWN ||
@@ -57,9 +60,9 @@ export class Hauler {
         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       );
     });
-    console.log(creep.name + targets);
+    logger.debug(creep.name + targets);
     const target = creep.pos.findClosestByPath(targets);
-    console.log(`closestStructure:  ${target}`);
+    logger.debug(`closestStructure:  ${target}`);
     return target;
   }
 
@@ -67,7 +70,7 @@ export class Hauler {
     creep: Creep,
     target: AnyCreep | Structure
   ) {
-    if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   }

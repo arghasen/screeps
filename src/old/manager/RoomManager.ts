@@ -8,8 +8,8 @@ export class RoomManager extends Manager {
   public sources: Source[] = [];
   public init = (room: Room):void => {
     let gameSpawns = Game.spawns;
-    for (let spawnName in gameSpawns) {
-      if (gameSpawns[spawnName].room.name == room.name) {
+    for (const spawnName in gameSpawns) {
+      if (gameSpawns[spawnName].room.name === room.name) {
         this.spawns.push(gameSpawns[spawnName]);
       }
     }

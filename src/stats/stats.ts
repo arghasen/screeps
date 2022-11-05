@@ -17,9 +17,12 @@ export class Stats {
     }
   }
   public static run(): void {
+    
     Stats.init();
+
     const prom: ScreepsPrometheus = new ScreepsPrometheus();
     const cpu: Prefix = prom.add(Prefix, 'cpu');
+    
     cpu.add(Gauge, 'used', Game.cpu.getUsed());
     cpu.add(Gauge, 'bucket', Game.cpu.bucket);
 
@@ -62,7 +65,7 @@ export class Stats {
         const mining: Prefix = roomSummary.add(Prefix, 'mining');
 
         if (Memory.stats.roomSummary[roomName]) {
-          //FIXME : Use Source Capacity to generlize mining
+          // FIXME : Use Source Capacity to generlize mining
           const totalEnergy: number =
             6000 -
             sources.reduce(

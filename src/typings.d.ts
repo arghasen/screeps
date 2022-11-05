@@ -1,5 +1,12 @@
 import _ from 'lodash';
 
 declare global {
-  const _: typeof _;
-}
+    // Syntax for adding proprties to `global` (ex "global.log")
+    const _: typeof _;
+    namespace NodeJS {
+      interface Global {
+        log: any;
+        kernel: Kernel;
+      }
+    }
+  }
