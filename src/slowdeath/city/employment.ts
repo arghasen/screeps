@@ -35,13 +35,21 @@ export class Employment extends Process {
 
   private populationBasedEmployer() {
     if (this.numHarversters < MaxRolePopulation.harvesters) {
-      const creep = this.unemployed.shift();
-      if (creep) {
-        creep.memory.role = Role.ROLE_HARVESTER;
-      }
+      this.assignRole(Role.ROLE_HARVESTER);
+    } else if (this.numHaulers < MaxRolePopulation.haulers && Memory.continuousHarvestingStarted) {
+      this.assignRole(Role.ROLE_HAULER);
+    } else if (this.numBuilders < MaxRolePopulation.builders) {
+      this.assignRole(Role.ROLE_BUILDER);
+    } else if (this.numUpgraders < MaxRolePopulation.upgrader) {
+      this.assignRole(Role.ROLE_UPGRADER);
     }
   }
-
+  private assignRole(role: Role) {
+    const creep = this.unemployed.shift();
+    if (creep) {
+      creep.memory.role = role;
+    }
+  }
   private getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
       if (creep.room.name === this.room.name) {

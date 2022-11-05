@@ -1,6 +1,7 @@
 import { Process } from "../../os/process";
 import { Role } from "../creepActions/constants";
 import { logger } from "../../utils/logger";
+import { spawnsInRoom } from "../../utils/utils";
 
 export class Spawns extends Process {
   protected className = "spawns";
@@ -15,11 +16,7 @@ export class Spawns extends Process {
 
     this.room = Game.rooms[this.metadata.roomName];
     if (this.room.controller) {
-      const maxspawns = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][this.room.controller.level];
-      const spawns = this.room.find(FIND_MY_SPAWNS, {
-        filter: (s: AnyStructure, i: number, c: AnyStructure[]) =>
-          c.length <= maxspawns || s.isActive()
-      });
+      const spawns = spawnsInRoom(this.room);
 
       for (const spawn of spawns) {
         if (spawn.spawning) {

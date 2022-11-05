@@ -70,9 +70,7 @@ export class BuildingManager extends Manager {
     }
   }
 
-  private getTotalExtensions(): number {
-    return this.extensionsUnderConstruction.length + this.extensionsCreated.length;
-  }
+
 
   private createExtensions(room: Room) {
     const loc = _.cloneDeep(extensionLoc[2]);

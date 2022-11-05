@@ -1,4 +1,4 @@
-export function color(str: string|number, colorName: string): string {
+export function color(str: string | number, colorName: string): string {
   return `<font color='${colorName}'>${str}</font>`;
 }
 
@@ -7,5 +7,5 @@ export function printRoomName(roomName: string): string {
 }
 
 export function onPublicServer(): boolean {
-  return Game.shard.name.includes('shard');
+  return Game.shard.name.includes("shard");
 }

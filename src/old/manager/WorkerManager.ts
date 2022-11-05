@@ -142,11 +142,6 @@ export class WorkerManager extends Manager {
     if (ret === OK || ret === ERR_NOT_ENOUGH_ENERGY) {
       return;
     }
-
-    this.createHaulers(energyAvailable);
-    this.createHarvesters(energyAvailable);
-    this.createBuilders(energyAvailable);
-    this.createUpgraders(energyAvailable);
   }
 
   private createContinuousHarvester(energyAvailable: number): ScreepsReturnCode {
@@ -168,52 +163,4 @@ export class WorkerManager extends Manager {
     return ERR_RCL_NOT_ENOUGH;
   }
 
-  private createUpgraders(energyAvailable: number): ScreepsReturnCode {
-    if (this.room.controller) {
-      if (this.room.controller.level > 1) {
-        if (Memory.focus === "upgrade") {
-          if (this.numUpgraders < maxRolePopulation.upgrader + 4) {
-            return this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
-          }
-        } else {
-          if (this.numUpgraders < maxRolePopulation.upgrader - 4) {
-            return this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
-          }
-        }
-      } else {
-        if (this.numUpgraders < maxRolePopulation.upgrader) {
-          return this.createCreep(energyAvailable, Role.ROLE_UPGRADER);
-        }
-      }
-    }
-    return ERR_NOT_OWNER;
-  }
-
-  private createHarvesters(energyAvailable: number) {
-    if (this.numHarversters < maxRolePopulation.harvesters) {
-      this.createCreep(energyAvailable, Role.ROLE_HARVESTER);
-    }
-  }
-
-  private createHaulers(energyAvailable: number) {
-    if (this.numHaulers < maxRolePopulation.haulers && Memory.continuousHarvestingStarted) {
-      this.createCreep(energyAvailable, Role.ROLE_HAULER);
-    }
-  }
-
-  private createBuilders(energyAvailable: number) {
-    if (this.room.controller) {
-      if (this.room.controller.level > 1) {
-        if (Memory.focus === "build") {
-          if (this.numBuilders < maxRolePopulation.builders + 4) {
-            this.createCreep(energyAvailable, Role.ROLE_BUILDER);
-          }
-        } else {
-          if (this.numBuilders < maxRolePopulation.builders) {
-            this.createCreep(energyAvailable, Role.ROLE_BUILDER);
-          }
-        }
-      }
-    }
-  }
 }

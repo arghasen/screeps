@@ -1,4 +1,4 @@
-export const controllerConsts: any = {
+export const ControllerConsts: Record<string, number> = {
   lvl2extensions: 5
 };
 
@@ -48,7 +48,7 @@ export const directionsArray: number[][] = [
   [0, -1]
 ];
 
-export const extensionLoc: any = {
+export const extensionLoc: Record<number, number[][]> = {
   2: [
     [1, 1],
     [1, -1],
