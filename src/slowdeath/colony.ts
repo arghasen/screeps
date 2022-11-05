@@ -7,6 +7,11 @@ import { logger } from 'utils/logger';
 export class Colony extends Process {
     
     className: string = 'colony';
+
+    colonyData: object = {
+
+    }
+    
     public main(){
         logger.info(`${this.className}: Starting colony`);
     }

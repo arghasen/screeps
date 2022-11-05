@@ -3,6 +3,7 @@ import { Scheduler } from 'os/scheduler';
 
 export class Kernel {
   scheduler: Scheduler;
+  
   constructor() {
     global.kernel = this;
     if(!Memory.os)
@@ -11,6 +12,7 @@ export class Kernel {
     }
     this.scheduler = new Scheduler();
   }
+
   start(): void {
       this.scheduler.reschedule();
     if (this.scheduler.getProcessCount() <= 0) {
@@ -53,5 +55,4 @@ export class Kernel {
     logger.info(`Processes Run: ${completedCount}/${processCount}`);
   }
 
-    
 }

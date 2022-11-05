@@ -3,8 +3,9 @@ import { Pid, Process } from './process';
 import { processTypes } from './processRegistry';
 
 export class Scheduler {
-  memory: any;
+  memory: Memory;
   processCache: any;
+
   constructor() {
     if (!Memory.os.scheduler) {
       Memory.os.scheduler = {};
@@ -25,6 +26,7 @@ export class Scheduler {
       };
     }
   }
+
   public getNextProcess(): Pid {
     if (this.memory.processes.running) {
       this.memory.processes.completed.push(this.memory.processes.running);
@@ -71,7 +73,7 @@ export class Scheduler {
     this.memory.processes.completed = [];
   }
 
-  public getPriorityForPid(pid: void) {}
+  public getPriorityForPid(pid: Pid) {}
 
   public getNextPid(): Pid {
     if (!this.memory.lastPid) {

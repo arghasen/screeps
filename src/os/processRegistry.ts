@@ -1,4 +1,4 @@
-import {Slowdeath} from "programs/slowdeath"
+import {Slowdeath} from "slowdeath/slowdeath"
 import {City} from "slowdeath/city"
 import { Empire } from "slowdeath/empire"
 import { Colony} from "slowdeath/colony"
@@ -17,4 +17,5 @@ export const processTypes:{[key:string]:any} = {
     "employment": Employment,
     "military": Military
 }
-export var foo = processTypes.slowdeath;
+
+export var ai = processTypes.slowdeath;

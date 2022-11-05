@@ -5,13 +5,15 @@ export abstract class Process {
   data: any;
   parent?: Process;
   className: string = 'Process';
+
   constructor(pid: Pid, name: string, data = {}, parent?: Process) {
     this.pid = pid;
     this.name = name;
     this.data = data;
     this.parent = parent;
   }
-  launchChildProcess (tag:string, name:string, data = {}) {
+
+  launchChildProcess(tag: string, name: string, data = {}) {
     if (!this.data.children) {
       this.data.children = {}
     }
@@ -21,7 +23,9 @@ export abstract class Process {
     this.data.children[tag] = global.kernel.scheduler.launch(name, data, this.pid)
     return this.data.children[tag]
   }
-  abstract main():void;
+
+  abstract main(): void;
+
   public run(): void {
     this.main();
   }

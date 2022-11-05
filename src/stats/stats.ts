@@ -17,9 +17,12 @@ export class Stats {
     }
   }
   public static run(): void {
+    
     Stats.init();
+
     const prom: ScreepsPrometheus = new ScreepsPrometheus();
     const cpu: Prefix = prom.add(Prefix, 'cpu');
+    
     cpu.add(Gauge, 'used', Game.cpu.getUsed());
     cpu.add(Gauge, 'bucket', Game.cpu.bucket);
 
