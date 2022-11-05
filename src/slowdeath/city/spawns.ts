@@ -25,7 +25,7 @@ export class Spawns extends Process {
         if (!creep) {
           break;
         }
-        if (getSpawnCost(creep.build) >= this.room.energyAvailable) {
+        if (getSpawnCost(creep.build) <= this.room.energyAvailable) {
           const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
           if (Number.isInteger(ret)) {
             logger.error(

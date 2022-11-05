@@ -1,5 +1,5 @@
 export function color(str: string | number, colorName: string): string {
-  return `<font color='${colorName}'>${str}</font>`;
+  return `<span style="color: ${colorName};">${str}</span>`;
 }
 
 export function printRoomName(roomName: string): string {

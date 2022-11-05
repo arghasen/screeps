@@ -14,7 +14,7 @@ export function loop(): void {
   kernel.start();
   kernel.run();
   kernel.shutdown();
-  logger.info(`Pre Stats Tick Cpu: ${color(Game.cpu.getUsed(), "pink")}`);
+  logger.info(`Pre Stats Tick Cpu: ${color(Game.cpu.getUsed(), "red")}`);
   Stats.run();
   logger.info(`Post Stats Tick Cpu: ${Game.cpu.getUsed()}`);
 

@@ -1,9 +1,9 @@
+import { MaxRolePopulation, Role } from "../creepActions/constants";
 import { Builder } from "../creepActions/Builder";
 import { ContinuousHarvester } from "../creepActions/ContinuousHarvester";
 import { Harvester } from "../creepActions/Harvester";
 import { Hauler } from "../creepActions/Hauler";
 import { Process } from "../../os/process";
-import { MaxRolePopulation, Role } from "../creepActions/constants";
 import { Upgrader } from "../creepActions/Upgrader";
 import { logger } from "../../utils/logger";
 

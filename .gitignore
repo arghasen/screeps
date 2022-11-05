@@ -5,4 +5,7 @@ screeps.json
 .idea
 blog/
 coverage/
-src/utils/gitversion.ts
+src/utils/version.ts
+.screeps.yml
+multimeter.log
+.screeps-multimeter.history

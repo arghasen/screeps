@@ -3,12 +3,12 @@ export const ControllerConsts: Record<string, number> = {
 };
 
 export const MaxRolePopulation = {
-  continuousHarvester: 2,
+  continuousHarvester: 0,
   harvesters: 1,
-  builders: 2,
-  upgrader: 1,
-  haulers: 2,
-  total: 7
+  builders: 1,
+  upgrader: 2,
+  haulers: 0,
+  total: 4
 };
 
 export enum Role {
