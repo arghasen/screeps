@@ -20,6 +20,11 @@ interface SchedulerMemory {
   };
   lastPid?: Pid;
 }
+interface MoveLoc {
+  x: number;
+  y: number;
+  roomName: string;
+}
 
 interface Memory {
   [x: string]: any;
@@ -44,18 +49,26 @@ interface Memory {
   createContinuousHarvester: boolean;
   critical: boolean;
   createClaimer: {
+    done?: string;
     x: number;
     y: number;
     targetRoom: string;
+    identifier: number;
+  };
+  needBuilder: {
+    sent: string;
+    moveLoc: MoveLoc;
   };
 }
 interface CreepMemory {
+  identifier?: number;
   targetRoom?: string;
   upgrading?: boolean;
   building?: boolean;
   running?: boolean;
   role?: any;
   source?: any;
+  moveLoc?: MoveLoc;
 }
 
 interface ProcessData {

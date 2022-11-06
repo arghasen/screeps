@@ -2,6 +2,7 @@ import { ControllerConsts, RoadStatus, extensionLoc } from "../creepActions/cons
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
 import spawnsInRoom from "../../utils/spawns-in-room";
+import isCreepAlive from "utils/is-creep-alive";
 
 export class Infrastructure extends Process {
   protected className = "infrastructure";
@@ -14,7 +15,9 @@ export class Infrastructure extends Process {
 
   public main() {
     this.init();
+
     if (this.room.controller?.my) {
+      this.requestRemoteBuilders(this.room.controller.pos);
       if (this.room.controller.level === 2) {
         this.createExtensions(this.room, this.spawns[0].pos, 2);
       }
@@ -31,6 +34,30 @@ export class Infrastructure extends Process {
       this.buildRoadsToController(this.room);
     }
   }
+
+  private requestRemoteBuilders(pos: RoomPosition) {
+    logger.info("Spawn lenght:", this.spawns.length);
+    if (this.spawns.length === 0) {
+      const builderData = {
+        sent: "",
+        moveLoc: {
+          x: pos.x,
+          y: pos.y,
+          roomName: this.room.name
+        }
+      };
+
+      if (Memory.needBuilder) {
+        const sent = Memory.needBuilder.sent;
+        if (sent === "" || !isCreepAlive(sent)) {
+          Memory.needBuilder = builderData;
+        }
+      } else {
+        Memory.needBuilder = builderData;
+      }
+    }
+  }
+
   private buildRoadsToController(room: Room) {
     if (Memory.roadsDone === RoadStatus.TO_SOURCES) {
       if (room.controller) {

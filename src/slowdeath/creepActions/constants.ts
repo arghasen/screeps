@@ -17,7 +17,8 @@ export enum Role {
   ROLE_HAULER,
   ROLE_BUILDER,
   ROLE_CONTINUOUS_HARVESTER,
-  ROLE_REM_UPGRADER
+  ROLE_REM_UPGRADER,
+  ROLE_CLAIMER
 }
 
 type RoleNames = { [key in Role]: string };
@@ -27,7 +28,8 @@ export const roleNames: RoleNames = {
   [Role.ROLE_HAULER]: "hauler",
   [Role.ROLE_BUILDER]: "builder",
   [Role.ROLE_CONTINUOUS_HARVESTER]: "continuous_harvester",
-  [Role.ROLE_REM_UPGRADER]: "remUpgrader"
+  [Role.ROLE_REM_UPGRADER]: "remUpgrader",
+  [Role.ROLE_CLAIMER]: "claimer"
 };
 
 export enum actions {

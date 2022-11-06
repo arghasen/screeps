@@ -6,6 +6,7 @@ import { Hauler } from "../creepActions/Hauler";
 import { Process } from "../../os/process";
 import { Upgrader } from "../creepActions/Upgrader";
 import { logger } from "../../utils/logger";
+import { Claimer } from "slowdeath/creepActions/claimer";
 
 export class Employment extends Process {
   protected className = "employment";
@@ -19,6 +20,7 @@ export class Employment extends Process {
   private unemployed: Creep[] = [];
   private room!: Room;
   private metadata?: CityData;
+  private numClaimer = 0;
 
   public main() {
     this.metadata = this.data as CityData;
@@ -33,6 +35,7 @@ export class Employment extends Process {
 
   private populationBasedEmployer() {
     const totWorkers = this.getTotalWorkers();
+    this.checkEmemrgencySituation(totWorkers);
     const scale = Math.max(Math.ceil(totWorkers / MaxRolePopulation.total), 1);
 
     this.waitForContiniousHarvester(totWorkers);
@@ -42,6 +45,28 @@ export class Employment extends Process {
     function employ(cur: number, max: number) {
       logger.debug(`current employ ${cur}, ${max}, ${scale}`);
       return cur < max * scale;
+    }
+  }
+
+  private checkEmemrgencySituation(totWorkers: number) {
+    if (
+      totWorkers < MaxRolePopulation.total &&
+      this.room.controller &&
+      this.room.controller.level > 1
+    ) {
+      Memory.critical = true;
+    } else {
+      Memory.critical = false;
+    }
+
+    if (
+      totWorkers < MaxRolePopulation.total * 3 &&
+      this.room.controller &&
+      this.room.controller.level > 2
+    ) {
+      Memory.critical = true;
+    } else {
+      Memory.critical = false;
     }
   }
 
@@ -69,7 +94,7 @@ export class Employment extends Process {
   }
 
   private storeHarvestingStatus() {
-    if (this.numContinuousHarvesters > 1) {
+    if (this.numContinuousHarvesters >= 1) {
       Memory.continuousHarvestingStarted = true;
     } else {
       Memory.continuousHarvestingStarted = false;
@@ -77,6 +102,15 @@ export class Employment extends Process {
   }
 
   private employWorkers(employ: (cur: number, max: number) => boolean) {
+    if (Memory.needBuilder && Memory.needBuilder.sent === "") {
+      const creep = this.unemployed.shift();
+      if (creep) {
+        logger.debug(`employing ${creep.name} in role ${Role.ROLE_BUILDER}`);
+        creep.memory.role = Role.ROLE_BUILDER;
+        creep.memory.moveLoc = Memory.needBuilder.moveLoc;
+        Memory.needBuilder.sent = creep.name;
+      }
+    }
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !Memory.continuousHarvestingStarted
@@ -109,19 +143,22 @@ export class Employment extends Process {
 
         switch (creep.memory.role) {
           case Role.ROLE_HARVESTER:
-            this.numHarversters = this.numHarversters + 1;
+            this.numHarversters++;
             break;
           case Role.ROLE_UPGRADER:
-            this.numUpgraders = this.numUpgraders + 1;
+            this.numUpgraders++;
             break;
           case Role.ROLE_HAULER:
-            this.numHaulers = this.numHaulers + 1;
+            this.numHaulers++;
             break;
           case Role.ROLE_BUILDER:
-            this.numBuilders = this.numBuilders + 1;
+            this.numBuilders++;
             break;
           case Role.ROLE_CONTINUOUS_HARVESTER:
-            this.numContinuousHarvesters = this.numContinuousHarvesters + 1;
+            this.numContinuousHarvesters++;
+            break;
+          case Role.ROLE_CLAIMER:
+            this.numClaimer++;
             break;
           default:
             this.unemployed.push(creep);
@@ -130,7 +167,7 @@ export class Employment extends Process {
       }
     }
     logger.info(
-      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
+      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
     );
   };
 
@@ -151,6 +188,9 @@ export class Employment extends Process {
           break;
         case Role.ROLE_CONTINUOUS_HARVESTER:
           ContinuousHarvester.run(creep);
+          break;
+        case Role.ROLE_CLAIMER:
+          Claimer.run(creep);
           break;
         default:
           _.noop();

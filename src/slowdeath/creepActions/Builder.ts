@@ -1,3 +1,4 @@
+import { logger } from "utils/logger";
 import { harvest, pickupDroppedEnergy, repair } from "../../slowdeath/creepActions/CommonActions";
 
 export class Builder {
@@ -12,29 +13,44 @@ export class Builder {
     }
 
     if (creep.memory.building) {
-      const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-      if (targets.length) {
-        if (creep.build(targets[0]) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-          creep.moveTo(targets[0], {
-            visualizePathStyle: { stroke: "#ffffff" }
-          });
+      if (creep.memory.moveLoc) {
+        if (creep.memory.moveLoc.roomName !== creep.pos.roomName) {
+          const target = new RoomPosition(
+            creep.memory.moveLoc.x,
+            creep.memory.moveLoc.y,
+            creep.memory.moveLoc.roomName
+          );
+          logger.info("Moving.location", logger.json(target));
+          creep.moveTo(target);
+        } else {
+          delete creep.memory.moveLoc;
         }
       } else {
-        const myStructures = creep.room.find(FIND_STRUCTURES);
-        const targetStructures = myStructures.filter(
-          structure =>
-            (structure.hits < structure.hitsMax &&
-              structure.structureType !== STRUCTURE_WALL &&
-              structure.structureType !== STRUCTURE_RAMPART) ||
-            (structure.structureType === STRUCTURE_RAMPART && structure.hits < 5000)
-        );
-        const targetStructure: AnyStructure | null = creep.pos.findClosestByRange(targetStructures);
-        if (targetStructure !== null) {
-          repair(creep, targetStructure);
+        const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+        if (targets.length) {
+          if (creep.build(targets[0]) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
+            creep.moveTo(targets[0], {
+              visualizePathStyle: { stroke: "#ffffff" }
+            });
+          }
         } else {
-          const t = creep.pos.findClosestByRange(FIND_CREEPS);
-          if (t) {
-            creep.transfer(t, RESOURCE_ENERGY, creep.store.energy);
+          const myStructures = creep.room.find(FIND_STRUCTURES);
+          const targetStructures = myStructures.filter(
+            structure =>
+              (structure.hits < structure.hitsMax &&
+                structure.structureType !== STRUCTURE_WALL &&
+                structure.structureType !== STRUCTURE_RAMPART) ||
+              (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000)
+          );
+          const targetStructure: AnyStructure | null =
+            creep.pos.findClosestByRange(targetStructures);
+          if (targetStructure !== null) {
+            repair(creep, targetStructure);
+          } else {
+            const t = creep.pos.findClosestByRange(FIND_CREEPS);
+            if (t) {
+              creep.transfer(t, RESOURCE_ENERGY, creep.store.energy);
+            }
           }
         }
       }

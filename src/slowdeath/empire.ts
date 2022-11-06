@@ -1,5 +1,6 @@
+import { clearDeadCreepsFromMemory, isCreepAlive } from "../utils/screeps-fns";
 import { Process } from "../os/process";
-import { clearDeadCreepsFromMemory } from "../utils/screeps-fns";
+
 import { logger } from "../utils/logger";
 
 /**
@@ -18,11 +19,15 @@ export class Empire extends Process {
     for (const name in flags) {
       const flag = flags[name];
       if (name === "claimThisRoom") {
-        Memory.createClaimer = {
-          x: flag.pos.x,
-          y: flag.pos.y,
-          targetRoom: flag.pos.roomName
-        };
+        const creepName = Memory.createClaimer.done;
+        if (creepName && !isCreepAlive(creepName)) {
+          Memory.createClaimer = {
+            x: flag.pos.x,
+            y: flag.pos.y,
+            targetRoom: flag.pos.roomName,
+            identifier: 1
+          };
+        }
       }
     }
     if (Game.time % 100 === 0) {

@@ -30,14 +30,16 @@ export class Spawns extends Process {
         if (!creep) {
           break;
         }
+        logger.info(`got creep to create: ${logger.json(creep)}`);
         if (getSpawnCost(creep.build) <= this.room.energyAvailable) {
           const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
-          if (Number.isInteger(ret)) {
+          if (ret !== OK) {
             logger.error(
               `${ret} while spawning creep ${creep.name} in room ${this.metadata.roomName}`
             );
           } else {
             logger.info(`Spawning creep ${creep.name} from ${this.metadata.roomName}`);
+            Memory.createClaimer.done = creep.name;
           }
         }
       }
@@ -53,22 +55,40 @@ function getQueuedCreep(energyAvailable: number, energyCapacityAvailable: number
       options: { memory: {} }
     };
   }
-  // eslint-disable-next-line no-empty
-  if (Memory.createClaimer) {
-  }
+
   if (Memory.createContinuousHarvester) {
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,
       options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER } }
     };
-  } else if (energyCapacityAvailable > 400 && energyCapacityAvailable <= 600) {
+  }
+
+  if (Memory.createClaimer?.done) {
+    if (energyCapacityAvailable >= 800) {
+      return {
+        build: [CLAIM, MOVE, MOVE, MOVE, MOVE],
+        name: `creep-${Game.time}`,
+        options: {
+          memory: {
+            role: Role.ROLE_CLAIMER,
+            x: Memory.createClaimer.x,
+            y: Memory.createClaimer.y,
+            targetRoom: Memory.createClaimer.targetRoom,
+            identifier: Memory.createClaimer.identifier
+          }
+        }
+      };
+    }
+  }
+
+  if (energyCapacityAvailable > 400 && energyCapacityAvailable <= 600) {
     return {
       build: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
       name: `creep-${Game.time}`,
       options: { memory: {} }
     };
-  } else if (energyCapacityAvailable > 600 && energyCapacityAvailable <= 750) {
+  } else if (energyCapacityAvailable > 600 && energyCapacityAvailable <= 800) {
     return {
       build: [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
       name: `creep-${Game.time}`,
