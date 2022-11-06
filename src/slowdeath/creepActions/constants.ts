@@ -60,3 +60,11 @@ export const extensionLoc: Record<number, number[][]> = {
     [0, -1]
   ]
 };
+
+export enum RoadStatus {
+  NONE,
+  BUILDING_TO_SOURCES,
+  TO_SOURCES,
+  BUILDING_TO_CONTROLLER,
+  TO_CONTROLLER
+}

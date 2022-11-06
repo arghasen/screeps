@@ -23,7 +23,7 @@ interface SchedulerMemory {
 
 interface Memory {
   [x: string]: any;
-  roadsDone: boolean;
+  roadsDone: number;
   continuousHarvestingStarted: boolean;
   stats: PromDict;
   version: string;

@@ -25,7 +25,7 @@ export function pickupDroppedEnergy(creep: Creep) {
     } else {
       closestSource = creep.pos.findClosestByPath(energyResources);
     }
-    logger.info(
+    logger.debug(
       `creep: ${creep.name} closest source: ${logger.json(closestSource)} of dropped energy`
     );
 

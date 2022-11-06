@@ -34,12 +34,12 @@ export class Builder {
         }
       }
     } else {
-      //   if (Memory.continuousHarvestingStarted) {
-      //     pickupDroppedEnergy(creep);
-      //   } else {
-      const source = creep.pos.findClosestByPath(FIND_SOURCES);
-      harvest(source, creep);
-      // }
+      if (Memory.continuousHarvestingStarted) {
+        pickupDroppedEnergy(creep);
+      } else {
+        const source = creep.pos.findClosestByPath(FIND_SOURCES);
+        harvest(source, creep);
+      }
     }
   };
 }

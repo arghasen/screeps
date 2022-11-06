@@ -1,4 +1,4 @@
-import { ControllerConsts, extensionLoc } from "../creepActions/constants";
+import { ControllerConsts, RoadStatus, extensionLoc } from "../creepActions/constants";
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
 import spawnsInRoom from "../../utils/spawns-in-room";
@@ -8,29 +8,55 @@ export class Infrastructure extends Process {
   private metadata?: CityData;
   private extensionsUnderConstruction: ConstructionSite[] = [];
   private extensionsCreated: AnyOwnedStructure[] = [];
+  private buildMoreRoads = true;
   private spawns: StructureSpawn[] = [];
   private room!: Room;
 
   public main() {
     this.init();
     this.createExtensions(this.room);
-    this.buildRoads(this.room);
+    if (this.buildMoreRoads) {
+      this.buildRoadsToSpawn(this.room);
+      this.buildRoadsToController(this.room);
+    }
+  }
+  private buildRoadsToController(room: Room) {
+    if (Memory.roadsDone === RoadStatus.TO_SOURCES) {
+      if (room.controller) {
+        this.buildRoads(room, room.controller);
+      }
+      Memory.roadsDone = RoadStatus.BUILDING_TO_CONTROLLER;
+    }
+    if (this.buildMoreRoads && Memory.BUILDING_TO_SOURCES) {
+      Memory.roadsDone = RoadStatus.TO_SOURCES;
+    }
   }
 
-  private buildRoads(room: Room) {
-    if (!Memory.roadsDone) {
-      const sources = room.find(FIND_SOURCES);
-      for (const source of sources) {
-        const chemin = this.spawns[0].pos.findPathTo(source.pos, {
-          range: 1,
-          ignoreCreeps: true
-        });
-        for (const p of chemin) {
-          this.spawns[0].room.createConstructionSite(p.x, p.y, STRUCTURE_ROAD);
+  private buildRoads(room: Room, to: Structure) {
+    const sources = room.find(FIND_SOURCES);
+    for (const source of sources) {
+      const path = to.pos.findPathTo(source.pos, {
+        range: 1,
+        ignoreCreeps: true
+      });
+      if (path) {
+        // create in reverse so u are closer to the source
+        for (const p of path.reverse()) {
+          room.createConstructionSite(p.x, p.y, STRUCTURE_ROAD);
         }
       }
     }
-    Memory.roadsDone = true;
+  }
+
+  private buildRoadsToSpawn(room: Room) {
+    if (Memory.roadsDone === RoadStatus.NONE) {
+      this.buildRoads(room, this.spawns[0]);
+      Memory.roadsDone = RoadStatus.BUILDING_TO_SOURCES;
+      return;
+    }
+    if (this.buildMoreRoads && Memory.BUILDING_TO_SOURCES) {
+      Memory.roadsDone = RoadStatus.TO_SOURCES;
+    }
   }
 
   private init() {
@@ -46,6 +72,11 @@ export class Infrastructure extends Process {
     this.extensionsUnderConstruction = constructionSites.filter(
       site => site.structureType === STRUCTURE_EXTENSION
     );
+
+    const roadsUnderConstruction = constructionSites.filter(
+      site => site.structureType === STRUCTURE_ROAD
+    );
+    this.buildMoreRoads = roadsUnderConstruction.length === 0;
     logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
   }
 

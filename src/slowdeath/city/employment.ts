@@ -35,10 +35,7 @@ export class Employment extends Process {
     const totWorkers = this.getTotalWorkers();
     const scale = Math.max(Math.ceil(totWorkers / MaxRolePopulation.total), 1);
 
-    if (this.waitForContiniousHarvester(totWorkers)) {
-      return;
-    }
-
+    this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
     this.employWorkers(employ);
 
@@ -105,8 +102,8 @@ export class Employment extends Process {
   private getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
       if (creep.room.name === this.room.name) {
-        logger.debug(`worker counting:`);
-        logger.printObject(creep);
+        logger.debug(`worker counting: ${logger.json(creep)};`);
+
         switch (creep.memory.role) {
           case Role.ROLE_HARVESTER:
             this.numHarversters = this.numHarversters + 1;
@@ -128,10 +125,10 @@ export class Employment extends Process {
             logger.info("Unemployed creep: %s", logger.json(creep));
         }
       }
-      logger.info(
-        `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
-      );
     }
+    logger.info(
+      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
+    );
   };
 
   private runCreepActions() {
