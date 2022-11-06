@@ -34,15 +34,7 @@ export class BuildingManager extends Manager {
       if (this.getTotalExtensions() < controllerConsts.lvl2extensions) {
         this.createExtensions(room);
       } else if (!Memory.roadsDone) {
-        const sources = this.spawns[0].room.find(FIND_SOURCES);
-        for (const source of sources) {
-          const chemin = this.spawns[0].pos.findPathTo(source.pos, {
-            range: 1
-          });
-          for (const p of chemin) {
-            this.spawns[0].room.createConstructionSite(p.x, p.y, STRUCTURE_ROAD);
-          }
-        }
+
         Memory.roadsDone = true;
         this.setupMineContainers(room);
       }

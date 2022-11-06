@@ -1,3 +1,4 @@
+import { Role } from "slowdeath/creepActions/constants";
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
 import { spawnsInRoom } from "../../utils/screeps-fns";
@@ -41,11 +42,19 @@ export class Spawns extends Process {
 }
 
 function getQueuedCreep() {
-  return {
-    build: [WORK, CARRY, MOVE],
-    name: `creep-${Game.time}`,
-    options: { memory: {} }
-  };
+  if (Memory.createContinuousHarvestor) {
+    return {
+      build: [WORK, WORK, WORK, WORK, WORK, MOVE],
+      name: `creep-${Game.time}`,
+      options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER } }
+    };
+  } else {
+    return {
+      build: [WORK, CARRY, MOVE],
+      name: `creep-${Game.time}`,
+      options: { memory: {} }
+    };
+  }
 }
 
 function getSpawnCost(body: BodyPartConstant[]) {

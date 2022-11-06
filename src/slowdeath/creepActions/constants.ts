@@ -3,7 +3,7 @@ export const ControllerConsts: Record<string, number> = {
 };
 
 export const MaxRolePopulation = {
-  continuousHarvester: 0,
+  continuousHarvester: 2,
   harvesters: 1,
   builders: 1,
   upgrader: 2,

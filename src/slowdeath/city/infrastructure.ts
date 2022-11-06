@@ -10,9 +10,27 @@ export class Infrastructure extends Process {
   private extensionsCreated: AnyOwnedStructure[] = [];
   private spawns: StructureSpawn[] = [];
   private room!: Room;
+
   public main() {
     this.init();
     this.createExtensions(this.room);
+    this.buildRoads(this.room);
+  }
+
+  private buildRoads(room: Room) {
+    if (!Memory.roadsDone) {
+      const sources = room.find(FIND_SOURCES);
+      for (const source of sources) {
+        const chemin = this.spawns[0].pos.findPathTo(source.pos, {
+          range: 1,
+          ignoreCreeps: true
+        });
+        for (const p of chemin) {
+          this.spawns[0].room.createConstructionSite(p.x, p.y, STRUCTURE_ROAD);
+        }
+      }
+    }
+    Memory.roadsDone = true;
   }
 
   private init() {

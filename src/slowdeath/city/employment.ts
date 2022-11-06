@@ -40,7 +40,16 @@ export class Employment extends Process {
       this.numUpgraders +
       this.numHaulers +
       this.unemployed.length;
-    const scale = Math.max(Math.floor(totWorkers / MaxRolePopulation.total), 1);
+    const scale = Math.max(Math.ceil(totWorkers / MaxRolePopulation.total), 1);
+
+    if (
+      this.room.energyCapacityAvailable >= 550 &&
+      totWorkers > MaxRolePopulation.total &&
+      this.numContinuousHarvesters < MaxRolePopulation.continuousHarvester
+    ) {
+      console.log("delaying new creeps till continious harvestors");
+      Memory.createContinuousHarvestor = true;
+    }
 
     if (employ(this.numHarversters, MaxRolePopulation.harvesters)) {
       this.assignRole(Role.ROLE_HARVESTER);

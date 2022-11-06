@@ -38,6 +38,6 @@ function initializeMemory() {
     };
     const scheduler = { processes };
     Memory.os = { scheduler };
-    Memory.version = gitVersion;
   }
+  Memory.version = gitVersion;
 }

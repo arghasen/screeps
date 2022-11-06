@@ -1,5 +1,5 @@
-import { clearDeadCreepsFromMemory } from "../utils/screeps-fns";
 import { Process } from "../os/process";
+import { clearDeadCreepsFromMemory } from "../utils/screeps-fns";
 import { logger } from "../utils/logger";
 
 /**
