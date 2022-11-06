@@ -16,6 +16,7 @@ import sourcesInRoom from "./sources-in-room";
 import spawnsInRoom from "./spawns-in-room";
 import towerEffectivenessAtRange from "./tower-effectiveness-at-range";
 
+// eslint-disable-next-line sort-imports
 import stub from "./stub";
 
 export {

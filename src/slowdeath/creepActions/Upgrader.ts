@@ -26,7 +26,7 @@ export class Upgrader {
             structure.structureType === STRUCTURE_STORAGE) &&
           structure.store.getUsedCapacity(RESOURCE_ENERGY) > creep.store.getCapacity()
       );
-      logger.info(`upgrader ${creep.name} energy stores:${stores}`);
+      logger.info(`upgrader ${creep.name} energy stores:${logger.json(stores)}`);
       if (stores.length >= 1) {
         const store = creep.pos.findClosestByPath(stores);
         if (store) {

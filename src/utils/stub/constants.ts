@@ -117,6 +117,7 @@ export default function stubConstants() {
       attack: 80,
       carry: 50,
       heal: 250,
+      // eslint-disable-next-line camelcase
       ranged_attack: 150,
       tough: 10,
       claim: 600
@@ -636,6 +637,7 @@ export default function stubConstants() {
           attack: 4
         }
       },
+      // eslint-disable-next-line camelcase
       ranged_attack: {
         KO: {
           rangedAttack: 2,

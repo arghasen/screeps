@@ -1,8 +1,12 @@
+import stubObject from "../stub/object";
 import deflate from "./";
 
 describe("Deflate", () => {
   it("should deflate a list of objects", () => {
-    const objects = [{ id: "ab" }, { id: "cb" }];
+    const objects = [
+      stubObject({ id: "ab", type: "source" }),
+      stubObject({ id: "cd", type: "source" })
+    ];
 
     const ids = deflate(objects);
 

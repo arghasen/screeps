@@ -1,5 +1,5 @@
-import { Role } from "slowdeath/creepActions/constants";
 import { Process } from "../../os/process";
+import { Role } from "slowdeath/creepActions/constants";
 import { logger } from "../../utils/logger";
 import { spawnsInRoom } from "../../utils/screeps-fns";
 

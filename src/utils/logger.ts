@@ -134,12 +134,6 @@ export class Logger {
     }
   }
 
-  public debugCreep(creep: { name: string; memory: any; pos: RoomPosition }, ...args: any[]): void {
-    if (creep.memory && creep.memory.debug) {
-      this.debug(`${creep.name} @ ${creep.pos}: `, args);
-    }
-  }
-
   public printObject(obj: object): void {
     console.log.apply(this, this.buildArguments(LogLevels.DEBUG).concat(JSON.stringify(obj)));
   }

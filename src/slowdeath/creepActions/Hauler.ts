@@ -1,5 +1,5 @@
-import { logger } from "utils/logger";
 import { Role } from "../../slowdeath/creepActions/constants";
+import { logger } from "utils/logger";
 import { pickupDroppedEnergy } from "../../slowdeath/creepActions/CommonActions";
 
 export class Hauler {
@@ -27,7 +27,7 @@ export class Hauler {
             creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
         });
 
-        logger.debug(`targetCreep:${targetCreep} for hauler: ${creep}`);
+        logger.debug(`targetCreep:${logger.json(targetCreep)} for hauler: ${logger.json(creep)}`);
 
         if (targetCreep) {
           this.transferEnergy(creep, targetCreep);
@@ -60,9 +60,9 @@ export class Hauler {
         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       );
     });
-    logger.debug(creep.name + targets);
+    logger.debug(creep.name + logger.json(targets));
     const target = creep.pos.findClosestByPath(targets);
-    logger.debug(`closestStructure:  ${target}`);
+    logger.debug(`closestStructure:  ${logger.json(target)}`);
     return target;
   }
 

@@ -1,4 +1,5 @@
-import { CreepOptions } from "./creep";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import stubObject from "../stub/object";
 
 interface StubGameOptions {

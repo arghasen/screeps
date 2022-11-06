@@ -8,7 +8,7 @@ interface StubObjectOptions {
 
 export default function stubObject(options: StubObjectOptions) {
   return {
-    __type: options.type,
+    type: options.type,
     id: options.id as Id<StubId>
   };
 }

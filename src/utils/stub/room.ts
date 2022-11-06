@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 export interface StubRoomOptions {
   controller?: {
     exists: boolean;
@@ -10,6 +12,42 @@ export interface StubRoomOptions {
   terminal?: any;
   objects?: string[];
 }
+
+const serializePath = (path: PathStep[]) => {
+  let result = "";
+
+  if (!path.length) {
+    return result;
+  }
+
+  if (path[0].x < 0 || path[0].y < 0) {
+    throw new Error("path coordinates cannot be negative");
+  }
+
+  result += path[0].x > 9 ? path[0].x : "0" + path[0].x.toString();
+  result += path[0].y > 9 ? path[0].y : "0" + path[0].y.toString();
+
+  path.forEach(step => {
+    result += step.direction;
+  });
+
+  return result;
+};
+
+const find = (ids: undefined | string[], constant: FindConstant) => {
+  if (ids) {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const objects: any[] = ids.map(Game.getObjectById);
+
+    switch (constant) {
+      case FIND_SOURCES:
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        return objects.filter(object => object.type === "source");
+    }
+  }
+
+  return [];
+};
 
 /**
  * Create a fake room object for use in tests
@@ -41,37 +79,3 @@ export default function stubRoom(name: string, options: StubRoomOptions = {}): R
     visual: undefined
   } as any;
 }
-
-const serializePath = (path: PathStep[]) => {
-  let result = "";
-
-  if (!path.length) {
-    return result;
-  }
-
-  if (path[0].x < 0 || path[0].y < 0) {
-    throw new Error("path coordinates cannot be negative");
-  }
-
-  result += path[0].x > 9 ? path[0].x : "0" + path[0].x;
-  result += path[0].y > 9 ? path[0].y : "0" + path[0].y;
-
-  path.forEach(step => {
-    result += step.direction;
-  });
-
-  return result;
-};
-
-const find = (ids: undefined | string[], constant: FindConstant) => {
-  if (ids) {
-    const objects: any[] = ids.map(Game.getObjectById);
-
-    switch (constant) {
-      case FIND_SOURCES:
-        return objects.filter(object => object.__type === "source");
-    }
-  }
-
-  return [];
-};
