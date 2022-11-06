@@ -31,10 +31,11 @@ export class Kernel {
       try {
         currentProcess.run();
       } catch (e) {
+        const err = e as Error;
         logger.error(
           `Kernel: error while running process pid:${currentProcessPid} name:${currentProcess.getName()} errorType: ${
-            (e as Error).message
-          }" `
+            err.message
+          } stacktrace: ${err.stack || "no stack available"} " `
         );
       }
     }
