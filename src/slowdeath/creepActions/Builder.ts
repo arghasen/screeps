@@ -14,7 +14,7 @@ export class Builder {
     if (creep.memory.building) {
       const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
       if (targets.length) {
-        if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
+        if (creep.build(targets[0]) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
           creep.moveTo(targets[0], {
             visualizePathStyle: { stroke: "#ffffff" }
           });
@@ -26,11 +26,16 @@ export class Builder {
             (structure.hits < structure.hitsMax &&
               structure.structureType !== STRUCTURE_WALL &&
               structure.structureType !== STRUCTURE_RAMPART) ||
-            (structure.structureType === STRUCTURE_RAMPART && structure.hits < 500000)
+            (structure.structureType === STRUCTURE_RAMPART && structure.hits < 5000)
         );
         const targetStructure: AnyStructure | null = creep.pos.findClosestByRange(targetStructures);
         if (targetStructure !== null) {
           repair(creep, targetStructure);
+        } else {
+          const t = creep.pos.findClosestByRange(FIND_CREEPS);
+          if (t) {
+            creep.transfer(t, RESOURCE_ENERGY, creep.store.energy);
+          }
         }
       }
     } else {

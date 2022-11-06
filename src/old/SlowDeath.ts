@@ -8,20 +8,7 @@ import { WorkerManager } from "./manager/WorkerManager";
 import { gitVersion } from "../utils/version";
 import { logger } from "../utils/logger";
 
-function defendRoom(roomName: string): void {
-  const hostiles: Creep[] = Game.rooms[roomName].find(FIND_HOSTILE_CREEPS);
-  if (hostiles.length > 0) {
-    Game.notify(`enemy spotted in room ${roomName}`);
-    const towers: AnyOwnedStructure[] = Game.rooms[roomName].find(FIND_MY_STRUCTURES, {
-      filter: { structureType: STRUCTURE_TOWER }
-    });
-    towers.forEach((tower: AnyOwnedStructure): void => {
-      if (tower.structureType === STRUCTURE_TOWER) {
-        tower.attack(hostiles[0]);
-      }
-    });
-  }
-}
+
 
 export class Slowdeath {
   public static roomManager: RoomManager;

@@ -18,11 +18,15 @@ export class Spawns extends Process {
     if (this.room.controller) {
       const spawns = spawnsInRoom(this.room);
 
+      const myCreeps = Object.keys(Game.creeps);
+      if (myCreeps.length >= 34 && !Memory.createContinuousHarvester) {
+        return;
+      }
       for (const spawn of spawns) {
         if (spawn.spawning) {
           continue;
         }
-        const creep = getQueuedCreep();
+        const creep = getQueuedCreep(this.room.energyAvailable);
         if (!creep) {
           break;
         }
@@ -41,12 +45,18 @@ export class Spawns extends Process {
   }
 }
 
-function getQueuedCreep() {
+function getQueuedCreep(energyAvailable: number) {
   if (Memory.createContinuousHarvester) {
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,
       options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER } }
+    };
+  } else if (energyAvailable > 250 && energyAvailable <= 550) {
+    return {
+      build: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
+      name: `creep-${Game.time}`,
+      options: { memory: {} }
     };
   } else {
     return {

@@ -17,7 +17,7 @@ export class Hauler {
       const target = this.getStructuresNeedingEnergy(creep);
       if (target) {
         // TODO: check why this is not working with the func.
-        if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
           creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
         } // no target exist, then transfer energy to creeps
       } else {
@@ -34,7 +34,10 @@ export class Hauler {
         } else {
           const storage = creep.room.storage;
           if (storage) {
-            if (creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            if (
+              creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE &&
+              creep.fatigue === 0
+            ) {
               creep.moveTo(storage, {
                 visualizePathStyle: { stroke: "#ffffff" }
               });
@@ -67,7 +70,7 @@ export class Hauler {
   }
 
   private static transferEnergy(creep: Creep, target: AnyCreep | Structure) {
-    if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+    if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
       creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
     }
   }

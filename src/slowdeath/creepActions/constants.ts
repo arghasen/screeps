@@ -7,8 +7,8 @@ export const MaxRolePopulation = {
   harvesters: 1,
   builders: 1,
   upgrader: 2,
-  haulers: 0,
-  total: 4
+  haulers: 1,
+  total: 5
 };
 
 export enum Role {

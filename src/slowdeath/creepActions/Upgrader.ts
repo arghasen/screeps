@@ -13,7 +13,10 @@ export class Upgrader {
     }
 
     if (creep.memory.upgrading && creep.room.controller !== undefined) {
-      if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+      if (
+        creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE &&
+        creep.fatigue === 0
+      ) {
         creep.moveTo(creep.room.controller, {
           visualizePathStyle: { stroke: "#ffffff" }
         });
@@ -30,7 +33,7 @@ export class Upgrader {
       if (stores.length >= 1) {
         const store = creep.pos.findClosestByPath(stores);
         if (store) {
-          if (creep.withdraw(store, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+          if (creep.withdraw(store, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
             creep.moveTo(store, { visualizePathStyle: { stroke: "#ffaa00" } });
             return;
           }

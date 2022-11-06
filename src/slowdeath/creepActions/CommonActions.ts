@@ -1,7 +1,7 @@
 import { logger } from "../../utils/logger";
 
 export function pickup(creep: Creep, closestSource: Resource) {
-  if (creep.pickup(closestSource) === ERR_NOT_IN_RANGE) {
+  if (creep.pickup(closestSource) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
     creep.moveTo(closestSource, {
       visualizePathStyle: { stroke: "#ffaa00" }
     });
@@ -20,7 +20,7 @@ export function pickupDroppedEnergy(creep: Creep) {
       energyResources.sort((a, b) => a.amount - b.amount);
     }
     let closestSource;
-    if (energyResources[0].amount > 2000) {
+    if (energyResources[0].amount > 1000) {
       closestSource = energyResources[0];
     } else {
       closestSource = creep.pos.findClosestByPath(energyResources);
@@ -47,7 +47,7 @@ export function pickupDroppedEnergy(creep: Creep) {
 }
 export function harvest(source: Source | null, creep: Creep) {
   if (source) {
-    if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
+    if (creep.harvest(source) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
       creep.moveTo(source, {
         visualizePathStyle: { stroke: "#ffaa00" }
       });
@@ -56,7 +56,7 @@ export function harvest(source: Source | null, creep: Creep) {
 }
 
 export function repair(creep: Creep, targetStructure: AnyStructure) {
-  if (creep.repair(targetStructure) === ERR_NOT_IN_RANGE) {
+  if (creep.repair(targetStructure) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
     creep.moveTo(targetStructure, {
       visualizePathStyle: { stroke: "#ffaa00" }
     });

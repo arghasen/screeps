@@ -77,7 +77,10 @@ export class Employment extends Process {
   }
 
   private employWorkers(employ: (cur: number, max: number) => boolean) {
-    if (employ(this.numHarversters, MaxRolePopulation.harvesters)) {
+    if (
+      employ(this.numHarversters, MaxRolePopulation.harvesters) &&
+      !Memory.continuousHarvestingStarted
+    ) {
       this.assignRole(Role.ROLE_HARVESTER);
     } else if (
       employ(this.numHaulers, MaxRolePopulation.haulers) &&
