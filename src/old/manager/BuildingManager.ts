@@ -15,16 +15,6 @@ export class BuildingManager extends Manager {
       }
     }
 
-    const myStructures = room.find(FIND_MY_STRUCTURES);
-    this.extensionsCreated = myStructures.filter(
-      structure => structure.structureType === STRUCTURE_EXTENSION
-    );
-
-    const constructionSites = room.find(FIND_CONSTRUCTION_SITES);
-    this.extensionsUnderConstruction = constructionSites.filter(
-      site => site.structureType === STRUCTURE_EXTENSION
-    );
-
     if (room.controller?.level === 2) {
       if (this.extensionsCreated.length !== controllerConsts.lvl2extensions) {
         Memory.focus = "build";
@@ -58,25 +48,6 @@ export class BuildingManager extends Manager {
         console.log("Possible Mining Locations:", possibleMiningLocations);
         // const closestSource = PathFinder.search(this.spawns[0].pos, possibleMiningLocations);
         // console.log("closest path to source")
-      }
-    }
-  }
-
-
-
-  private createExtensions(room: Room) {
-    const loc = _.cloneDeep(extensionLoc[2]);
-    for (let i: number = this.getTotalExtensions(); i < controllerConsts.lvl2extensions; i++) {
-      console.log(loc);
-      const res: ScreepsReturnCode = room.createConstructionSite(
-        this.spawns[0].pos.x + loc[i][0],
-        this.spawns[0].pos.y + loc[i][1],
-        STRUCTURE_EXTENSION
-      );
-      console.log("result for creation", res);
-      if (res !== 0) {
-        loc.splice(i, 1);
-        --i;
       }
     }
   }

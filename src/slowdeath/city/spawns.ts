@@ -42,7 +42,7 @@ export class Spawns extends Process {
 }
 
 function getQueuedCreep() {
-  if (Memory.createContinuousHarvestor) {
+  if (Memory.createContinuousHarvester) {
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,

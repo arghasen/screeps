@@ -40,7 +40,8 @@ interface Memory {
   os: {
     scheduler: SchedulerMemory;
   };
-  continuousHarvestorCount: number;
+  continuousHarvesterCount: number;
+  createContinuousHarvester: boolean;
 }
 interface CreepMemory {
   upgrading?: boolean;

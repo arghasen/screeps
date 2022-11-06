@@ -28,30 +28,58 @@ export class Employment extends Process {
 
     this.runCreepActions();
     this.getWorkerCounts();
-    if (this.unemployed.length > 0) {
-      this.populationBasedEmployer();
-    }
+    this.populationBasedEmployer();
   }
 
   private populationBasedEmployer() {
-    const totWorkers =
+    const totWorkers = this.getTotalWorkers();
+    const scale = Math.max(Math.ceil(totWorkers / MaxRolePopulation.total), 1);
+
+    if (this.waitForContiniousHarvester(totWorkers)) {
+      return;
+    }
+
+    this.storeHarvestingStatus();
+    this.employWorkers(employ);
+
+    function employ(cur: number, max: number) {
+      logger.debug(`current employ ${cur}, ${max}, ${scale}`);
+      return cur < max * scale;
+    }
+  }
+
+  private waitForContiniousHarvester(totWorkers: number) {
+    if (this.numContinuousHarvesters >= MaxRolePopulation.continuousHarvester) {
+      Memory.createContinuousHarvester = false;
+      return false;
+    }
+    if (this.room.energyCapacityAvailable >= 550 && totWorkers > MaxRolePopulation.total) {
+      console.log("delaying new creeps till continious harvestors");
+      Memory.createContinuousHarvester = true;
+      return true;
+    }
+    return false;
+  }
+
+  private getTotalWorkers() {
+    return (
       this.numBuilders +
       this.numHarversters +
       this.numUpgraders +
       this.numHaulers +
-      this.unemployed.length;
-    const scale = Math.max(Math.ceil(totWorkers / MaxRolePopulation.total), 1);
+      this.unemployed.length
+    );
+  }
 
-    if (this.room.energyCapacityAvailable >= 550 && totWorkers > MaxRolePopulation.total) {
-      if (this.numContinuousHarvesters < MaxRolePopulation.continuousHarvester) {
-        console.log("delaying new creeps till continious harvestors");
-        Memory.createContinuousHarvestor = true;
-        return;
-      } else {
-        Memory.createContinuousHarvestor = false;
-      }
+  private storeHarvestingStatus() {
+    if (this.numContinuousHarvesters > 1) {
+      Memory.continuousHarvestingStarted = true;
+    } else {
+      Memory.continuousHarvestingStarted = false;
     }
+  }
 
+  private employWorkers(employ: (cur: number, max: number) => boolean) {
     if (employ(this.numHarversters, MaxRolePopulation.harvesters)) {
       this.assignRole(Role.ROLE_HARVESTER);
     } else if (
@@ -63,11 +91,6 @@ export class Employment extends Process {
       this.assignRole(Role.ROLE_BUILDER);
     } else if (employ(this.numUpgraders, MaxRolePopulation.upgrader)) {
       this.assignRole(Role.ROLE_UPGRADER);
-    }
-
-    function employ(cur: number, max: number) {
-      logger.debug(`current employ ${cur}, ${max}, ${scale}`);
-      return cur < max * scale;
     }
   }
 
@@ -106,7 +129,7 @@ export class Employment extends Process {
         }
       }
       logger.info(
-        `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers} unemployed:${this.unemployed.length}`
+        `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
       );
     }
   };
