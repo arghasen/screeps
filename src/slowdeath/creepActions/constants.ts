@@ -8,7 +8,7 @@ export const MaxRolePopulation = {
   builders: 1,
   upgrader: 2,
   haulers: 1,
-  total: 5
+  total: 4
 };
 
 export enum Role {
@@ -57,7 +57,17 @@ export const extensionLoc: Record<number, number[][]> = {
     [1, 0],
     [0, 1],
     [-1, 0],
-    [0, -1]
+    [0, -1],
+    [1, 2],
+    [2, 1],
+    [-1, 2],
+    [2, 2],
+    [-2, -2],
+    [-1, -2],
+    [0, 2],
+    [0, -2],
+    [-2, 0],
+    [2, 0]
   ]
 };
 

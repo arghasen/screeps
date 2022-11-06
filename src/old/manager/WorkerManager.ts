@@ -17,20 +17,8 @@ export class WorkerManager extends Manager {
   public room!: Room;
 
   public init = (room: Room): void => {
-    this.room = room;
-    for (const spawnName of Object.keys(Game.spawns)) {
-      if (Game.spawns[spawnName].room.name === room.name) {
-        this.spawns.push(Game.spawns[spawnName]);
-      }
-    }
-    this.myCreeps = _.values(Game.creeps);
-    logger.printObject(Game.creeps);
-    this.sources = room.find(FIND_SOURCES);
 
-    this.getWorkerCounts();
-    if (this.numContinuousHarvesters > 1) {
-      Memory.continuousHarvestingStarted = true;
-    }
+
     // var energyAvailable = room.energyAvailable;
     const energyAvailable: number = room.energyCapacityAvailable;
 

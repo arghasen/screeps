@@ -14,7 +14,18 @@ export class Infrastructure extends Process {
 
   public main() {
     this.init();
-    this.createExtensions(this.room);
+    if (this.room.controller?.my) {
+      if (this.room.controller.level === 2) {
+        this.createExtensions(this.room, this.spawns[0].pos, 2);
+      }
+      if (this.room.controller.level === 3) {
+        const pos = this.room.getPositionAt(this.spawns[0].pos.x + 10, this.spawns[0].pos.y + 10);
+        if (pos) {
+          this.createExtensions(this.room, pos, 3);
+        }
+      }
+    }
+
     if (this.buildMoreRoads) {
       this.buildRoadsToSpawn(this.room);
       this.buildRoadsToController(this.room);
@@ -84,13 +95,17 @@ export class Infrastructure extends Process {
     return this.extensionsUnderConstruction.length + this.extensionsCreated.length;
   }
 
-  private createExtensions(room: Room) {
+  private createExtensions(room: Room, pos: RoomPosition, level: number) {
     const loc = _.cloneDeep(extensionLoc[2]);
-    for (let i: number = this.getTotalExtensions(); i < ControllerConsts.lvl2extensions; i++) {
+    for (
+      let i: number = this.getTotalExtensions();
+      i < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
+      i++
+    ) {
       console.log(loc);
       const res: ScreepsReturnCode = room.createConstructionSite(
-        this.spawns[0].pos.x + loc[i][0],
-        this.spawns[0].pos.y + loc[i][1],
+        pos.x + loc[i % loc.length][0],
+        pos.y + loc[i % loc.length][1],
         STRUCTURE_EXTENSION
       );
       console.log("result for creation", res);

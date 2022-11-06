@@ -42,8 +42,15 @@ interface Memory {
   };
   continuousHarvesterCount: number;
   createContinuousHarvester: boolean;
+  critical: boolean;
+  createClaimer: {
+    x: number;
+    y: number;
+    targetRoom: string;
+  };
 }
 interface CreepMemory {
+  targetRoom?: string;
   upgrading?: boolean;
   building?: boolean;
   running?: boolean;

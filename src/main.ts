@@ -4,6 +4,7 @@ import { NOT_RUNNING } from "./os/process";
 import { Stats } from "./stats/stats";
 import { gitVersion } from "./utils/version";
 import { logger } from "./utils/logger";
+import { RoadStatus } from "slowdeath/creepActions/constants";
 
 export function loop(): void {
   logger.info(`${color("Beginning of new tick", "Magenta")}`);
@@ -42,5 +43,8 @@ function initializeMemory() {
   Memory.version = gitVersion;
   if (!Memory.continuousHarvesterCount) {
     Memory.continuousHarvesterCount = 0;
+  }
+  if (!Memory.roadsDone) {
+    Memory.roadsDone = RoadStatus.NONE;
   }
 }

@@ -14,6 +14,17 @@ export class Empire extends Process {
       console.log(room);
       this.launchChildProcess(`colony-${room}`, "colony", { roomName: room });
     }
+    const flags = Game.flags;
+    for (const name in flags) {
+      const flag = flags[name];
+      if (name === "claimThisRoom") {
+        Memory.createClaimer = {
+          x: flag.pos.x,
+          y: flag.pos.y,
+          targetRoom: flag.pos.roomName
+        };
+      }
+    }
     if (Game.time % 100 === 0) {
       clearDeadCreepsFromMemory();
     }

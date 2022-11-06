@@ -19,14 +19,14 @@ export class Spawns extends Process {
       const spawns = spawnsInRoom(this.room);
 
       const myCreeps = Object.keys(Game.creeps);
-      if (myCreeps.length >= 34 && !Memory.createContinuousHarvester) {
+      if (myCreeps.length >= 22 && !Memory.createContinuousHarvester) {
         return;
       }
       for (const spawn of spawns) {
         if (spawn.spawning) {
           continue;
         }
-        const creep = getQueuedCreep(this.room.energyAvailable);
+        const creep = getQueuedCreep(this.room.energyAvailable, this.room.energyCapacityAvailable);
         if (!creep) {
           break;
         }
@@ -45,16 +45,32 @@ export class Spawns extends Process {
   }
 }
 
-function getQueuedCreep(energyAvailable: number) {
+function getQueuedCreep(energyAvailable: number, energyCapacityAvailable: number) {
+  if (Memory.critical) {
+    return {
+      build: [WORK, CARRY, MOVE],
+      name: `creep-${Game.time}`,
+      options: { memory: {} }
+    };
+  }
+  // eslint-disable-next-line no-empty
+  if (Memory.createClaimer) {
+  }
   if (Memory.createContinuousHarvester) {
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,
       options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER } }
     };
-  } else if (energyAvailable > 250 && energyAvailable <= 550) {
+  } else if (energyCapacityAvailable > 400 && energyCapacityAvailable <= 600) {
     return {
       build: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
+      name: `creep-${Game.time}`,
+      options: { memory: {} }
+    };
+  } else if (energyCapacityAvailable > 600 && energyCapacityAvailable <= 750) {
+    return {
+      build: [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
       name: `creep-${Game.time}`,
       options: { memory: {} }
     };
