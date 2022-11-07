@@ -1,12 +1,12 @@
 import { MaxRolePopulation, Role } from "../creepActions/constants";
 import { Builder } from "../creepActions/Builder";
+import { Claimer } from "slowdeath/creepActions/claimer";
 import { ContinuousHarvester } from "../creepActions/ContinuousHarvester";
 import { Harvester } from "../creepActions/Harvester";
 import { Hauler } from "../creepActions/Hauler";
 import { Process } from "../../os/process";
 import { Upgrader } from "../creepActions/Upgrader";
 import { logger } from "../../utils/logger";
-import { Claimer } from "slowdeath/creepActions/claimer";
 
 export class Employment extends Process {
   protected className = "employment";
@@ -28,7 +28,7 @@ export class Employment extends Process {
     logger.info(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
 
-    this.runCreepActions();
+    this.runCreepActions(); // FIXME: this is a bug, should run after employment. Fix after room based memory
     this.getWorkerCounts();
     this.populationBasedEmployer();
   }
@@ -173,6 +173,9 @@ export class Employment extends Process {
 
   private runCreepActions() {
     for (const creep of this.myCreeps) {
+      // if (creep.pos.roomName !== this.room.name) {
+      //   continue;
+      // }
       switch (creep.memory.role) {
         case Role.ROLE_HARVESTER:
           Harvester.run(creep);

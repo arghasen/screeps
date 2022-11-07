@@ -11,10 +11,16 @@ export class Empire extends Process {
   public main() {
     logger.info(`${this.className}: Starting Empire`);
     logger.info(`${this.className}: launching colonies`);
+    this.handleFlags();
     for (const room of Object.keys(Game.rooms)) {
-      console.log(room);
       this.launchChildProcess(`colony-${room}`, "colony", { roomName: room });
     }
+    if (Game.time % 100 === 0) {
+      clearDeadCreepsFromMemory();
+    }
+  }
+
+  private handleFlags() {
     const flags = Game.flags;
     for (const name in flags) {
       const flag = flags[name];
@@ -22,16 +28,15 @@ export class Empire extends Process {
         const creepName = Memory.createClaimer.done;
         if (creepName && !isCreepAlive(creepName)) {
           Memory.createClaimer = {
-            x: flag.pos.x,
-            y: flag.pos.y,
-            targetRoom: flag.pos.roomName,
+            loc: {
+              x: flag.pos.x,
+              y: flag.pos.y,
+              roomName: flag.pos.roomName
+            },
             identifier: 1
           };
         }
       }
-    }
-    if (Game.time % 100 === 0) {
-      clearDeadCreepsFromMemory();
     }
   }
 }

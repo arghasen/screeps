@@ -17,9 +17,12 @@ export class Spawns extends Process {
     this.room = Game.rooms[this.metadata.roomName];
     if (this.room.controller) {
       const spawns = spawnsInRoom(this.room);
+      const roomName = this.room.name;
+      const myCreeps = _.filter(Game.creeps, creep => {
+        return creep.pos.roomName === roomName;
+      });
 
-      const myCreeps = Object.keys(Game.creeps);
-      if (myCreeps.length >= 22 && !Memory.createContinuousHarvester) {
+      if (myCreeps.length >= 18 && !Memory.createContinuousHarvester) {
         return;
       }
       for (const spawn of spawns) {
@@ -72,9 +75,7 @@ function getQueuedCreep(energyAvailable: number, energyCapacityAvailable: number
         options: {
           memory: {
             role: Role.ROLE_CLAIMER,
-            x: Memory.createClaimer.x,
-            y: Memory.createClaimer.y,
-            targetRoom: Memory.createClaimer.targetRoom,
+            moveLoc: Memory.createClaimer.loc,
             identifier: Memory.createClaimer.identifier
           }
         }

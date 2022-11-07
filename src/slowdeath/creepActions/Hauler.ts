@@ -15,35 +15,20 @@ export class Hauler {
 
     if (creep.memory.running) {
       const target = this.getStructuresNeedingEnergy(creep);
+      const storage = creep.room.storage;
       if (target) {
         // TODO: check why this is not working with the func.
         if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
           creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
-        } // no target exist, then transfer energy to creeps
+        } // no target exist, then transfer energy to storage
+      } else if (storage && storage.store.getCapacity(RESOURCE_ENERGY) > 0) {
+        this.transferEnergy(creep, storage);
       } else {
-        const targetCreep = creep.pos.findClosestByRange(FIND_CREEPS, {
-          filter: creepTo =>
-            creepTo.memory.role !== Role.ROLE_HAULER &&
-            creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
-        });
-
+        // no target exist, then transfer energy to creeps
+        const targetCreep = getCreepNeedingEnergy(creep);
         logger.debug(`targetCreep:${logger.json(targetCreep)} for hauler: ${logger.json(creep)}`);
-
         if (targetCreep) {
           this.transferEnergy(creep, targetCreep);
-        } else {
-          const storage = creep.room.storage;
-          if (storage) {
-            if (
-              creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE &&
-              creep.fatigue === 0
-            ) {
-              creep.moveTo(storage, {
-                visualizePathStyle: { stroke: "#ffffff" }
-              });
-            }
-          }
-          creep.memory.running = false;
         }
       }
     } else {
@@ -74,4 +59,11 @@ export class Hauler {
       creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
     }
   }
+}
+function getCreepNeedingEnergy(creep: Creep) {
+  return creep.pos.findClosestByRange(FIND_CREEPS, {
+    filter: creepTo =>
+      creepTo.memory.role !== Role.ROLE_HAULER &&
+      creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
+  });
 }

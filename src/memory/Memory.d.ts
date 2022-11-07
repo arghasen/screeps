@@ -25,11 +25,17 @@ interface MoveLoc {
   y: number;
   roomName: string;
 }
+interface RoomMemory {
+  roadsDone: number;
+  continuousHarvestingStarted: boolean;
+  continuousHarvesterCount: number;
+  createContinuousHarvester: boolean;
+  critical: boolean;
+}
 
 interface Memory {
   [x: string]: any;
-  roadsDone: number;
-  continuousHarvestingStarted: boolean;
+  rooms: Record<string, RoomMemory>;
   stats: PromDict;
   version: string;
   energy: number;
@@ -45,14 +51,9 @@ interface Memory {
   os: {
     scheduler: SchedulerMemory;
   };
-  continuousHarvesterCount: number;
-  createContinuousHarvester: boolean;
-  critical: boolean;
   createClaimer: {
     done?: string;
-    x: number;
-    y: number;
-    targetRoom: string;
+    loc: MoveLoc;
     identifier: number;
   };
   needBuilder: {
@@ -66,7 +67,7 @@ interface CreepMemory {
   upgrading?: boolean;
   building?: boolean;
   running?: boolean;
-  role?: any;
+  role?: number;
   source?: any;
   moveLoc?: MoveLoc;
 }

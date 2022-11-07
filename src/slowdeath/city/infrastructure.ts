@@ -1,8 +1,8 @@
-import { ControllerConsts, RoadStatus, extensionLoc } from "../creepActions/constants";
+import isCreepAlive from "utils/is-creep-alive";
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
 import spawnsInRoom from "../../utils/spawns-in-room";
-import isCreepAlive from "utils/is-creep-alive";
+import { extensionLoc, RoadStatus } from "../creepActions/constants";
 
 export class Infrastructure extends Process {
   protected className = "infrastructure";
@@ -27,12 +27,47 @@ export class Infrastructure extends Process {
           this.createExtensions(this.room, pos, 3);
         }
       }
+      if (this.room.controller.level === 4) {
+        const pos = this.room.getPositionAt(this.spawns[0].pos.x - 5, this.spawns[0].pos.y);
+        if (pos) {
+          const ret = this.room.createConstructionSite(pos.x, pos.y, STRUCTURE_STORAGE);
+        }
+      }
+      logger.info("Build More Roads:", this.buildMoreRoads);
+      if (this.buildMoreRoads) {
+        this.buildRoadsToSpawn(this.room);
+        this.buildRoadsToController(this.room);
+        if (this.room.controller.level >= 3) {
+          this.buildRoadsToLvl3Extenstions(this.room);
+        }
+        if (this.room.storage) {
+          this.buildMoreRoadsToStorage(this.room);
+        }
+      }
     }
+  }
+  private buildMoreRoadsToStorage(room: Room) {
+    if (this.room.memory.roadsDone === RoadStatus.TO_LVL3EXT) {
+      const pos = this.room.storage?.pos;
+      if (pos) {
+        this.buildRoads(room, pos);
+      }
+      this.room.memory.roadsDone = RoadStatus.BUILDING_TO_STORAGE;
+    }
+    this.updateStatus(RoadStatus.BUILDING_TO_STORAGE, RoadStatus.TO_STORAGE);
+  }
 
-    if (this.buildMoreRoads) {
-      this.buildRoadsToSpawn(this.room);
-      this.buildRoadsToController(this.room);
+  private buildRoadsToLvl3Extenstions(room: Room) {
+    if (this.room.memory.roadsDone === RoadStatus.TO_CONTROLLER) {
+      for (const extension of this.extensionsCreated) {
+        const pos = extension.pos;
+        if (pos) {
+          this.buildRoads(room, pos);
+        }
+      }
+      this.room.memory.roadsDone = RoadStatus.BUILDING_TO_LVL3EXT;
     }
+    this.updateStatus(RoadStatus.BUILDING_TO_LVL3EXT, RoadStatus.TO_LVL3EXT);
   }
 
   private requestRemoteBuilders(pos: RoomPosition) {
@@ -59,21 +94,19 @@ export class Infrastructure extends Process {
   }
 
   private buildRoadsToController(room: Room) {
-    if (Memory.roadsDone === RoadStatus.TO_SOURCES) {
+    if (this.room.memory.roadsDone === RoadStatus.TO_SOURCES) {
       if (room.controller) {
-        this.buildRoads(room, room.controller);
+        this.buildRoads(room, room.controller.pos);
       }
-      Memory.roadsDone = RoadStatus.BUILDING_TO_CONTROLLER;
+      this.room.memory.roadsDone = RoadStatus.BUILDING_TO_CONTROLLER;
     }
-    if (this.buildMoreRoads && Memory.BUILDING_TO_SOURCES) {
-      Memory.roadsDone = RoadStatus.TO_SOURCES;
-    }
+    this.updateStatus(RoadStatus.BUILDING_TO_CONTROLLER, RoadStatus.TO_CONTROLLER);
   }
 
-  private buildRoads(room: Room, to: Structure) {
+  private buildRoads(room: Room, pos: RoomPosition) {
     const sources = room.find(FIND_SOURCES);
     for (const source of sources) {
-      const path = to.pos.findPathTo(source.pos, {
+      const path = pos.findPathTo(source.pos, {
         range: 1,
         ignoreCreeps: true
       });
@@ -87,13 +120,17 @@ export class Infrastructure extends Process {
   }
 
   private buildRoadsToSpawn(room: Room) {
-    if (Memory.roadsDone === RoadStatus.NONE) {
-      this.buildRoads(room, this.spawns[0]);
-      Memory.roadsDone = RoadStatus.BUILDING_TO_SOURCES;
+    if (this.room.memory.roadsDone === RoadStatus.NONE) {
+      this.buildRoads(room, this.spawns[0].pos);
+      this.room.memory.roadsDone = RoadStatus.BUILDING_TO_SOURCES;
       return;
     }
-    if (this.buildMoreRoads && Memory.BUILDING_TO_SOURCES) {
-      Memory.roadsDone = RoadStatus.TO_SOURCES;
+    this.updateStatus(RoadStatus.BUILDING_TO_SOURCES, RoadStatus.TO_SOURCES);
+  }
+
+  private updateStatus(from: RoadStatus, to: RoadStatus) {
+    if (this.buildMoreRoads && this.room.memory.roadsDone === from) {
+      this.room.memory.roadsDone = to;
     }
   }
 

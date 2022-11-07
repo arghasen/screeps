@@ -1,5 +1,5 @@
-import { logger } from "utils/logger";
 import { harvest, pickupDroppedEnergy, repair } from "../../slowdeath/creepActions/CommonActions";
+import { logger } from "utils/logger";
 
 export class Builder {
   public static run = (creep: Creep): void => {

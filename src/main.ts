@@ -44,7 +44,4 @@ function initializeMemory() {
   if (!Memory.continuousHarvesterCount) {
     Memory.continuousHarvesterCount = 0;
   }
-  if (!Memory.roadsDone) {
-    Memory.roadsDone = RoadStatus.NONE;
-  }
 }

@@ -6,9 +6,9 @@ export const MaxRolePopulation = {
   continuousHarvester: 2,
   harvesters: 1,
   builders: 1,
-  upgrader: 2,
+  upgrader: 1,
   haulers: 1,
-  total: 4
+  total: 3
 };
 
 export enum Role {
@@ -78,5 +78,9 @@ export enum RoadStatus {
   BUILDING_TO_SOURCES,
   TO_SOURCES,
   BUILDING_TO_CONTROLLER,
-  TO_CONTROLLER
+  TO_CONTROLLER,
+  BUILDING_TO_LVL3EXT,
+  TO_LVL3EXT,
+  BUILDING_TO_STORAGE,
+  TO_STORAGE
 }
