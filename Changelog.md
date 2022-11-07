@@ -4,9 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2022.11.06](https://github.com/arghasen/screeps/releases/tag/2022.11.06) - 2022-11-06
+## [v0.6.0](https://github.com/arghasen/screeps/releases/tag/v0.6.0) - 2022-11-08
 
-<small>[Compare with 2022.11.05](https://github.com/arghasen/screeps/compare/2022.11.05...2022.11.06)</small>
+<small>[Compare with v0.5.0](https://github.com/arghasen/screeps/compare/v0.5.0...v0.6.0)</small>
+
+### Features
+- Memory now segmented by rooms ([9fe2761](https://github.com/arghasen/screeps/commit/9fe2761a8659b78267ec4c59cd92a1777030b1bb) by Argha Sen).
+- Rooms can request builders from other rooms ([b1fa985](https://github.com/arghasen/screeps/commit/b1fa985f433f386fbf6cbf2d1d311b9457ba1cd8) by Argha Sen).
+- Lvl3 extenstions, flag reading, basic claimer support ([6970a26](https://github.com/arghasen/screeps/commit/6970a26a458098391ec5bef222bf71184790f61b) by Argha Sen).
+- Creeps check fatigue before moving, towers for defense ([c3be78e](https://github.com/arghasen/screeps/commit/c3be78ebaf7a272e10fd57e022e636e6d158f89b) by Argha Sen).
+
+
+## [v0.5.0](https://github.com/arghasen/screeps/releases/tag/v0.5.0) - 2022-11-06
+
+<small>[Compare with v0.4.0](https://github.com/arghasen/screeps/compare/v0.4.0...v0.5.0)</small>
 
 ### Bug Fixes
 - Roads creation now done as a state machine ([45d615f](https://github.com/arghasen/screeps/commit/45d615f8032f32ddb7a517aa40694154296de57b) by Argha Sen).
@@ -29,9 +40,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add ability to spawn creeps ([e49f4e4](https://github.com/arghasen/screeps/commit/e49f4e40a249d45d79be1b2158273225e0916aed) by Argha Sen).
 
 
-## [2022.11.05](https://github.com/arghasen/screeps/releases/tag/2022.11.05) - 2022-11-05
+## [v0.4.0](https://github.com/arghasen/screeps/releases/tag/v0.4.0) - 2022-11-05
 
-<small>[Compare with 2022.02.04-v1](https://github.com/arghasen/screeps/compare/2022.02.04-v1...2022.11.05)</small>
+<small>[Compare with 2022.02.04-v1](https://github.com/arghasen/screeps/compare/2022.02.04-v1...v0.4.0)</small>
 
 ### Code Refactoring
 - Move ai file to its own subdirectory ([dfeed23](https://github.com/arghasen/screeps/commit/dfeed2359121f81e8c19885402df60357ab83e53) by Argha Sen).
