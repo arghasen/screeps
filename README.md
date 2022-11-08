@@ -1,22 +1,23 @@
 
-# Screeps 
+# Slowdeath AI ( ai for screeps)
 [![Node.js CI](https://github.com/arghasen/screeps/actions/workflows/node.js.yml/badge.svg)](https://github.com/arghasen/screeps/actions/workflows/node.js.yml)
 
 Code for my screeps AI. 
  
-## Bot Types
+# Bot Types
 
 - Harvester
 - Upgrader
 - Builder
 - Continuous Harvester
+- Claimer
+- Hauler
 
-After 2 days of working and reachining RCL4, I am constantly running into problems with trying to improve the bot. Seems like I need a new architecture and with TS move already planned I think it is a good time to think of a rewrite.
+# AI structure
+Operating Systems based with extremely basic kernel, scheduler and process.
 
+# Memory Structure
+Currently uses ingame Memory. Support for RawMemory is planned in future.
 
-## V1 
-
-V1 improvements are in docs/v1
-
-## V2 Operating System
-
+# Caching Structure
+No caching is in use as of now, in cache tick is implemented but not used
