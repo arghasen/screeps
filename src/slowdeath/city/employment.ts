@@ -28,9 +28,9 @@ export class Employment extends Process {
     logger.info(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
 
-    this.runCreepActions(); // FIXME: this is a bug, should run after employment. Fix after room based memory
     this.getWorkerCounts();
     this.populationBasedEmployer();
+    this.runCreepActions();
   }
 
   private populationBasedEmployer() {
@@ -54,9 +54,9 @@ export class Employment extends Process {
       this.room.controller &&
       this.room.controller.level > 1
     ) {
-      Memory.critical = true;
+      this.room.memory.critical = true;
     } else {
-      Memory.critical = false;
+      this.room.memory.critical = false;
     }
 
     if (
@@ -64,20 +64,20 @@ export class Employment extends Process {
       this.room.controller &&
       this.room.controller.level > 2
     ) {
-      Memory.critical = true;
+      this.room.memory.critical = true;
     } else {
-      Memory.critical = false;
+      this.room.memory.critical = false;
     }
   }
 
   private waitForContiniousHarvester(totWorkers: number) {
     if (this.numContinuousHarvesters >= MaxRolePopulation.continuousHarvester) {
-      Memory.createContinuousHarvester = false;
+      this.room.memory.createContinuousHarvester = false;
       return false;
     }
     if (this.room.energyCapacityAvailable >= 550 && totWorkers > MaxRolePopulation.total) {
       console.log("delaying new creeps till continious harvestors");
-      Memory.createContinuousHarvester = true;
+      this.room.memory.createContinuousHarvester = true;
       return true;
     }
     return false;
@@ -95,9 +95,9 @@ export class Employment extends Process {
 
   private storeHarvestingStatus() {
     if (this.numContinuousHarvesters >= 1) {
-      Memory.continuousHarvestingStarted = true;
+      this.room.memory.continuousHarvestingStarted = true;
     } else {
-      Memory.continuousHarvestingStarted = false;
+      this.room.memory.continuousHarvestingStarted = false;
     }
   }
 
@@ -113,12 +113,12 @@ export class Employment extends Process {
     }
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
-      !Memory.continuousHarvestingStarted
+      !this.room.memory.continuousHarvestingStarted
     ) {
       this.assignRole(Role.ROLE_HARVESTER);
     } else if (
       employ(this.numHaulers, MaxRolePopulation.haulers) &&
-      Memory.continuousHarvestingStarted
+      this.room.memory.continuousHarvestingStarted
     ) {
       this.assignRole(Role.ROLE_HAULER);
     } else if (employ(this.numBuilders, MaxRolePopulation.builders)) {
@@ -173,9 +173,9 @@ export class Employment extends Process {
 
   private runCreepActions() {
     for (const creep of this.myCreeps) {
-      // if (creep.pos.roomName !== this.room.name) {
-      //   continue;
-      // }
+      if (creep.pos.roomName !== this.room.name) {
+        continue;
+      }
       switch (creep.memory.role) {
         case Role.ROLE_HARVESTER:
           Harvester.run(creep);

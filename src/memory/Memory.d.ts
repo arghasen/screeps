@@ -26,6 +26,7 @@ interface MoveLoc {
   roomName: string;
 }
 interface RoomMemory {
+  setup: any;
   roadsDone: number;
   continuousHarvestingStarted: boolean;
   continuousHarvesterCount: number;
@@ -34,7 +35,6 @@ interface RoomMemory {
 }
 
 interface Memory {
-  [x: string]: any;
   rooms: Record<string, RoomMemory>;
   stats: PromDict;
   version: string;

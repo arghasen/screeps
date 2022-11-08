@@ -6,7 +6,7 @@ import { spawnsInRoom } from "../../utils/screeps-fns";
 export class Spawns extends Process {
   protected className = "spawns";
   private metadata?: CityData;
-  private room?: Room;
+  private room!: Room;
   public main() {
     this.metadata = this.data as CityData;
     logger.info(`${this.className}: Starting spawnner`);
@@ -22,14 +22,18 @@ export class Spawns extends Process {
         return creep.pos.roomName === roomName;
       });
 
-      if (myCreeps.length >= 18 && !Memory.createContinuousHarvester) {
+      if (myCreeps.length >= 18 && !this.room.memory.createContinuousHarvester) {
         return;
       }
       for (const spawn of spawns) {
         if (spawn.spawning) {
           continue;
         }
-        const creep = getQueuedCreep(this.room.energyAvailable, this.room.energyCapacityAvailable);
+        const creep = getQueuedCreep(
+          this.room.name,
+          this.room.energyAvailable,
+          this.room.energyCapacityAvailable
+        );
         if (!creep) {
           break;
         }
@@ -50,8 +54,13 @@ export class Spawns extends Process {
   }
 }
 
-function getQueuedCreep(energyAvailable: number, energyCapacityAvailable: number) {
-  if (Memory.critical) {
+function getQueuedCreep(
+  roomName: string,
+  energyAvailable: number,
+  energyCapacityAvailable: number
+) {
+  const room = Game.rooms[roomName];
+  if (room.memory.critical) {
     return {
       build: [WORK, CARRY, MOVE],
       name: `creep-${Game.time}`,
@@ -59,7 +68,7 @@ function getQueuedCreep(energyAvailable: number, energyCapacityAvailable: number
     };
   }
 
-  if (Memory.createContinuousHarvester) {
+  if (room.memory.createContinuousHarvester) {
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,

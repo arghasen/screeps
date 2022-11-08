@@ -22,7 +22,7 @@ export class Infrastructure extends Process {
         this.createExtensions(this.room, this.spawns[0].pos, 2);
       }
       if (this.room.controller.level === 3) {
-        const pos = this.room.getPositionAt(this.spawns[0].pos.x + 10, this.spawns[0].pos.y + 10);
+        const pos = this.room.getPositionAt(this.spawns[0].pos.x + 5, this.spawns[0].pos.y - 5);
         if (pos) {
           this.createExtensions(this.room, pos, 3);
         }

@@ -3,7 +3,6 @@
 //
 
 import { BuildingManager } from "./manager/BuildingManager";
-import { RoomManager } from "./manager/RoomManager";
 import { WorkerManager } from "./manager/WorkerManager";
 import { gitVersion } from "../utils/version";
 import { logger } from "../utils/logger";
@@ -11,7 +10,6 @@ import { logger } from "../utils/logger";
 
 
 export class Slowdeath {
-  public static roomManager: RoomManager;
   public static buildingManager: BuildingManager;
   public static workerManager: WorkerManager;
   public static init(): void {
@@ -44,7 +42,6 @@ export class Slowdeath {
   }
 
   public static execute(): void {
-    this.roomManager.run();
     this.buildingManager.run();
     this.workerManager.run();
   }

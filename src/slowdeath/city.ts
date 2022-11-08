@@ -29,8 +29,9 @@ export class City extends Process {
   }
 
   private setupMemoryForRoom(room: Room) {
-    if (!room.memory) {
+    if (!room.memory.setup) {
       room.memory = {
+        setup: true,
         roadsDone: RoadStatus.NONE,
         continuousHarvesterCount: 0,
         continuousHarvestingStarted: false,

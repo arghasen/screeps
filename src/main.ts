@@ -41,7 +41,4 @@ function initializeMemory() {
     Memory.os = { scheduler };
   }
   Memory.version = gitVersion;
-  if (!Memory.continuousHarvesterCount) {
-    Memory.continuousHarvesterCount = 0;
-  }
 }

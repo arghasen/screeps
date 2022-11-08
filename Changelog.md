@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [v0.6.0](https://github.com/arghasen/screeps/releases/tag/v0.6.0) - 2022-11-08
+## [v0.6.1](https://github.com/arghasen/screeps/releases/tag/v0.6.1) - 2022-11-08
+
+<small>[Compare with v0.6.0](https://github.com/arghasen/screeps/compare/v0.6.0...v0.6.1)</small>
+
+
+## [v0.6.0](https://github.com/arghasen/screeps/releases/tag/v0.6.0) - 2022-11-07
 
 <small>[Compare with v0.5.0](https://github.com/arghasen/screeps/compare/v0.5.0...v0.6.0)</small>
 

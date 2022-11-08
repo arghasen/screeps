@@ -3,8 +3,8 @@ export class ContinuousHarvester {
     if (!creep.memory.source) {
       const sources: Source[] = creep.room.find(FIND_SOURCES);
       sources.sort();
-      creep.memory.source = sources[Memory.continuousHarvesterCount % 2].id;
-      Memory.continuousHarvesterCount = Memory.continuousHarvesterCount + 1;
+      creep.memory.source = sources[creep.room.memory.continuousHarvesterCount % 2].id;
+      creep.room.memory.continuousHarvesterCount++;
     }
     const source = Game.getObjectById(creep.memory.source);
     if (source instanceof Source) {

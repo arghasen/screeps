@@ -1,4 +1,4 @@
-import { harvest, pickupDroppedEnergy, repair } from "../../slowdeath/creepActions/CommonActions";
+import { getEnergy, repair } from "../../slowdeath/creepActions/CommonActions";
 import { logger } from "utils/logger";
 
 export class Builder {
@@ -55,12 +55,7 @@ export class Builder {
         }
       }
     } else {
-      if (Memory.continuousHarvestingStarted) {
-        pickupDroppedEnergy(creep);
-      } else {
-        const source = creep.pos.findClosestByPath(FIND_SOURCES);
-        harvest(source, creep);
-      }
+      getEnergy(creep);
     }
   };
 }

@@ -1,5 +1,4 @@
-import { harvest, pickupDroppedEnergy } from "./CommonActions";
-import { logger } from "../../utils/logger";
+import { getEnergy } from "./CommonActions";
 
 export class Upgrader {
   public static run = (creep: Creep): void => {
@@ -22,28 +21,7 @@ export class Upgrader {
         });
       }
     } else {
-      const structures = creep.room.find(FIND_STRUCTURES);
-      const stores = structures.filter(
-        structure =>
-          (structure.structureType === STRUCTURE_CONTAINER ||
-            structure.structureType === STRUCTURE_STORAGE) &&
-          structure.store.getUsedCapacity(RESOURCE_ENERGY) > creep.store.getCapacity()
-      );
-      logger.info(`upgrader ${creep.name} energy stores:${logger.json(stores)}`);
-      if (stores.length >= 1) {
-        const store = creep.pos.findClosestByPath(stores);
-        if (store) {
-          if (creep.withdraw(store, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-            creep.moveTo(store, { visualizePathStyle: { stroke: "#ffaa00" } });
-            return;
-          }
-        }
-      } else if (Memory.continuousHarvestingStarted) {
-        pickupDroppedEnergy(creep);
-      } else {
-        const source = creep.pos.findClosestByPath(FIND_SOURCES);
-        harvest(source, creep);
-      }
+      getEnergy(creep);
     }
   };
 }

@@ -1,6 +1,11 @@
 import { Role } from "../../slowdeath/creepActions/constants";
 import { logger } from "utils/logger";
-import { pickupDroppedEnergy } from "../../slowdeath/creepActions/CommonActions";
+import {
+  getStructuresNeedingEnergy,
+  getCreepNeedingEnergy,
+  pickupDroppedEnergy,
+  transfer
+} from "./CommonActions";
 
 export class Hauler {
   public static run = (creep: Creep): void => {
@@ -14,7 +19,7 @@ export class Hauler {
     }
 
     if (creep.memory.running) {
-      const target = this.getStructuresNeedingEnergy(creep);
+      const target = getStructuresNeedingEnergy(creep);
       const storage = creep.room.storage;
       if (target) {
         // TODO: check why this is not working with the func.
@@ -22,13 +27,13 @@ export class Hauler {
           creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
         } // no target exist, then transfer energy to storage
       } else if (storage && storage.store.getCapacity(RESOURCE_ENERGY) > 0) {
-        this.transferEnergy(creep, storage);
+        transfer(creep, storage);
       } else {
         // no target exist, then transfer energy to creeps
         const targetCreep = getCreepNeedingEnergy(creep);
         logger.debug(`targetCreep:${logger.json(targetCreep)} for hauler: ${logger.json(creep)}`);
         if (targetCreep) {
-          this.transferEnergy(creep, targetCreep);
+          transfer(creep, targetCreep);
         }
       }
     } else {
@@ -36,34 +41,4 @@ export class Hauler {
       pickupDroppedEnergy(creep);
     }
   };
-
-  private static getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
-    const structures = creep.room.find(FIND_STRUCTURES);
-    const targets = _.filter(structures, structure => {
-      return (
-        (structure.structureType === STRUCTURE_EXTENSION ||
-          structure.structureType === STRUCTURE_SPAWN ||
-          structure.structureType === STRUCTURE_CONTAINER ||
-          structure.structureType === STRUCTURE_TOWER) &&
-        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-      );
-    });
-    logger.debug(creep.name + logger.json(targets));
-    const target = creep.pos.findClosestByPath(targets);
-    logger.debug(`closestStructure:  ${logger.json(target)}`);
-    return target;
-  }
-
-  private static transferEnergy(creep: Creep, target: AnyCreep | Structure) {
-    if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-      creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
-    }
-  }
-}
-function getCreepNeedingEnergy(creep: Creep) {
-  return creep.pos.findClosestByRange(FIND_CREEPS, {
-    filter: creepTo =>
-      creepTo.memory.role !== Role.ROLE_HAULER &&
-      creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
-  });
 }
