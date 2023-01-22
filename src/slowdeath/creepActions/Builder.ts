@@ -14,15 +14,11 @@ export class Builder {
 
     if (creep.memory.building) {
       if (creep.memory.moveLoc) {
-        if (creep.memory.moveLoc.roomName !== creep.pos.roomName) {
-          const target = new RoomPosition(
-            creep.memory.moveLoc.x,
-            creep.memory.moveLoc.y,
-            creep.memory.moveLoc.roomName
-          );
-          logger.info("Moving.location", logger.json(target));
-          creep.moveTo(target);
-        } else {
+        const target = new RoomPosition(creep.memory.moveLoc.x, creep.memory.moveLoc.y, creep.memory.moveLoc.roomName);
+        logger.info("Moving.location", logger.json(target));
+        creep.moveTo(target);
+
+        if (creep.memory.moveLoc.roomName === creep.pos.roomName) {
           delete creep.memory.moveLoc;
         }
       } else {

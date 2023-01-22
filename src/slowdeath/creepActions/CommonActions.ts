@@ -69,7 +69,7 @@ function getDroppedEnergySources(creep: Creep) {
     droppedResource => droppedResource.resourceType === RESOURCE_ENERGY
   );
   if (energyResources.length >= 2) {
-    energyResources.sort((a, b) => a.amount - b.amount);
+    energyResources.sort((a, b) => b.amount - a.amount);
   }
   return energyResources;
 }
@@ -99,17 +99,24 @@ function getEnergyStore(creep: Creep) {
 export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
   const structures = creep.room.find(FIND_STRUCTURES);
   const targets = _.filter(structures, structure => {
-    return (
-      (structure.structureType === STRUCTURE_EXTENSION ||
-        structure.structureType === STRUCTURE_SPAWN ||
-        structure.structureType === STRUCTURE_CONTAINER ||
-        structure.structureType === STRUCTURE_TOWER) &&
-      structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-    );
+      return ((structure.structureType === STRUCTURE_EXTENSION ||
+          structure.structureType === STRUCTURE_SPAWN ) &&
+          structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+  });
+  const targets2 = _.filter(structures, structure => {
+      return (
+          (structure.structureType === STRUCTURE_CONTAINER ||
+          structure.structureType === STRUCTURE_TOWER) &&
+          structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
   });
   logger.debug(creep.name + logger.json(targets));
   const target = creep.pos.findClosestByPath(targets);
   logger.debug(`closestStructure:  ${logger.json(target)}`);
+  if(!target){
+      const target2 = creep.pos.findClosestByPath(targets2);
+  logger.debug(`closestStructure:  ${logger.json(target2)}`);
+  return target2;
+  }
   return target;
 }
 

@@ -25,6 +25,17 @@ export class Empire extends Process {
     for (const name in flags) {
       const flag = flags[name];
       if (name === "claimThisRoom") {
+        if(!Memory.createClaimer)
+        {
+             Memory.createClaimer = {
+                loc: {
+                    x: flag.pos.x,
+                    y: flag.pos.y,
+                    roomName: flag.pos.roomName
+                },
+                identifier: 1
+            };
+        }
         const creepName = Memory.createClaimer.done;
         if (creepName && !isCreepAlive(creepName)) {
           Memory.createClaimer = {

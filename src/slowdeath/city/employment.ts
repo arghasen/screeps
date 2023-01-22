@@ -49,23 +49,17 @@ export class Employment extends Process {
   }
 
   private checkEmemrgencySituation(totWorkers: number) {
-    if (
-      totWorkers < MaxRolePopulation.total &&
+    if (totWorkers < MaxRolePopulation.total &&
       this.room.controller &&
-      this.room.controller.level > 1
-    ) {
+      this.room.controller.level >= 1) {
       this.room.memory.critical = true;
-    } else {
-      this.room.memory.critical = false;
     }
-
-    if (
-      totWorkers < MaxRolePopulation.total * 3 &&
+    else if (totWorkers < MaxRolePopulation.total * 2 &&
       this.room.controller &&
-      this.room.controller.level > 2
-    ) {
+      this.room.controller.level >= 2) {
       this.room.memory.critical = true;
-    } else {
+    }
+    else {
       this.room.memory.critical = false;
     }
   }

@@ -12,20 +12,23 @@ export class City extends Process {
     this.metadata = this.data as CityData;
     logger.info(`${this.className}: Starting city for ${this.metadata.roomName}`);
     const room = Game.rooms[this.metadata.roomName];
-    this.setupMemoryForRoom(room);
+    if (room) {
+      this.setupMemoryForRoom(room);
 
-    this.launchChildProcess(`infrastructure-${this.metadata.roomName}`, "infrastructure", {
-      roomName: this.metadata.roomName
-    });
-    this.launchChildProcess(`employment-${this.metadata.roomName}`, "employment", {
-      roomName: this.metadata.roomName
-    });
-    this.launchChildProcess(`military-${this.metadata.roomName}`, "military", {
-      roomName: this.metadata.roomName
-    });
-    this.launchChildProcess(`spawns-${this.metadata.roomName}`, "spawns", {
-      roomName: this.metadata.roomName
-    });
+      this.launchChildProcess(`infrastructure-${this.metadata.roomName}`, "infrastructure", {
+        roomName: this.metadata.roomName
+      });
+      this.launchChildProcess(`employment-${this.metadata.roomName}`, "employment", {
+        roomName: this.metadata.roomName
+      });
+      this.launchChildProcess(`military-${this.metadata.roomName}`, "military", {
+        roomName: this.metadata.roomName
+      });
+      this.launchChildProcess(`spawns-${this.metadata.roomName}`, "spawns", {
+        roomName: this.metadata.roomName
+      });
+    }
+
   }
 
   private setupMemoryForRoom(room: Room) {

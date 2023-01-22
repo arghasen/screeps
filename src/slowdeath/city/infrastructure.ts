@@ -16,6 +16,10 @@ export class Infrastructure extends Process {
   public main() {
     this.init();
 
+    if (!this.room) {
+      return;
+    }
+
     if (this.room.controller?.my) {
       this.requestRemoteBuilders(this.room.controller.pos);
       if (this.room.controller.level === 2) {
@@ -33,19 +37,23 @@ export class Infrastructure extends Process {
           const ret = this.room.createConstructionSite(pos.x, pos.y, STRUCTURE_STORAGE);
         }
       }
-      logger.info("Build More Roads:", this.buildMoreRoads);
-      if (this.buildMoreRoads) {
-        this.buildRoadsToSpawn(this.room);
-        this.buildRoadsToController(this.room);
-        if (this.room.controller.level >= 3) {
-          this.buildRoadsToLvl3Extenstions(this.room);
-        }
-        if (this.room.storage) {
-          this.buildMoreRoadsToStorage(this.room);
+
+      if (this.spawns.length > 0) {
+        logger.info("Build More Roads:", this.buildMoreRoads);
+        if (this.buildMoreRoads) {
+          this.buildRoadsToSpawn(this.room);
+          this.buildRoadsToController(this.room);
+          if (this.room.controller.level >= 3) {
+            this.buildRoadsToLvl3Extenstions(this.room);
+          }
+          if (this.room.storage) {
+            this.buildMoreRoadsToStorage(this.room);
+          }
         }
       }
     }
   }
+
   private buildMoreRoadsToStorage(room: Room) {
     if (this.room.memory.roadsDone === RoadStatus.TO_LVL3EXT) {
       const pos = this.room.storage?.pos;
@@ -137,22 +145,25 @@ export class Infrastructure extends Process {
   private init() {
     this.metadata = this.data as CityData;
     this.room = Game.rooms[this.metadata.roomName];
-    this.spawns = spawnsInRoom(this.room);
-    const myStructures = this.room.find(FIND_MY_STRUCTURES);
-    this.extensionsCreated = myStructures.filter(
-      structure => structure.structureType === STRUCTURE_EXTENSION
-    );
 
-    const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
-    this.extensionsUnderConstruction = constructionSites.filter(
-      site => site.structureType === STRUCTURE_EXTENSION
-    );
+    if (this.room) {
+      this.spawns = spawnsInRoom(this.room);
+      const myStructures = this.room.find(FIND_MY_STRUCTURES);
+      this.extensionsCreated = myStructures.filter(
+        structure => structure.structureType === STRUCTURE_EXTENSION
+      );
 
-    const roadsUnderConstruction = constructionSites.filter(
-      site => site.structureType === STRUCTURE_ROAD
-    );
-    this.buildMoreRoads = roadsUnderConstruction.length === 0;
-    logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
+      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      this.extensionsUnderConstruction = constructionSites.filter(
+        site => site.structureType === STRUCTURE_EXTENSION
+      );
+
+      const roadsUnderConstruction = constructionSites.filter(
+        site => site.structureType === STRUCTURE_ROAD
+      );
+      this.buildMoreRoads = roadsUnderConstruction.length === 0;
+      logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
+    }
   }
 
   private getTotalExtensions(): number {

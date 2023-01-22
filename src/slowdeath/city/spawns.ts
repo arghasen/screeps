@@ -98,7 +98,7 @@ function getQueuedCreep(
       name: `creep-${Game.time}`,
       options: { memory: {} }
     };
-  } else if (energyCapacityAvailable > 600 && energyCapacityAvailable <= 800) {
+  } else if (energyCapacityAvailable > 600) {
     return {
       build: [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
       name: `creep-${Game.time}`,
