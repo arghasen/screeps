@@ -1,24 +1,16 @@
-import { Role } from "../../slowdeath/creepActions/constants";
-import { logger } from "utils/logger";
 import {
   getStructuresNeedingEnergy,
-  getCreepNeedingEnergy,
   pickupDroppedEnergy,
-  transfer
+  transfer,
+  transferEnergyFromCreep
 } from "./CommonActions";
+import { setCreepState } from "./creepState";
 
 export class Hauler {
   public static run = (creep: Creep): void => {
-    if (creep.memory.running && creep.store[RESOURCE_ENERGY] === 0) {
-      creep.memory.running = false;
-      creep.say("🔄 harvest");
-    }
-    if (!creep.memory.running && creep.store.getFreeCapacity() === 0) {
-      creep.memory.running = true;
-      creep.say("🚧 running");
-    }
+    setCreepState(creep);
 
-    if (creep.memory.running) {
+    if (!creep.memory.harvesting) {
       const target = getStructuresNeedingEnergy(creep);
       const storage = creep.room.storage;
       if (target) {
@@ -30,14 +22,10 @@ export class Hauler {
         transfer(creep, storage);
       } else {
         // no target exist, then transfer energy to creeps
-        const targetCreep = getCreepNeedingEnergy(creep);
-        logger.debug(`targetCreep:${logger.json(targetCreep)} for hauler: ${logger.json(creep)}`);
-        if (targetCreep) {
-          transfer(creep, targetCreep);
-        }
+        transferEnergyFromCreep(creep);
       }
     } else {
-      creep.memory.running = false;
+      creep.memory.harvesting = true;
       pickupDroppedEnergy(creep);
     }
   };

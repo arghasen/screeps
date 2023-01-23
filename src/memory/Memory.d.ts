@@ -64,9 +64,7 @@ interface Memory {
 interface CreepMemory {
   identifier?: number;
   targetRoom?: string;
-  upgrading?: boolean;
-  building?: boolean;
-  running?: boolean;
+  harvesting: boolean;
   role?: number;
   source?: any;
   moveLoc?: MoveLoc;

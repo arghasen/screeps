@@ -1,3 +1,5 @@
+import { harvest } from "./CommonActions";
+
 export class ContinuousHarvester {
   public static run = (creep: Creep): void => {
     if (!creep.memory.source) {
@@ -8,9 +10,7 @@ export class ContinuousHarvester {
     }
     const source = Game.getObjectById(creep.memory.source);
     if (source instanceof Source) {
-      if (creep.harvest(source) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-        creep.moveTo(source, { visualizePathStyle: { stroke: "#ffaa00" } });
-      }
+      harvest(creep,source);
     }
   };
 }

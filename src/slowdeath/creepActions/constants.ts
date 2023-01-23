@@ -10,7 +10,17 @@ export const MaxRolePopulation = {
   haulers: 1,
   total: 4
 };
-
+export const MaxPopulationPerRoom : Record<number, number> = {
+  0: 18,
+  1: 18,
+  2: 18,
+  3: 18,
+  4: 18,
+  5: 18,
+  6: 18,
+  7: 18,
+  8: 18
+}
 export enum Role {
   ROLE_HARVESTER,
   ROLE_UPGRADER,

@@ -1,10 +1,12 @@
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
+import { findStructureNeedingRepair } from "../creepActions/CommonActions"
 
 export class Military extends Process {
   protected className = "military";
   private metadata?: CityData;
-  private towers: AnyOwnedStructure[] = [];
+  private towers: StructureTower[] = [];
+  private defendedRoomThisTick: boolean = false;
   public main() {
     this.metadata = this.data as CityData;
     logger.info(`${this.className}: Starting military for ${this.metadata.roomName}`);
@@ -19,6 +21,19 @@ export class Military extends Process {
       }
     }
     this.defendRoom(room);
+    if (!this.defendedRoomThisTick) {
+      this.repairRoom(room);
+    }
+  }
+
+  private repairRoom(room: Room): void {
+    const repairTower = this.towers[0];
+    if (repairTower) {
+      const targetStructure = findStructureNeedingRepair(room, repairTower.pos);
+      if (targetStructure) {
+        repairTower.repair(targetStructure);
+      }
+    }
   }
 
   private defendRoom(room: Room): void {
@@ -31,6 +46,7 @@ export class Military extends Process {
           tower.attack(hostiles[0]);
         }
       });
+      this.defendedRoomThisTick = true;
     }
   }
 }

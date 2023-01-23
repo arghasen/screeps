@@ -1,5 +1,5 @@
 import { Process } from "../../os/process";
-import { Role } from "slowdeath/creepActions/constants";
+import { MaxPopulationPerRoom, Role } from "slowdeath/creepActions/constants";
 import { logger } from "../../utils/logger";
 import { spawnsInRoom } from "../../utils/screeps-fns";
 
@@ -22,7 +22,7 @@ export class Spawns extends Process {
         return creep.pos.roomName === roomName;
       });
 
-      if (myCreeps.length >= 18 && !this.room.memory.createContinuousHarvester) {
+      if (myCreeps.length >= MaxPopulationPerRoom[this.room.controller.level] && !this.room.memory.createContinuousHarvester) {
         return;
       }
       for (const spawn of spawns) {
@@ -64,7 +64,7 @@ function getQueuedCreep(
     return {
       build: [WORK, CARRY, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {} }
+      options: { memory: {harvesting: false} }
     };
   }
 
@@ -72,7 +72,7 @@ function getQueuedCreep(
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER } }
+      options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER, harvesting: false } }
     };
   }
 
@@ -85,7 +85,8 @@ function getQueuedCreep(
           memory: {
             role: Role.ROLE_CLAIMER,
             moveLoc: Memory.createClaimer.loc,
-            identifier: Memory.createClaimer.identifier
+            identifier: Memory.createClaimer.identifier,
+            harvesting: false
           }
         }
       };
@@ -96,19 +97,19 @@ function getQueuedCreep(
     return {
       build: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {} }
+      options: { memory: {harvesting: false} }
     };
   } else if (energyCapacityAvailable > 600) {
     return {
       build: [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {} }
+      options: { memory: {harvesting: false} }
     };
   } else {
     return {
       build: [WORK, CARRY, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {} }
+      options: { memory: {harvesting: false} }
     };
   }
 }

@@ -3,27 +3,21 @@ import { Role } from "./constants";
 
 export function pickup(creep: Creep, closestSource: Resource) {
   if (creep.pickup(closestSource) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-    creep.moveTo(closestSource, {
-      visualizePathStyle: { stroke: "#ffaa00" }
-    });
+    creep.moveTo(closestSource, { visualizePathStyle: { stroke: "#ffaa00" } });
   }
 }
 
-export function harvest(source: Source | null, creep: Creep) {
+export function harvest(creep: Creep, source:Source|null) {
   if (source) {
     if (creep.harvest(source) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-      creep.moveTo(source, {
-        visualizePathStyle: { stroke: "#ffaa00" }
-      });
+      creep.moveTo(source, { visualizePathStyle: { stroke: "#ffaa00" } });
     }
   }
 }
 
 export function repair(creep: Creep, targetStructure: AnyStructure) {
   if (creep.repair(targetStructure) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-    creep.moveTo(targetStructure, {
-      visualizePathStyle: { stroke: "#ffaa00" }
-    });
+    creep.moveTo(targetStructure, { visualizePathStyle: { stroke: "#ffaa00" } });
   }
 }
 
@@ -36,6 +30,13 @@ export function withdraw(creep: Creep, store: AnyStructure) {
 export function transfer(creep: Creep, target: AnyCreep | Structure) {
   if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
     creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
+  }
+}
+
+export function build(creep: Creep, target: ConstructionSite) {
+  if (creep.build(target) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
+    creep.moveTo(target, {visualizePathStyle: { stroke: "#ffffff" }
+    });
   }
 }
 
@@ -98,24 +99,26 @@ function getEnergyStore(creep: Creep) {
 
 export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
   const structures = creep.room.find(FIND_STRUCTURES);
-  const targets = _.filter(structures, structure => {
-      return ((structure.structureType === STRUCTURE_EXTENSION ||
-          structure.structureType === STRUCTURE_SPAWN ) &&
-          structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+  const targets = structures.filter(structure => {
+    return ((structure.structureType === STRUCTURE_EXTENSION ||
+      structure.structureType === STRUCTURE_SPAWN) &&
+      structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
   });
-  const targets2 = _.filter(structures, structure => {
-      return (
-          (structure.structureType === STRUCTURE_CONTAINER ||
-          structure.structureType === STRUCTURE_TOWER) &&
-          structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-  });
+
   logger.debug(creep.name + logger.json(targets));
   const target = creep.pos.findClosestByPath(targets);
-  logger.debug(`closestStructure:  ${logger.json(target)}`);
-  if(!target){
-      const target2 = creep.pos.findClosestByPath(targets2);
-  logger.debug(`closestStructure:  ${logger.json(target2)}`);
-  return target2;
+  logger.debug(`closest spawn or extension :  ${logger.json(target)}`);
+
+  if (!target) {
+    const targets2 = structures.filter(structure => {
+      return (
+        (structure.structureType === STRUCTURE_CONTAINER ||
+          structure.structureType === STRUCTURE_TOWER) &&
+        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+    });
+    const target2 = creep.pos.findClosestByPath(targets2);
+    logger.debug(`closest container or tower: ${logger.json(target2)}`);
+    return target2;
   }
   return target;
 }
@@ -125,7 +128,7 @@ export function pickupOrHarvest(creep: Creep) {
     pickupDroppedEnergy(creep);
   } else {
     const source = creep.pos.findClosestByPath(FIND_SOURCES);
-    harvest(source, creep);
+    harvest(creep, source);
   }
 }
 
@@ -135,4 +138,24 @@ export function getCreepNeedingEnergy(creep: Creep) {
       creepTo.memory.role !== Role.ROLE_HAULER &&
       creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
   });
+}
+
+export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnyStructure | null {
+  const myStructures = room.find(FIND_STRUCTURES);
+  const targetStructures = myStructures.filter(
+    structure => (structure.hits < structure.hitsMax &&
+      structure.structureType !== STRUCTURE_WALL &&
+      structure.structureType !== STRUCTURE_RAMPART) ||
+      (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000)
+  );
+  const targetStructure = pos.findClosestByRange(targetStructures);
+  return targetStructure;
+}
+
+export function transferEnergyFromCreep(creep: Creep) {
+  const targetCreep = getCreepNeedingEnergy(creep);
+  logger.debug(`targetCreep:${logger.json(targetCreep)} for hauler: ${logger.json(creep)}`);
+  if (targetCreep) {
+    transfer(creep, targetCreep);
+  }
 }
