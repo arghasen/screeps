@@ -1,4 +1,4 @@
-import { MaxRolePopulation, Role } from "../creepActions/constants";
+import { MaxRolePopulation, PopulationScaler, Role } from "../creepActions/constants";
 import { Builder } from "../creepActions/Builder";
 import { Claimer } from "slowdeath/creepActions/claimer";
 import { ContinuousHarvester } from "../creepActions/ContinuousHarvester";
@@ -21,10 +21,14 @@ export class Employment extends Process {
   private room!: Room;
   private metadata?: CityData;
   private numClaimer = 0;
+  private rcl = 0;
 
   public main() {
     this.metadata = this.data as CityData;
     this.room = Game.rooms[this.metadata.roomName];
+    if (this.room.controller) {
+      this.rcl = this.room.controller.level;
+    }
     logger.info(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
 
@@ -36,7 +40,7 @@ export class Employment extends Process {
   private populationBasedEmployer() {
     const totWorkers = this.getTotalWorkers();
     this.checkEmemrgencySituation(totWorkers);
-    const scale = Math.max(Math.ceil(totWorkers / MaxRolePopulation.total), 1);
+    const scale = Math.max(Math.ceil(totWorkers / PopulationScaler[this.rcl]), 1);
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
@@ -49,14 +53,10 @@ export class Employment extends Process {
   }
 
   private checkEmemrgencySituation(totWorkers: number) {
-    if (totWorkers < MaxRolePopulation.total &&
-      this.room.controller &&
-      this.room.controller.level >= 1) {
+    if (totWorkers < PopulationScaler[this.rcl] && this.rcl <= 1) {
       this.room.memory.critical = true;
     }
-    else if (totWorkers < MaxRolePopulation.total * 2 &&
-      this.room.controller &&
-      this.room.controller.level >= 2) {
+    else if (totWorkers < PopulationScaler[this.rcl] * 2 && this.rcl >= 2) {
       this.room.memory.critical = true;
     }
     else {
@@ -69,7 +69,7 @@ export class Employment extends Process {
       this.room.memory.createContinuousHarvester = false;
       return false;
     }
-    if (this.room.energyCapacityAvailable >= 550 && totWorkers > MaxRolePopulation.total) {
+    if (this.room.energyCapacityAvailable >= 550 && totWorkers > PopulationScaler[this.rcl]) {
       console.log("delaying new creeps till continious harvestors");
       this.room.memory.createContinuousHarvester = true;
       return true;
@@ -107,8 +107,8 @@ export class Employment extends Process {
     }
 
     // FIXME: Improve this logic
-    const buildersRequired = (this.room.controller && this.room.controller.level >=7 && this.numBuilders>1)? false:true;
-    
+    const buildersRequired = (this.rcl >= 7 && this.numBuilders > 1) ? false : true;
+
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !this.room.memory.continuousHarvestingStarted
@@ -167,6 +167,7 @@ export class Employment extends Process {
     logger.info(
       `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
     );
+    new RoomVisual(this.room.name).text(`Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`, 25, 4);
   };
 
   private runCreepActions() {

@@ -23,6 +23,7 @@ export function loop(): void {
     Game.cpu.generatePixel();
   }
   logger.info(`End of Tick Cpu: ${Game.cpu.getUsed()}`);
+  logger.info(`CPU bucket left ${Game.cpu.bucket}`);
 }
 
 function initializeMemory() {
