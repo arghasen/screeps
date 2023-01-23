@@ -105,6 +105,10 @@ export class Employment extends Process {
         Memory.needBuilder.sent = creep.name;
       }
     }
+
+    // FIXME: Improve this logic
+    const buildersRequired = (this.room.controller && this.room.controller.level >=7 && this.numBuilders>1)? false:true;
+    
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !this.room.memory.continuousHarvestingStarted
@@ -115,7 +119,7 @@ export class Employment extends Process {
       this.room.memory.continuousHarvestingStarted
     ) {
       this.assignRole(Role.ROLE_HAULER);
-    } else if (employ(this.numBuilders, MaxRolePopulation.builders)) {
+    } else if (employ(this.numBuilders, MaxRolePopulation.builders) && buildersRequired) {
       this.assignRole(Role.ROLE_BUILDER);
     } else if (employ(this.numUpgraders, MaxRolePopulation.upgrader)) {
       this.assignRole(Role.ROLE_UPGRADER);
