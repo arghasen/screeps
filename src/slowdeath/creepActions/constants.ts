@@ -6,7 +6,7 @@ export const MaxRolePopulation = {
   continuousHarvester: 2,
   harvesters: 1,
   builders: 1,
-  upgrader: 2,
+  upgrader: 1,
   haulers: 1
 };
 
@@ -18,19 +18,19 @@ export const PopulationScaler : Record <number,number>= {
   4: 4,
   5: 4,
   6: 4,
-  7: 3,
-  8: 3
+  7: 2,
+  8: 2
 }
 export const MaxPopulationPerRoom : Record<number, number> = {
-  0: 18,
-  1: 18,
-  2: 18,
-  3: 18,
-  4: 18,
-  5: 18,
-  6: 18,
-  7: 15,
-  8: 15
+  0: 16,
+  1: 16,
+  2: 16,
+  3: 16,
+  4: 16,
+  5: 16,
+  6: 16,
+  7: 11,
+  8: 11
 }
 export enum Role {
   ROLE_HARVESTER,

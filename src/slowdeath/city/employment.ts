@@ -40,7 +40,7 @@ export class Employment extends Process {
   private populationBasedEmployer() {
     const totWorkers = this.getTotalWorkers();
     this.checkEmemrgencySituation(totWorkers);
-    const scale = Math.max(Math.ceil(totWorkers / PopulationScaler[this.rcl]), 1);
+    const scale = Math.max(Math.floor(totWorkers / PopulationScaler[this.rcl]), 1);
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
@@ -107,7 +107,7 @@ export class Employment extends Process {
     }
 
     // FIXME: Improve this logic
-    const buildersRequired = (this.rcl >= 7 && this.numBuilders > 1) ? false : true;
+    const buildersRequired = (this.rcl >= 7 && this.numBuilders >= 1) ? false : true;
 
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&

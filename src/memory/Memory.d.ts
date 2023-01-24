@@ -32,6 +32,7 @@ interface RoomMemory {
   continuousHarvesterCount: number;
   createContinuousHarvester: boolean;
   critical: boolean;
+  linksCreated : boolean;
 }
 
 interface Memory {
@@ -62,6 +63,7 @@ interface Memory {
   };
 }
 interface CreepMemory {
+  link?: Id<StructureController> | Id<StructureExtension> | Id<StructureExtractor> | Id<StructureFactory> | Id<StructureInvaderCore> | Id<StructureKeeperLair> | Id<StructureLab> | Id<StructureLink> | Id<StructureNuker> | Id<StructureObserver> | Id<StructurePowerBank> | Id<StructurePowerSpawn> | Id<StructureRampart> | Id<StructureSpawn> | Id<StructureStorage> | Id<StructureTerminal> | Id<StructureTower>;
   identifier?: number;
   targetRoom?: string;
   harvesting: boolean;

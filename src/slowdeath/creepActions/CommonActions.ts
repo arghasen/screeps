@@ -142,8 +142,9 @@ export function getCreepNeedingEnergy(creep: Creep) {
 
 export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnyStructure | null {
   const myStructures = room.find(FIND_STRUCTURES);
+  // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
   const targetStructures = myStructures.filter(
-    structure => (structure.hits < structure.hitsMax &&
+    structure => ((structure.hits < structure.hitsMax -300) &&
       structure.structureType !== STRUCTURE_WALL &&
       structure.structureType !== STRUCTURE_RAMPART) ||
       (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000)

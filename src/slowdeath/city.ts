@@ -39,7 +39,8 @@ export class City extends Process {
         continuousHarvesterCount: 0,
         continuousHarvestingStarted: false,
         createContinuousHarvester: false,
-        critical: false
+        critical: false,
+        linksCreated: false
       };
     }
   }

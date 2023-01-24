@@ -161,6 +161,18 @@ export class Infrastructure extends Process {
       const roadsUnderConstruction = constructionSites.filter(
         site => site.structureType === STRUCTURE_ROAD
       );
+
+      const linksCreated = myStructures.filter(structure =>structure.structureType === STRUCTURE_LINK);
+      logger.info(`links: ${linksCreated}`);
+      if(linksCreated.length >= 3){
+        this.room.memory.linksCreated = true;
+        // if(this.room.controller){
+        //   this.room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES)
+        // }
+      }
+      else{
+        this.room.memory.linksCreated = false;
+      }
       this.buildMoreRoads = roadsUnderConstruction.length === 0;
       logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
     }

@@ -1,5 +1,5 @@
 import { Process } from "../../os/process";
-import { MaxPopulationPerRoom, Role } from "slowdeath/creepActions/constants";
+import { MaxPopulationPerRoom, MaxRolePopulation, Role } from "slowdeath/creepActions/constants";
 import { logger } from "../../utils/logger";
 import { spawnsInRoom } from "../../utils/screeps-fns";
 
@@ -22,7 +22,7 @@ export class Spawns extends Process {
         return creep.pos.roomName === roomName;
       });
 
-      if (myCreeps.length >= MaxPopulationPerRoom[this.room.controller.level] && !this.room.memory.createContinuousHarvester) {
+      if (myCreeps.length >= MaxPopulationPerRoom[this.room.controller.level] + MaxRolePopulation.continuousHarvester && !this.room.memory.createContinuousHarvester) {
         return;
       }
       for (const spawn of spawns) {
@@ -64,11 +64,18 @@ function getQueuedCreep(
     return {
       build: [WORK, CARRY, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {harvesting: false} }
+      options: { memory: { harvesting: false } }
     };
   }
 
   if (room.memory.createContinuousHarvester) {
+    if (energyCapacityAvailable > 1000) {
+      return {
+        build: [WORK, WORK, WORK, WORK, WORK,CARRY, MOVE],
+        name: `creep-${Game.time}`,
+        options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER, harvesting: false } }
+      };
+    }
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
       name: `creep-${Game.time}`,
@@ -97,19 +104,26 @@ function getQueuedCreep(
     return {
       build: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {harvesting: false} }
+      options: { memory: { harvesting: false } }
     };
-  } else if (energyCapacityAvailable > 600) {
+  } else if (energyCapacityAvailable > 600 && energyCapacityAvailable < 1000) {
     return {
       build: [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {harvesting: false} }
+      options: { memory: { harvesting: false } }
     };
-  } else {
+  } else if (energyCapacityAvailable > 1100) {
+    return {
+      build: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+      name: `creep-${Game.time}`,
+      options: { memory: { harvesting: false } }
+    };
+  }
+  else {
     return {
       build: [WORK, CARRY, MOVE],
       name: `creep-${Game.time}`,
-      options: { memory: {harvesting: false} }
+      options: { memory: { harvesting: false } }
     };
   }
 }
