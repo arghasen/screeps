@@ -1,4 +1,4 @@
-import { getEnergy } from "./CommonActions";
+import { getCreepNeedingEnergy, getEnergy, transfer, withdraw } from "./CommonActions";
 import { setCreepState } from "./creepState";
 
 export class Upgrader {
@@ -6,6 +6,14 @@ export class Upgrader {
     setCreepState(creep);
 
     if (!creep.memory.harvesting && creep.room.controller !== undefined) {
+      // TODO: Ignore if target too far away
+      if(creep.ticksToLive! <= 5 && creep.store.energy > 15){
+        const target = getCreepNeedingEnergy(creep);
+        if(target){
+          transfer(creep,target);
+        }
+      }
+
       if (
         creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE &&
         creep.fatigue === 0
@@ -14,6 +22,12 @@ export class Upgrader {
           visualizePathStyle: { stroke: "#ffffff" }
         });
       }
+    } else if(creep.room.memory.upgraderLink){
+      const upgraderLink = Game.getObjectById(creep.room.memory.upgraderLink);
+      if (upgraderLink instanceof Structure && upgraderLink.structureType === STRUCTURE_LINK) {
+        withdraw(creep,upgraderLink);
+      }
+
     } else {
       getEnergy(creep);
     }

@@ -26,6 +26,7 @@ interface MoveLoc {
   roomName: string;
 }
 interface RoomMemory {
+  upgraderLink: Id<StructureController> | Id<StructureExtension> | Id<StructureExtractor> | Id<StructureFactory> | Id<StructureInvaderCore> | Id<StructureKeeperLair> | Id<StructureLab> | Id<StructureLink> | Id<StructureNuker> | Id<StructureObserver> | Id<StructurePowerBank> | Id<StructurePowerSpawn> | Id<StructureRampart> | Id<StructureSpawn> | Id<StructureStorage> | Id<StructureTerminal> | Id<StructureTower> | undefined;
   setup: any;
   roadsDone: number;
   continuousHarvestingStarted: boolean;

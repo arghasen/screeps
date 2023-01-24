@@ -29,8 +29,8 @@ export const MaxPopulationPerRoom : Record<number, number> = {
   4: 16,
   5: 16,
   6: 16,
-  7: 11,
-  8: 11
+  7: 9,
+  8: 9
 }
 export enum Role {
   ROLE_HARVESTER,
