@@ -26,14 +26,14 @@ interface MoveLoc {
   roomName: string;
 }
 interface RoomMemory {
-  upgraderLink: Id<StructureController> | Id<StructureExtension> | Id<StructureExtractor> | Id<StructureFactory> | Id<StructureInvaderCore> | Id<StructureKeeperLair> | Id<StructureLab> | Id<StructureLink> | Id<StructureNuker> | Id<StructureObserver> | Id<StructurePowerBank> | Id<StructurePowerSpawn> | Id<StructureRampart> | Id<StructureSpawn> | Id<StructureStorage> | Id<StructureTerminal> | Id<StructureTower> | undefined;
+  upgraderLink: Id<StructureLink> | undefined;
   setup: any;
   roadsDone: number;
   continuousHarvestingStarted: boolean;
   continuousHarvesterCount: number;
   createContinuousHarvester: boolean;
   critical: boolean;
-  linksCreated : boolean;
+  linksCreated: boolean;
 }
 
 interface Memory {
@@ -64,7 +64,7 @@ interface Memory {
   };
 }
 interface CreepMemory {
-  link?: Id<StructureController> | Id<StructureExtension> | Id<StructureExtractor> | Id<StructureFactory> | Id<StructureInvaderCore> | Id<StructureKeeperLair> | Id<StructureLab> | Id<StructureLink> | Id<StructureNuker> | Id<StructureObserver> | Id<StructurePowerBank> | Id<StructurePowerSpawn> | Id<StructureRampart> | Id<StructureSpawn> | Id<StructureStorage> | Id<StructureTerminal> | Id<StructureTower>;
+  link?: Id<StructureLink>;
   identifier?: number;
   targetRoom?: string;
   harvesting: boolean;

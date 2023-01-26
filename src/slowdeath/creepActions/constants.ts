@@ -6,7 +6,7 @@ export const MaxRolePopulation = {
   continuousHarvester: 2,
   harvesters: 1,
   builders: 1,
-  upgrader: 1,
+  upgrader: 2,
   haulers: 1
 };
 
@@ -18,8 +18,8 @@ export const PopulationScaler : Record <number,number>= {
   4: 4,
   5: 4,
   6: 4,
-  7: 2,
-  8: 2
+  7: 3,
+  8: 3
 }
 export const MaxPopulationPerRoom : Record<number, number> = {
   0: 16,
@@ -29,8 +29,8 @@ export const MaxPopulationPerRoom : Record<number, number> = {
   4: 16,
   5: 16,
   6: 16,
-  7: 9,
-  8: 9
+  7: 7,
+  8: 7
 }
 export enum Role {
   ROLE_HARVESTER,
@@ -39,7 +39,8 @@ export enum Role {
   ROLE_BUILDER,
   ROLE_CONTINUOUS_HARVESTER,
   ROLE_REM_UPGRADER,
-  ROLE_CLAIMER
+  ROLE_CLAIMER,
+  ROLE_DISMANTLER
 }
 
 type RoleNames = { [key in Role]: string };
@@ -50,7 +51,8 @@ export const roleNames: RoleNames = {
   [Role.ROLE_BUILDER]: "builder",
   [Role.ROLE_CONTINUOUS_HARVESTER]: "continuous_harvester",
   [Role.ROLE_REM_UPGRADER]: "remUpgrader",
-  [Role.ROLE_CLAIMER]: "claimer"
+  [Role.ROLE_CLAIMER]: "claimer",
+  [Role.ROLE_DISMANTLER]: "dismantler"
 };
 
 export enum actions {

@@ -12,7 +12,7 @@ export class City extends Process {
     this.metadata = this.data as CityData;
     logger.info(`${this.className}: Starting city for ${this.metadata.roomName}`);
     const room = Game.rooms[this.metadata.roomName];
-    if (room) {
+    if (room && room.controller?.my) {
       this.setupMemoryForRoom(room);
 
       this.launchChildProcess(`infrastructure-${this.metadata.roomName}`, "infrastructure", {

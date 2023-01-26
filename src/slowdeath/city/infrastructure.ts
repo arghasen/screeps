@@ -168,7 +168,7 @@ export class Infrastructure extends Process {
         this.room.memory.linksCreated = true;
         if(this.room.controller && this.room.controller.level>=5){
           const upgraderLink = this.room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter:{structureType: STRUCTURE_LINK}});
-          this.room.memory.upgraderLink = upgraderLink?.id;
+          this.room.memory.upgraderLink = upgraderLink?.id as Id<StructureLink>;
         }
       }
       else{

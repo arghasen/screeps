@@ -7,6 +7,7 @@ import { Hauler } from "../creepActions/Hauler";
 import { Process } from "../../os/process";
 import { Upgrader } from "../creepActions/Upgrader";
 import { logger } from "../../utils/logger";
+import { Dismantler } from "slowdeath/creepActions/Dismantler";
 
 export class Employment extends Process {
   protected className = "employment";
@@ -158,6 +159,8 @@ export class Employment extends Process {
           case Role.ROLE_CLAIMER:
             this.numClaimer++;
             break;
+          case Role.ROLE_DISMANTLER:
+            break;
           default:
             this.unemployed.push(creep);
             logger.info("Unemployed creep: %s", logger.json(creep));
@@ -194,6 +197,8 @@ export class Employment extends Process {
         case Role.ROLE_CLAIMER:
           Claimer.run(creep);
           break;
+        case Role.ROLE_DISMANTLER:
+        //  Dismantler.run(creep);
         default:
           _.noop();
       }

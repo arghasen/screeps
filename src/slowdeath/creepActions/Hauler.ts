@@ -13,14 +13,18 @@ export class Hauler {
     if (!creep.memory.harvesting) {
       const target = getStructuresNeedingEnergy(creep);
       const storage = creep.room.storage;
+      const terminal = creep.room.terminal;
       if (target) {
         // TODO: check why this is not working with the func.
         if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
           creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
         } // no target exist, then transfer energy to storage
-      } else if (storage && storage.store.getCapacity(RESOURCE_ENERGY) > 0) {
+      } else if (storage && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
         transfer(creep, storage);
-      } else {
+      } else if (terminal && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0){
+        transfer(creep,terminal);
+      } 
+      else {
         // no target exist, then transfer energy to creeps
         transferEnergyFromCreep(creep);
       }

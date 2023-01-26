@@ -48,6 +48,9 @@ export class Empire extends Process {
           };
         }
       }
+      if(name === "Attack"){
+        logger.info(`attack needed at location ${flag}`);
+      }
     }
   }
 }
