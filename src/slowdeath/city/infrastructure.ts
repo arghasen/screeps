@@ -190,7 +190,7 @@ export class Infrastructure extends Process {
       i < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
       i++
     ) {
-      console.log(loc);
+      console.log(`${i} ${loc}`);
       const res: ScreepsReturnCode = room.createConstructionSite(
         pos.x + loc[i % loc.length][0],
         pos.y + loc[i % loc.length][1],
@@ -200,6 +200,9 @@ export class Infrastructure extends Process {
       if (res !== 0) {
         loc.splice(i, 1);
         --i;
+      }
+      if(loc.length==0){
+        break;
       }
     }
   }

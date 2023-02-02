@@ -26,13 +26,13 @@ export class Military extends Process {
     if (!this.defendedRoomThisTick) {
       this.repairRoom(room);
     }
-    const creep_ = _.filter(Game.creeps, (creep)=>{return creep.memory.role === Role.ROLE_DISMANTLER});
-    if(creep_.length<1){
-      Game.spawns.Spawn3.spawnCreep([WORK,WORK,WORK, WORK, WORK, WORK, MOVE,MOVE], "das1",{memory:{role:7, harvesting:false}})
-    }
-    for(let c of creep_){
-      Dismantler.run(c);
-    }
+    // const creep_ = _.filter(Game.creeps, (creep)=>{return creep.memory.role === Role.ROLE_DISMANTLER});
+    // if(creep_.length<1){
+    //   Game.spawns.Spawn3.spawnCreep([WORK,WORK,WORK, WORK, WORK, WORK, MOVE,MOVE], "das1",{memory:{role:7, harvesting:false}})
+    // }
+    // for(let c of creep_){
+    //   Dismantler.run(c);
+    // }
   }
 
   private repairRoom(room: Room): void {

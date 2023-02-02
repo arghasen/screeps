@@ -46,7 +46,9 @@ export class Spawns extends Process {
             );
           } else {
             logger.info(`Spawning creep ${creep.name} from ${this.metadata.roomName}`);
-            Memory.createClaimer.done = creep.name;
+            if(Memory.createClaimer && creep.options.memory.role == Role.ROLE_CLAIMER){
+              Memory.createClaimer.done = creep.name;
+            }        
           }
         }
       }

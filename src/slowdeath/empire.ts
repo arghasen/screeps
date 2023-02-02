@@ -2,6 +2,8 @@ import { clearDeadCreepsFromMemory, isCreepAlive } from "../utils/screeps-fns";
 import { Process } from "../os/process";
 
 import { logger } from "../utils/logger";
+import { Claimer } from "./creepActions/claimer";
+import { Role } from "./creepActions/constants";
 
 /**
  * Empire overlooks the entire empire and takes high level decisions
@@ -25,30 +27,50 @@ export class Empire extends Process {
     for (const name in flags) {
       const flag = flags[name];
       if (name === "claimThisRoom") {
-        if(!Memory.createClaimer)
-        {
-             Memory.createClaimer = {
-                loc: {
-                    x: flag.pos.x,
-                    y: flag.pos.y,
-                    roomName: flag.pos.roomName
-                },
-                identifier: 1
-            };
-        }
-        const creepName = Memory.createClaimer.done;
-        if (creepName && !isCreepAlive(creepName)) {
-          Memory.createClaimer = {
-            loc: {
-              x: flag.pos.x,
-              y: flag.pos.y,
-              roomName: flag.pos.roomName
-            },
-            identifier: 1
+        const creep_ = _.filter(Game.creeps, (creep) => { return creep.memory.role === Role.ROLE_CLAIMER });
+        if (creep_.length < 1) {
+          const loc = {
+            x: flag.pos.x,
+            y: flag.pos.y,
+            roomName: flag.pos.roomName
           };
+          Game.spawns.Spawn3.spawnCreep([CLAIM, MOVE], "cl1", {
+            memory: {
+              role: Role.ROLE_CLAIMER,
+              moveLoc: loc,
+              identifier: 1,
+              harvesting: false
+            }
+          })
         }
+        for (let c of creep_) {
+          Claimer.run(c);
+        }
+        //   if(!Memory.createClaimer)
+        //   {
+        //        Memory.createClaimer = {
+        //           loc: {
+        //               x: flag.pos.x,
+        //               y: flag.pos.y,
+        //               roomName: flag.pos.roomName
+        //           },
+        //           identifier: 1
+        //       };
+        //   }
+        //   const creepName = Memory.createClaimer.done;
+        //   if (creepName && !isCreepAlive(creepName)) {
+        //     Memory.createClaimer = {
+        //       loc: {
+        //         x: flag.pos.x,
+        //         y: flag.pos.y,
+        //         roomName: flag.pos.roomName
+        //       },
+        //       identifier: 1
+        //     };
+        //   }
       }
-      if(name === "Attack"){
+
+      if (name === "Attack") {
         logger.info(`attack needed at location ${flag}`);
       }
     }
