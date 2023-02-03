@@ -17,7 +17,9 @@ export class ContinuousHarvester {
     }
     const source = objectFromId(creep.memory.source);
     harvest(creep, source);
-
+    if(creep.ticksToLive == 1){
+      creep.room.memory.harvesterStartTime[source!.id].push(creep.memory.harvestStartTime!)
+    }
     if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() == 0) {
       if (creep.room.memory.linksCreated == true) {
         logger.info("link mining");

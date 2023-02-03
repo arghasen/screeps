@@ -175,6 +175,11 @@ export class Infrastructure extends Process {
         this.room.memory.linksCreated = false;
       }
       this.buildMoreRoads = roadsUnderConstruction.length === 0;
+      if(constructionSites.length>1){
+        this.room.memory.extraBuilders = true;
+      } else{
+        this.room.memory.extraBuilders = false;
+      }
       logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
     }
   }

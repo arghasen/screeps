@@ -45,7 +45,9 @@ export class Employment extends Process {
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
-    this.employWorkers(employ);
+    if (this.unemployed.length > 0) {
+      this.employWorkers(employ);
+    }
 
     function employ(cur: number, max: number) {
       logger.debug(`current employ ${cur}, ${max}, ${scale}`);
@@ -106,7 +108,6 @@ export class Employment extends Process {
         Memory.needBuilder.sent = creep.name;
       }
     }
-
     // FIXME: Improve this logic
     const buildersRequired = (this.rcl >= 7 && this.numBuilders >= 1) ? false : true;
 
@@ -120,11 +121,28 @@ export class Employment extends Process {
       this.room.memory.continuousHarvestingStarted
     ) {
       this.assignRole(Role.ROLE_HAULER);
-    } else if (employ(this.numBuilders, MaxRolePopulation.builders) && buildersRequired) {
+    } else if (employ(this.numBuilders, this.dynamicEmployer(Role.ROLE_BUILDER)) && buildersRequired) {
       this.assignRole(Role.ROLE_BUILDER);
-    } else if (employ(this.numUpgraders, MaxRolePopulation.upgrader)) {
+    } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.ROLE_UPGRADER))) {
       this.assignRole(Role.ROLE_UPGRADER);
     }
+  }
+
+  private dynamicEmployer(role: Role): number {
+    if (role == Role.ROLE_BUILDER) {
+      if (this.room.memory.extraBuilders) {
+        return MaxRolePopulation.builders + 1;
+      } else {
+        return MaxRolePopulation.builders;
+      }
+    } else if (role == Role.ROLE_UPGRADER) {
+      if (this.room.memory.extraBuilders) {
+        return MaxRolePopulation.builders - 1;
+      } else {
+        return MaxRolePopulation.builders;
+      }
+    }
+    return 0;
   }
 
   private assignRole(role: Role) {

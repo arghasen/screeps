@@ -26,6 +26,7 @@ interface MoveLoc {
   roomName: string;
 }
 interface RoomMemory {
+  extraBuilders: boolean;
   upgraderLink: Id<StructureLink> | undefined;
   setup: any;
   roadsDone: number;
@@ -34,6 +35,7 @@ interface RoomMemory {
   createContinuousHarvester: boolean;
   critical: boolean;
   linksCreated: boolean;
+  harvesterStartTime: Record<string, number[]>;
 }
 
 interface Memory {
@@ -64,6 +66,7 @@ interface Memory {
   };
 }
 interface CreepMemory {
+  harvestStartTime?: number;
   target?: any;
   link?: Id<StructureLink>;
   identifier?: number;

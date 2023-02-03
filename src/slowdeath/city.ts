@@ -1,3 +1,4 @@
+import sourcesInRoom from "utils/sources-in-room";
 import { Process } from "../os/process";
 import { logger } from "../utils/logger";
 import { RoadStatus } from "./creepActions/constants";
@@ -41,8 +42,14 @@ export class City extends Process {
         createContinuousHarvester: false,
         critical: false,
         linksCreated: false,
-        upgraderLink: undefined
+        upgraderLink: undefined,
+        harvesterStartTime:{},
+        extraBuilders: false
       };
+      const sources = sourcesInRoom(room);
+      for(const source of sources){
+        room.memory.harvesterStartTime[source.id] = [];
+      }
     }
   }
 }
