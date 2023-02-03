@@ -43,15 +43,9 @@ export function build(creep: Creep, target: ConstructionSite) {
 }
 
 export function pickupDroppedEnergy(creep: Creep) {
-  let target: Resource | null = null;;
-  if (creep.memory.target) {
-    target = objectFromId(creep.memory.target); // FIXME
-    if (!target || !(target instanceof Resource)) {
-      logger.warning(`creep memory has invalid target ${logger.json(creep)} target: ${target}`);
-      creep.memory.target = undefined;
-    }
-  }
-  if (!creep.memory.target) {
+  let target: Resource | null = null;
+  target = extractTarget(creep); // checks creep.memory internally and unsets it if target is null.
+  if (!target) {
     target = getDroppedEnergySource()
   }
   if (target) {
@@ -82,6 +76,18 @@ export function pickupDroppedEnergy(creep: Creep) {
     );
     return closestSource;
   }
+}
+
+function extractTarget<T extends _HasId>(creep: Creep): T | null {
+  let target: T | null = null;
+  if (creep.memory.target) {
+    target = objectFromId(creep.memory.target); // FIXME
+    if (!target || !(target instanceof Resource)) {
+      logger.warning(`creep memory has invalid target ${logger.json(creep)} target: ${target}`);
+      creep.memory.target = undefined;
+    }
+  }
+  return target;
 }
 
 function getDroppedEnergySources(creep: Creep) {
