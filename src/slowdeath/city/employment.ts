@@ -1,4 +1,4 @@
-import { MaxRolePopulation, PopulationScaler, Role } from "../creepActions/constants";
+import { MaxPopulationPerRoom, MaxRolePopulation, PopulationScaler, Role } from "../creepActions/constants";
 import { Builder } from "../creepActions/Builder";
 import { Claimer } from "slowdeath/creepActions/claimer";
 import { ContinuousHarvester } from "../creepActions/ContinuousHarvester";
@@ -41,7 +41,7 @@ export class Employment extends Process {
   private populationBasedEmployer() {
     const totWorkers = this.getTotalWorkers();
     this.checkEmemrgencySituation(totWorkers);
-    const scale = Math.max(Math.floor(totWorkers / PopulationScaler[this.rcl]), 1);
+    const scale = Math.max(Math.floor(MaxPopulationPerRoom[this.rcl] / PopulationScaler[this.rcl]), 1);
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();

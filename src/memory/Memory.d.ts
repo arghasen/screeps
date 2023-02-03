@@ -64,12 +64,13 @@ interface Memory {
   };
 }
 interface CreepMemory {
+  target?: any;
   link?: Id<StructureLink>;
   identifier?: number;
   targetRoom?: string;
   harvesting: boolean;
   role?: number;
-  source?: any;
+  source?: Id<Source>;
   moveLoc?: MoveLoc;
 }
 

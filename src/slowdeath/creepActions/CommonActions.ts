@@ -1,3 +1,4 @@
+import objectFromId from "utils/object-from-id";
 import { logger } from "../../utils/logger";
 import { Role } from "./constants";
 
@@ -7,7 +8,7 @@ export function pickup(creep: Creep, closestSource: Resource) {
   }
 }
 
-export function harvest(creep: Creep, source:Source|null) {
+export function harvest(creep: Creep, source: Source | null) {
   if (source) {
     if (creep.harvest(source) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
       creep.moveTo(source, { visualizePathStyle: { stroke: "#ffaa00" } });
@@ -35,21 +36,41 @@ export function transfer(creep: Creep, target: AnyCreep | Structure) {
 
 export function build(creep: Creep, target: ConstructionSite) {
   if (creep.build(target) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-    creep.moveTo(target, {visualizePathStyle: { stroke: "#ffffff" }
+    creep.moveTo(target, {
+      visualizePathStyle: { stroke: "#ffffff" }
     });
   }
 }
 
 export function pickupDroppedEnergy(creep: Creep) {
-  const energyResources = getDroppedEnergySources(creep);
-  if (energyResources.length >= 1) {
-    const closestSource = getClosestDroppedEnergySource();
-    if (closestSource instanceof Resource) {
-      pickup(creep, closestSource);
+  let target: Resource | null = null;;
+  if (creep.memory.target) {
+    target = objectFromId(creep.memory.target); // FIXME
+    if (!target || !(target instanceof Resource)) {
+      logger.warning(`creep memory has invalid target ${logger.json(creep)} target: ${target}`);
+      creep.memory.target = undefined;
     }
   }
+  if (!creep.memory.target) {
+    target = getDroppedEnergySource()
+  }
+  if (target) {
+    pickup(creep, target);
+  }
 
-  function getClosestDroppedEnergySource() {
+  function getDroppedEnergySource() {
+    let target: Resource | null = null;;
+    const energyResources = getDroppedEnergySources(creep);
+    if (energyResources.length >= 1) {
+      target = getClosestDroppedEnergySource(energyResources);
+      if (target instanceof Resource) {
+        creep.memory.target = target.id;
+      }
+    }
+    return target;
+  }
+
+  function getClosestDroppedEnergySource(energyResources: Resource[]) {
     let closestSource;
     if (energyResources[0].amount > 1000) {
       closestSource = energyResources[0];
@@ -144,7 +165,7 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
   const myStructures = room.find(FIND_STRUCTURES);
   // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
   const targetStructures = myStructures.filter(
-    structure => ((structure.hits < structure.hitsMax -300) &&
+    structure => ((structure.hits < structure.hitsMax - 300) &&
       structure.structureType !== STRUCTURE_WALL &&
       structure.structureType !== STRUCTURE_RAMPART) ||
       (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000)

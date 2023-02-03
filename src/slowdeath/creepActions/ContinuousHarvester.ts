@@ -1,5 +1,5 @@
 import { logger } from "utils/logger";
-import {objectFromId} from "utils/screeps-fns";
+import { objectFromId } from "utils/screeps-fns";
 import { harvest, transfer } from "./CommonActions";
 
 export class ContinuousHarvester {
@@ -15,10 +15,9 @@ export class ContinuousHarvester {
         creep.memory.link = link.id as Id<StructureLink>;
       }
     }
-    const source = Game.getObjectById(creep.memory.source);
-    if (source instanceof Source) {
-      harvest(creep, source);
-    }
+    const source = objectFromId(creep.memory.source);
+    harvest(creep, source);
+
     if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() == 0) {
       if (creep.room.memory.linksCreated == true) {
         logger.info("link mining");
@@ -35,7 +34,7 @@ function handleLinkMining(creep: Creep) {
   if (creep.memory.link) {
     const link = objectFromId(creep.memory.link);
     logger.info(`link to be used ${link}`)
-    if(link){
+    if (link) {
       transfer(creep, link);
       if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
         logger.info("link more than 50% full");
@@ -46,7 +45,7 @@ function handleLinkMining(creep: Creep) {
 
   function transferToUpgraderLink(link: StructureLink) {
     if (creep.room.memory.upgraderLink) {
-      const upgraderLink = objectFromId(creep.room.memory.upgraderLink) ;
+      const upgraderLink = objectFromId(creep.room.memory.upgraderLink);
       const ret = link.transferEnergy(upgraderLink!);
       logger.info(`link result: ${ret}`)
     }

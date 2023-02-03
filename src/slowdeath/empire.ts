@@ -4,6 +4,7 @@ import { Process } from "../os/process";
 import { logger } from "../utils/logger";
 import { Claimer } from "./creepActions/claimer";
 import { Role } from "./creepActions/constants";
+import { Dismantler } from "./creepActions/Dismantler";
 
 /**
  * Empire overlooks the entire empire and takes high level decisions
@@ -72,6 +73,13 @@ export class Empire extends Process {
 
       if (name === "Attack") {
         logger.info(`attack needed at location ${flag}`);
+        const creep_ = _.filter(Game.creeps, (creep)=>{return creep.memory.role === Role.ROLE_DISMANTLER});
+        if(creep_.length<1){
+          Game.spawns.Spawn3.spawnCreep([WORK,WORK,WORK, WORK, WORK, WORK, MOVE,MOVE], "das1",{memory:{role:7, harvesting:false}})
+        }
+        for(let c of creep_){
+          Dismantler.run(c);
+        }
       }
     }
   }
