@@ -18,3 +18,22 @@ export function nearbyTerrain(room: Room): void {
     }
   }
 }
+
+function setupMineContainers(room: Room) {
+  const sources = room.find(FIND_SOURCES);
+  for (const source of sources) {
+    const possibleMiningLocations:number[][] = [];
+    for (const loc of directionsArray) {
+      const x = source.pos.x + loc[0];
+      const y = source.pos.y + loc[1];
+      const terrain = room.getTerrain().get(x, y);
+      console.log("Terrain at: (" + x + "," + y + "):" + terrain);
+      if (terrain !== TERRAIN_MASK_WALL) {
+        possibleMiningLocations.push(loc);
+      }
+      console.log("Possible Mining Locations:", possibleMiningLocations);
+      // const closestSource = PathFinder.search(this.spawns[0].pos, possibleMiningLocations);
+      // console.log("closest path to source")
+    }
+  }
+}

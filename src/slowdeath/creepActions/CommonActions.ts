@@ -97,7 +97,7 @@ function extractTarget<T extends _HasId>(creep: Creep): T | null {
   if (creep.memory.target) {
     target = objectFromId(creep.memory.target); // FIXME
     if (!target || !(target instanceof Resource)) {
-      logger.warning(`creep memory has invalid target ${logger.json(creep)} target: ${target}`);
+      logger.debug(`creep memory has invalid target ${logger.json(creep)} target: ${target}`);
       creep.memory.target = undefined;
     }
   }

@@ -29,7 +29,7 @@ export class Scheduler {
   }
 
   public launch(name: string, data: unknown = {}, parent?: Pid): Pid {
-    logger.info(`launching process : ${name} `);
+    logger.debug(`launching process : ${name} `);
     const pid = this.getNextPid();
     this.memory.processes.index[pid] = {
       n: name,

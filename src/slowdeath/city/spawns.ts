@@ -47,7 +47,7 @@ export class Spawns extends Process {
 
         if (creep) {
           if (getSpawnCost(creep.build) <= this.room.energyAvailable) {
-            logger.warning(`got creep to create: ${logger.json(creep)}`);
+            logger.info(`got creep to create: ${logger.json(creep)}`);
             this.createCreep(spawn, creep);
           } else {
             this.queueCreep(creep);
@@ -66,7 +66,7 @@ export class Spawns extends Process {
     if (ret !== OK) {
       logger.error(`${ret} while spawning creep ${creep.name} in room ${this.metadata!.roomName}`);
     } else {
-      logger.info(`Spawning creep ${creep.name} from ${this.metadata!.roomName}`);
+      logger.info(`Spawning successful creep ${creep.name} from ${this.metadata!.roomName}`);
       this.onCreateSuccess(creep);
     }
   }
