@@ -16,7 +16,7 @@ export function getContinuousHarvesterBody(energyCapacityAvailable: number): Bod
       body = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     } else if (energyCapacityAvailable >= 500 && energyCapacityAvailable < 800) {
       body = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
-    } else if (energyCapacityAvailable > 800) {
+    } else if (energyCapacityAvailable >= 800) {
       body = [
         CARRY,
         CARRY,
@@ -42,11 +42,11 @@ export function getContinuousHarvesterBody(energyCapacityAvailable: number): Bod
   export function getBuilderBody(energyCapacityAvailable: number): BodyPartConstant[] {
     let body: BodyPartConstant[] = [];
   
-    if (energyCapacityAvailable > 400 && energyCapacityAvailable <= 600) {
+    if (energyCapacityAvailable >= 400 && energyCapacityAvailable < 600) {
       body = [WORK, WORK, CARRY, CARRY, MOVE, MOVE];
-    } else if (energyCapacityAvailable > 600 && energyCapacityAvailable < 1000) {
+    } else if (energyCapacityAvailable >= 600 && energyCapacityAvailable < 1100) {
       body = [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
-    } else if (energyCapacityAvailable > 1100) {
+    } else if (energyCapacityAvailable >= 1100) {
       body = [
         WORK,
         WORK,

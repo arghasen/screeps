@@ -1,6 +1,6 @@
 import isMyRoom from "./";
-import stubGame from "../stub/game";
-import stubRoom from "../stub/room";
+import stubGame from "../../../tests/stub/game";
+import stubRoom from "../../../tests/stub/room";
 
 describe("Is My Room", () => {
   beforeAll(() => {

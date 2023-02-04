@@ -1,9 +1,9 @@
 import sourcesInRoom from "./";
 
-import stubConstants from "../stub/constants";
-import stubGame from "../stub/game";
-import stubRoom from "../stub/room";
-import stubObject from "../stub/object";
+import stubConstants from "../../../tests/stub/constants";
+import stubGame from "../../../tests/stub/game";
+import stubRoom from "../../../tests/stub/room";
+import stubObject from "../../../tests/stub/object";
 
 describe("Sources in Room", () => {
   beforeAll(() => {

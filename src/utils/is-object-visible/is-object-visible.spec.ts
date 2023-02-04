@@ -1,7 +1,7 @@
 import isObjectVisible from "./";
 
-import stubGame from "../stub/game";
-import stubObject, { StubId} from "../stub/object";
+import stubGame from "../../../tests/stub/game";
+import stubObject, { StubId} from "../../../tests/stub/object";
 
 describe("Is Object Visible", () => {
   beforeAll(() => {

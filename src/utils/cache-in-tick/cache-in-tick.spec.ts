@@ -1,6 +1,6 @@
 import cacheInTick from "./";
 
-import stubGame from "../stub/game";
+import stubGame from "../../../tests/stub/game";
 
 describe("Cache In Tick", () => {
   beforeAll(() => {

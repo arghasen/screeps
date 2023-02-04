@@ -1,7 +1,7 @@
 import hasBodyPart from "./";
 
-import stubCreep from "../stub/creep";
-import stubConstants from "../stub/constants";
+import stubCreep from "../../../tests//stub/creep";
+import stubConstants from "../../../tests/stub/constants";
 
 describe("Has Body Part", () => {
   beforeAll(() => {

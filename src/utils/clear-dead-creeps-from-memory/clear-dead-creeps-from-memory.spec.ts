@@ -1,7 +1,7 @@
 import clearDeadCreepsFromMemory from "./";
-import stubMemory from "../stub/memory";
-import stubGame from "../stub/game";
-import stubCreep from "../stub/creep";
+import stubMemory from "../../../tests/stub/memory";
+import stubGame from "../../../tests/stub/game";
+import stubCreep from "../../../tests/stub/creep";
 
 describe("Clear Dead Creeps From Memory", () => {
   it("should remove dead creeps", () => {

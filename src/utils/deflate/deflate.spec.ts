@@ -1,4 +1,4 @@
-import stubObject from "../stub/object";
+import stubObject from "../../../tests//stub/object";
 import deflate from "./";
 
 describe("Deflate", () => {

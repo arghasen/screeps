@@ -1,6 +1,6 @@
 import isCreepAlive from "./";
-import stubGame from "../stub/game";
-import stubCreep from "../stub/creep";
+import stubGame from "../../../tests/stub/game";
+import stubCreep from "../../../tests/stub/creep";
 
 describe("Is Creep Alive", () => {
   it("should return false if the creep is dead", () => {

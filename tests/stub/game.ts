@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import stubObject from "../stub/object";
+import stubObject from "./object";
 
 interface StubGameOptions {
   objectsById?: { [id: string]: ReturnType<typeof stubObject> };
