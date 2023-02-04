@@ -1,5 +1,5 @@
 import { Process } from "../../os/process";
-import { MaxPopulationPerRoom, MaxRolePopulation, Role } from "slowdeath/creepActions/constants";
+import { MaxPopulationPerRoom, MaxRolePopulation, Role, roleNames } from "slowdeath/creepActions/constants";
 import { logger } from "../../utils/logger";
 import { spawnsInRoom } from "../../utils/screeps-fns";
 
@@ -21,10 +21,15 @@ export class Spawns extends Process {
       const myCreeps = _.filter(Game.creeps, creep => {
         return creep.pos.roomName === roomName;
       });
-
+      
       if (myCreeps.length >= MaxPopulationPerRoom[this.room.controller.level] + MaxRolePopulation.continuousHarvester && !this.room.memory.createContinuousHarvester) {
         return;
       }
+      const creepToCreate = this.room.memory.spawnQueue[0];
+      if(creepToCreate){
+        logger.warning(`Using spawn queue to create creep: ${roleNames[creepToCreate]}`)
+      }
+
       for (const spawn of spawns) {
         if (spawn.spawning) {
           continue;
@@ -32,7 +37,8 @@ export class Spawns extends Process {
         const creep = getQueuedCreep(
           this.room.name,
           this.room.energyAvailable,
-          this.room.energyCapacityAvailable
+          this.room.energyCapacityAvailable,
+          creepToCreate
         );
         if (!creep) {
           break;
@@ -48,24 +54,42 @@ export class Spawns extends Process {
             logger.info(`Spawning creep ${creep.name} from ${this.metadata.roomName}`);
             if(Memory.createClaimer && creep.options.memory.role == Role.ROLE_CLAIMER){
               Memory.createClaimer.done = creep.name;
-            }        
+            }  
+            if(creep.options.memory.role !== Role.ROLE_CONTINUOUS_HARVESTER){
+              this.room.memory.spawnQueue.shift();     
+            }
+ 
           }
         }
       }
     }
   }
 }
+function getHaulerBody(energyCapcityAvailable: number): BodyPartConstant[] {
+  let body: BodyPartConstant[] = [];
+  if (energyCapcityAvailable >= 300 && energyCapcityAvailable <400) {
+    body = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
+  } else if (energyCapcityAvailable >= 400 && energyCapcityAvailable < 500) {
+    body = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
+  } else if (energyCapcityAvailable >= 500 && energyCapcityAvailable < 800) {
+    body = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
+  } else if(energyCapcityAvailable> 800){
+    body = [ CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+  }
+  return body;
+}
 
 function getQueuedCreep(
   roomName: string,
   energyAvailable: number,
-  energyCapacityAvailable: number
+  energyCapacityAvailable: number,
+  role: Role
 ) {
   const room = Game.rooms[roomName];
   if (room.memory.critical) {
     return {
       build: [WORK, CARRY, MOVE],
-      name: `creep-${Game.time}`,
+      name: `${roleNames[role]}-${Game.time}`,
       options: { memory: { harvesting: false } }
     };
   }
@@ -74,13 +98,13 @@ function getQueuedCreep(
     if (energyCapacityAvailable > 1000) {
       return {
         build: [WORK, WORK, WORK, WORK, WORK,CARRY, MOVE],
-        name: `creep-${Game.time}`,
+        name: `${roleNames[role]}-${Game.time}`,
         options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER, harvesting: false } }
       };
     }
     return {
       build: [WORK, WORK, WORK, WORK, WORK, MOVE],
-      name: `creep-${Game.time}`,
+      name: `${roleNames[role]}-${Game.time}`,
       options: { memory: { role: Role.ROLE_CONTINUOUS_HARVESTER, harvesting: false } }
     };
   }
@@ -101,31 +125,37 @@ function getQueuedCreep(
       };
     }
   }
-
+  // if(role == Role.ROLE_HAULER){
+  //   return {
+  //     build: getHaulerBody(energyCapacityAvailable),
+  //     name: `${roleNames[role]}-${Game.time}`,
+  //     options: { memory: { role: role, harvesting: false } }
+  //   };
+  // }
   if (energyCapacityAvailable > 400 && energyCapacityAvailable <= 600) {
     return {
       build: [WORK, WORK, CARRY, CARRY, MOVE, MOVE],
-      name: `creep-${Game.time}`,
+      name: `${roleNames[role]}-${Game.time}`,
       options: { memory: { harvesting: false } }
     };
   } else if (energyCapacityAvailable > 600 && energyCapacityAvailable < 1000) {
     return {
       build: [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
-      name: `creep-${Game.time}`,
+      name: `${roleNames[role]}-${Game.time}`,
       options: { memory: { harvesting: false } }
     };
   } else if (energyCapacityAvailable > 1100) {
     return {
       build: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
-      name: `creep-${Game.time}`,
+      name: `${roleNames[role]}-${Game.time}`,
       options: { memory: { harvesting: false } }
     };
   }
   else {
     return {
       build: [WORK, CARRY, MOVE],
-      name: `creep-${Game.time}`,
-      options: { memory: { harvesting: false } }
+      name: `${roleNames[role]}-${Game.time}`,
+      options: { memory: {  harvesting: false } }
     };
   }
 }

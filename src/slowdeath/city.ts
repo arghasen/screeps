@@ -44,7 +44,8 @@ export class City extends Process {
         linksCreated: false,
         upgraderLink: undefined,
         harvesterStartTime:{},
-        extraBuilders: false
+        extraBuilders: false,
+        spawnQueue:[]
       };
       const sources = sourcesInRoom(room);
       for(const source of sources){

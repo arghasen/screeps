@@ -2,6 +2,7 @@ type ScreepsPrometheus = import("@brainwart/screeps-prometheus-game").ScreepsPro
 type PromDict = ReturnType<ScreepsPrometheus["build"]>;
 
 type Pid = import("os/process").Pid;
+type Role = import ("slowdeath/creepActions/constants").Role ;
 interface SchedulerMemory {
   processes: {
     running: Pid;
@@ -26,6 +27,7 @@ interface MoveLoc {
   roomName: string;
 }
 interface RoomMemory {
+  spawnQueue: Role[];
   extraBuilders: boolean;
   upgraderLink: Id<StructureLink> | undefined;
   setup: any;

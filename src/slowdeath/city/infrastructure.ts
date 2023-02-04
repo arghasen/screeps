@@ -12,7 +12,7 @@ export class Infrastructure extends Process {
   private buildMoreRoads = true;
   private spawns: StructureSpawn[] = [];
   private room!: Room;
-
+  private towers:StructureTower[] = [] 
   public main() {
     this.init();
 
@@ -29,6 +29,12 @@ export class Infrastructure extends Process {
         const pos = this.room.getPositionAt(this.spawns[0].pos.x + 5, this.spawns[0].pos.y - 5);
         if (pos) {
           this.createExtensions(this.room, pos, 3);
+        }
+      }
+      if (this.room.controller.level >= 3) {
+        if (this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller.level]) {
+          logger.info("time to build a tower");
+          this.room.createConstructionSite(25, 25, STRUCTURE_TOWER);
         }
       }
       if (this.room.controller.level === 4) {
@@ -161,6 +167,9 @@ export class Infrastructure extends Process {
       const roadsUnderConstruction = constructionSites.filter(
         site => site.structureType === STRUCTURE_ROAD
       );
+      this.towers = this.room.find(FIND_MY_STRUCTURES, {
+        filter: { structureType: STRUCTURE_TOWER }
+      });
 
       const linksCreated = myStructures.filter(structure =>structure.structureType === STRUCTURE_LINK);
       logger.info(`links: ${linksCreated}`);

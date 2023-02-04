@@ -45,6 +45,9 @@ export class Employment extends Process {
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
+    if (totWorkers < MaxPopulationPerRoom[this.rcl] + MaxRolePopulation.continuousHarvester+this.room.memory.spawnQueue.length) {
+      this.createWorkers(employ);
+    }
     if (this.unemployed.length > 0) {
       this.employWorkers(employ);
     }
@@ -52,6 +55,25 @@ export class Employment extends Process {
     function employ(cur: number, max: number) {
       logger.debug(`current employ ${cur}, ${max}, ${scale}`);
       return cur < max * scale;
+    }
+  }
+  createWorkers(employ: (cur: number, max: number) => boolean) {
+    // FIXME: Improve this logic
+    const buildersRequired = (this.rcl >= 7 && this.numBuilders >= 1) ? false : true;
+    if (
+      employ(this.numHarversters, MaxRolePopulation.harvesters) &&
+      !this.room.memory.continuousHarvestingStarted
+    ) {
+      this.room.memory.spawnQueue.push(Role.ROLE_HARVESTER);
+    } else if (
+      employ(this.numHaulers, MaxRolePopulation.haulers) &&
+      this.room.memory.continuousHarvestingStarted
+    ) {
+      this.room.memory.spawnQueue.push(Role.ROLE_HAULER);
+    } else if (employ(this.numBuilders, this.dynamicEmployer(Role.ROLE_BUILDER)) && buildersRequired) {
+      this.room.memory.spawnQueue.push(Role.ROLE_BUILDER);
+    } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.ROLE_UPGRADER))) {
+      this.room.memory.spawnQueue.push(Role.ROLE_UPGRADER);
     }
   }
 
@@ -99,6 +121,7 @@ export class Employment extends Process {
   }
 
   private employWorkers(employ: (cur: number, max: number) => boolean) {
+
     if (Memory.needBuilder && Memory.needBuilder.sent === "") {
       const creep = this.unemployed.shift();
       if (creep) {
@@ -137,15 +160,17 @@ export class Employment extends Process {
       }
     } else if (role == Role.ROLE_UPGRADER) {
       if (this.room.memory.extraBuilders) {
-        return MaxRolePopulation.builders - 1;
+        return MaxRolePopulation.upgrader - 1;
       } else {
-        return MaxRolePopulation.builders;
+        return MaxRolePopulation.upgrader;
       }
     }
     return 0;
   }
 
   private assignRole(role: Role) {
+    //this.room.memory.spawnQueue.push(role);
+
     const creep = this.unemployed.shift();
     if (creep) {
       logger.debug(`employing ${creep.name} in role ${role}`);

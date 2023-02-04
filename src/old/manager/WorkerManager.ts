@@ -99,27 +99,6 @@ export class WorkerManager extends Manager {
 
   private creapCreator(room: Room, energyAvailable: number) {
     if (this.spawns[0] && !this.spawns[0].spawning) {
-      // FIXME : We can probably have better logic for restart in emergency
-      if (this.myCreeps.length === 0 || this.numHarversters === 0) {
-        this.createCreep(250, Role.ROLE_HARVESTER);
-        return;
-      }
-      if (this.myCreeps.length < this.sources.length) {
-        if (room.controller && room.controller.level > 1 && room.energyCapacityAvailable >= 350) {
-          const res = this.createCreep(energyAvailable, Role.ROLE_CONTINUOUS_HARVESTER);
-          if (res === ERR_NOT_ENOUGH_ENERGY) {
-            logger.warning(
-              "skipping creation of creeps till energy for continuous harvesters is available"
-            );
-            return;
-          }
-          if (res === OK) {
-            Memory.count = Memory.count + 1;
-          }
-        } else {
-          this.createCreep(250, Role.ROLE_HARVESTER);
-        }
-      }
 
       this.populationBasedCreepCreator(energyAvailable);
     }

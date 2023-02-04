@@ -18,7 +18,12 @@ export class ContinuousHarvester {
     const source = objectFromId(creep.memory.source);
     harvest(creep, source);
     if(creep.ticksToLive == 1){
-      creep.room.memory.harvesterStartTime[source!.id].push(creep.memory.harvestStartTime!)
+      const startTime = creep.room.memory.harvesterStartTime[source!.id];
+      if(startTime.length>=10){
+        startTime.shift();
+      }
+      startTime.push(creep.memory.harvestStartTime!)
+      startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
     }
     if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() == 0) {
       if (creep.room.memory.linksCreated == true) {

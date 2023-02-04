@@ -16,12 +16,7 @@ export class Military extends Process {
     this.towers = room.find(FIND_MY_STRUCTURES, {
       filter: { structureType: STRUCTURE_TOWER }
     });
-    if (room.controller?.my && room.controller.level >= 3) {
-      if (this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][room.controller.level]) {
-        logger.info("time to build a tower");
-        room.createConstructionSite(25, 25, STRUCTURE_TOWER);
-      }
-    }
+    
     this.defendRoom(room);
     if (!this.defendedRoomThisTick) {
       this.repairRoom(room);
