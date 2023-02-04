@@ -146,7 +146,7 @@ export class Infrastructure extends Process {
     if (this.room.controller!.level >= 3) {
       if (this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller!.level]) {
         logger.info("time to build a tower");
-        const towerPos = getTowerPosition(this.room.name);
+        const towerPos = getTowerPosition(this.room.name, this.towers);
         if (towerPos) {
           this.room.createConstructionSite(towerPos, STRUCTURE_TOWER);
           this.buildRoadsFromSource(this.room, towerPos);
@@ -157,8 +157,15 @@ export class Infrastructure extends Process {
       }
     }
 
-    function getTowerPosition(roomName: string) {
-      return new RoomPosition(25, 25, roomName);
+    function getTowerPosition(roomName: string, towers: StructureTower[]) {
+      if(towers.length == 0){
+        return new RoomPosition(25, 25, roomName);
+      } else if(towers.length == 1){
+        return new RoomPosition(15, 20, roomName);
+      } else if(towers.length == 2){
+        return new RoomPosition(30, 20, roomName);
+      }
+      return null;
     }
   }
 
