@@ -22,6 +22,9 @@ export function loop(): void {
   if (onPublicServer() && Game.cpu.bucket === 10000) {
     Game.cpu.generatePixel();
   }
+  if (Memory.gcl && !Memory.gcl[Game.gcl.level]) {
+    Memory.gcl[Game.gcl.level] = Game.time;
+  }
   logger.info(`End of Tick Cpu: ${Game.cpu.getUsed()}`);
   logger.info(`CPU bucket left ${Game.cpu.bucket}`);
 }
@@ -42,4 +45,7 @@ function initializeMemory() {
     Memory.os = { scheduler };
   }
   Memory.version = gitVersion;
+  if(!Memory.gcl){
+    Memory.gcl= {};
+  }
 }

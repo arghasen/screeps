@@ -52,7 +52,7 @@ export class Infrastructure extends Process {
         this.room.memory.linksCreated = false;
       }
       this.buildMoreRoads = roadsUnderConstruction.length === 0;
-      logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
+      logger.debug(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
     }
   }
 
@@ -65,7 +65,7 @@ export class Infrastructure extends Process {
   }
 
   private requestRemoteBuilders(pos: RoomPosition) {
-    logger.info("Spawn lenght:", this.spawns.length);
+    logger.debug("Spawn lenght:", this.spawns.length);
     if (this.spawns.length === 0) {
       const builderData = {
         sent: "",
@@ -102,7 +102,7 @@ export class Infrastructure extends Process {
       this.buildStorage();
 
       if (this.spawns.length > 0) {
-        logger.info("Build More Roads:", this.buildMoreRoads);
+        logger.debug("Build More Roads:", this.buildMoreRoads);
         if (this.buildMoreRoads) {
           this.buildRoadsToSpawn(this.room);
           this.buildRoadsToController(this.room);

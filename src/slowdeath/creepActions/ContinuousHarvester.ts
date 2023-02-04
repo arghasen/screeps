@@ -27,7 +27,7 @@ export class ContinuousHarvester {
     }
     if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() == 0) {
       if (creep.room.memory.linksCreated == true) {
-        logger.info("link mining");
+        logger.debug("link mining");
         // FIXME: a poor emergency mode
         if (creep.room.energyAvailable > 2000) {
           handleLinkMining(creep);
@@ -40,11 +40,11 @@ export class ContinuousHarvester {
 function handleLinkMining(creep: Creep) {
   if (creep.memory.link) {
     const link = objectFromId(creep.memory.link);
-    logger.info(`link to be used ${link}`)
+    logger.debug(`link to be used ${link}`)
     if (link) {
       transfer(creep, link);
       if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
-        logger.info("link more than 50% full");
+        logger.debug("link more than 50% full");
         transferToUpgraderLink(link);
       }
     }
@@ -54,7 +54,7 @@ function handleLinkMining(creep: Creep) {
     if (creep.room.memory.upgraderLink) {
       const upgraderLink = objectFromId(creep.room.memory.upgraderLink);
       const ret = link.transferEnergy(upgraderLink!);
-      logger.info(`link result: ${ret}`)
+      logger.debug(`link result: ${ret}`)
     }
   }
 }

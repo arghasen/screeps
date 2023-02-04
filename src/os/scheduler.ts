@@ -77,7 +77,7 @@ export class Scheduler {
   public getProcessForPid(pid: Pid): Process {
     if (!this.processCache[pid]) {
       const ProgramClass = this.getProgramClass(this.memory.processes.index[pid].n);
-      logger.info(`Creating ${ProgramClass.name} for pid : ${pid}`);
+      logger.debug(`Creating ${ProgramClass.name} for pid : ${pid}`);
       try {
         this.processCache[pid] = this.getProgram(ProgramClass, pid);
       } catch (e) {
@@ -98,7 +98,7 @@ export class Scheduler {
     );
   }
   private getProgramClass(name: string) {
-    logger.info(`Getting program class for : ${name}`);
+    logger.debug(`Getting program class for : ${name}`);
     return processTypes[name];
   }
 

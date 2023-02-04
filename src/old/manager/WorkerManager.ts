@@ -45,72 +45,6 @@ export class WorkerManager extends Manager {
 
 
 
-  private getBody(energyAvailable: number, role: Role): BodyPartConstant[] {
-    let body: BodyPartConstant[] = [WORK, WORK, CARRY, MOVE];
-    if (energyAvailable === 250 || energyAvailable === 300) {
-      body = [WORK, CARRY, MOVE, MOVE];
-    }
-    if (energyAvailable === 350) {
-      body = [WORK, WORK, CARRY, CARRY, MOVE];
-    }
-    if (energyAvailable >= 500 && role === Role.ROLE_UPGRADER) {
-      body = [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
-    }
-    if (role === Role.ROLE_CONTINUOUS_HARVESTER) {
-      body = this.getContinuousHarvesterBody(energyAvailable);
-    }
-
-    if (role === Role.ROLE_HAULER) {
-      body = this.getHaulerBody(energyAvailable);
-    }
-    if (role === Role.ROLE_BUILDER) {
-      if (Memory.focus === "build" && energyAvailable >= 550) {
-        body = [WORK, MOVE, WORK, MOVE, CARRY, MOVE, CARRY, CARRY, MOVE];
-      } else {
-        body = [WORK, CARRY, CARRY, MOVE];
-      }
-    }
-    return body;
-  }
-
-  private getHaulerBody(energyAvailable: number): BodyPartConstant[] {
-    let body: BodyPartConstant[] = [];
-    if (energyAvailable === 300) {
-      body = [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE];
-    } else if (energyAvailable === 400) {
-      body = [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
-    } else if (energyAvailable >= 500) {
-      body = [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
-    }
-    return body;
-  }
-
-  private getContinuousHarvesterBody(energyAvailable: number): BodyPartConstant[] {
-    let body: BodyPartConstant[] = [];
-    if (energyAvailable === 350 || energyAvailable === 400) {
-      body = [WORK, WORK, WORK, MOVE];
-    } else if (energyAvailable === 450 || energyAvailable === 500) {
-      body = [WORK, WORK, WORK, WORK, MOVE];
-    } else if (energyAvailable >= 550) {
-      body = [WORK, WORK, WORK, WORK, WORK, MOVE];
-    }
-    return body;
-  }
-
-  private creapCreator(room: Room, energyAvailable: number) {
-    if (this.spawns[0] && !this.spawns[0].spawning) {
-
-      this.populationBasedCreepCreator(energyAvailable);
-    }
-  }
-
-  private populationBasedCreepCreator(energyAvailable: number): void {
-    const ret = this.createContinuousHarvester(energyAvailable);
-    if (ret === OK || ret === ERR_NOT_ENOUGH_ENERGY) {
-      return;
-    }
-  }
-
   private createContinuousHarvester(energyAvailable: number): ScreepsReturnCode {
     if (
       this.numContinuousHarvesters < maxRolePopulation.continuousHarvester &&
@@ -121,9 +55,6 @@ export class WorkerManager extends Manager {
         logger.warning(
           "skipping creation of creeps till energy for continuous harvesters is available"
         );
-      }
-      if (res === OK) {
-        Memory.count = Memory.count + 1;
       }
       return res;
     }

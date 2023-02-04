@@ -28,11 +28,17 @@ export class City extends Process {
       this.launchChildProcess(`spawns-${this.metadata.roomName}`, "spawns", {
         roomName: this.metadata.roomName
       });
-    }
 
+      if (!room.memory.rcl[room.controller.level]) {
+        room.memory.rcl[room.controller.level] = Game.time;
+      }
+    }
   }
 
   private setupMemoryForRoom(room: Room) {
+    if (!room.memory.rcl) {
+      room.memory.rcl = {};
+    }
     if (!room.memory.setup) {
       room.memory = {
         setup: true,
@@ -43,12 +49,13 @@ export class City extends Process {
         critical: false,
         linksCreated: false,
         upgraderLink: undefined,
-        harvesterStartTime:{},
+        harvesterStartTime: {},
         extraBuilders: false,
-        spawnQueue:[]
+        spawnQueue: [],
+        rcl: {}
       };
       const sources = sourcesInRoom(room);
-      for(const source of sources){
+      for (const source of sources) {
         room.memory.harvesterStartTime[source.id] = [];
       }
     }

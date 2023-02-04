@@ -25,7 +25,7 @@ export class Kernel {
         return;
       }
 
-      logger.info(`kernel:running process pid: ${currentProcessPid}`);
+      logger.debug(`kernel:running process pid: ${currentProcessPid}`);
 
       const currentProcess = this.scheduler.getProcessForPid(currentProcessPid);
       try {

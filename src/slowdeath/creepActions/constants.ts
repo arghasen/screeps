@@ -16,22 +16,22 @@ export const PopulationScaler: Record<number, number> = {
   2: 4,
   3: 4,
   4: 4,
-  5: 4,
-  6: 4,
+  5: 3,
+  6: 3,
   7: 3,
   8: 3
-}
+};
 export const MaxPopulationPerRoom: Record<number, number> = {
   0: 16,
   1: 16,
   2: 16,
   3: 16,
   4: 16,
-  5: 16,
-  6: 16,
+  5: 10,
+  6: 7,
   7: 7,
   8: 7
-}
+};
 export enum Role {
   ROLE_HARVESTER,
   ROLE_UPGRADER,

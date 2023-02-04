@@ -3,6 +3,13 @@ type PromDict = ReturnType<ScreepsPrometheus["build"]>;
 
 type Pid = import("os/process").Pid;
 type Role = import ("slowdeath/creepActions/constants").Role ;
+
+interface CreepSpawnData {
+  build: BodyPartConstant[];
+  name: string;
+  options: SpawnOptions;
+}
+
 interface SchedulerMemory {
   processes: {
     running: Pid;
@@ -27,6 +34,8 @@ interface MoveLoc {
   roomName: string;
 }
 interface RoomMemory {
+  spawnNext?: CreepSpawnData;
+  rcl: Record<number, number>;
   spawnQueue: Role[];
   extraBuilders: boolean;
   upgraderLink: Id<StructureLink> | undefined;
@@ -41,6 +50,7 @@ interface RoomMemory {
 }
 
 interface Memory {
+  gcl: Record<GlobalControlLevel["level"],number>;
   rooms: Record<string, RoomMemory>;
   stats: PromDict;
   version: string;
@@ -57,7 +67,7 @@ interface Memory {
   os: {
     scheduler: SchedulerMemory;
   };
-  createClaimer: {
+  createClaimer?: {
     done?: string;
     loc: MoveLoc;
     identifier: number;
@@ -74,7 +84,7 @@ interface CreepMemory {
   identifier?: number;
   targetRoom?: string;
   harvesting: boolean;
-  role?: number;
+  role: number;
   source?: Id<Source>;
   moveLoc?: MoveLoc;
 }

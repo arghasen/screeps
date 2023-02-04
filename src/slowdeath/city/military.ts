@@ -11,7 +11,7 @@ export class Military extends Process {
   private defendedRoomThisTick: boolean = false;
   public main() {
     this.metadata = this.data as CityData;
-    logger.info(`${this.className}: Starting military for ${this.metadata.roomName}`);
+    logger.debug(`${this.className}: Starting military for ${this.metadata.roomName}`);
     const room = Game.rooms[this.metadata.roomName];
     this.towers = room.find(FIND_MY_STRUCTURES, {
       filter: { structureType: STRUCTURE_TOWER }

@@ -12,8 +12,8 @@ export class Slowdeath extends Process {
   }
 
   public main() {
-    logger.info(`${this.className}: starting main`);
-    logger.info(`${this.className}: launching empire`);
+    logger.info(`${this.className}: starting Slowdeath AI`);
+    logger.debug(`${this.className}: launching empire`);
     this.launchChildProcess("empire", "empire", {});
   }
 }

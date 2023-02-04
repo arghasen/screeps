@@ -2,6 +2,16 @@ import objectFromId from "utils/object-from-id";
 import { logger } from "../../utils/logger";
 import { Role } from "./constants";
 
+export function moveToOtherRoom(creep: Creep, moveLoc:MoveLoc) {
+  const target = new RoomPosition(moveLoc.x, moveLoc.y, moveLoc.roomName);
+  logger.debug("Moving.location", logger.json(target));
+  creep.moveTo(target);
+
+  if (moveLoc.roomName === creep.pos.roomName) {
+    delete creep.memory.moveLoc;
+  }
+}
+
 export function pickup(creep: Creep, closestSource: Resource) {
   if (creep.pickup(closestSource) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
     creep.moveTo(closestSource, { visualizePathStyle: { stroke: "#ffaa00" } });
@@ -108,7 +118,7 @@ function getDroppedEnergySources(creep: Creep) {
 
 export function getEnergy(creep: Creep) {
   const stores = getEnergyStore(creep);
-  logger.info(`upgrader ${creep.name} energy stores:${logger.json(stores)}`);
+  logger.debug(`upgrader ${creep.name} energy stores:${logger.json(stores)}`);
   const store = creep.pos.findClosestByPath(stores);
   if (store) {
     withdraw(creep, store);

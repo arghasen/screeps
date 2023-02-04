@@ -30,7 +30,7 @@ export class Employment extends Process {
     if (this.room.controller) {
       this.rcl = this.room.controller.level;
     }
-    logger.info(`${this.className}: Starting employment in ${this.metadata.roomName}`);
+    logger.debug(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
 
     this.getWorkerCounts();
@@ -61,7 +61,7 @@ export class Employment extends Process {
 
     spawnQueue.forEach((role)=>{this.workerCounter(role);})
 
-    const buildersRequired = (this.rcl >= 7 && this.numBuilders >= 1) ? false : true;
+    const buildersRequired = (this.rcl >= 5 && this.numBuilders >= 1) ? false : true;
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !this.room.memory.continuousHarvestingStarted
@@ -80,10 +80,10 @@ export class Employment extends Process {
   }
 
   private checkEmemrgencySituation(totWorkers: number) {
-    if (totWorkers < PopulationScaler[this.rcl] && this.rcl <= 1) {
+    if (totWorkers < PopulationScaler[this.rcl] && this.rcl <= 2) {
       this.room.memory.critical = true;
     }
-    else if (totWorkers < PopulationScaler[this.rcl] * 2 && this.rcl >= 2) {
+    else if (totWorkers < PopulationScaler[this.rcl] * 2 && this.rcl >= 3) {
       this.room.memory.critical = true;
     }
     else {
@@ -122,19 +122,6 @@ export class Employment extends Process {
     }
   }
 
-  private employWorkers(employ: (cur: number, max: number) => boolean) {
-
-    if (Memory.needBuilder && Memory.needBuilder.sent === "") {
-      const creep = this.unemployed.shift();
-      if (creep) {
-        logger.debug(`employing ${creep.name} in role ${Role.ROLE_BUILDER}`);
-        creep.memory.role = Role.ROLE_BUILDER;
-        creep.memory.moveLoc = Memory.needBuilder.moveLoc;
-        Memory.needBuilder.sent = creep.name;
-      }
-    }
-  }
-
   private dynamicEmployer(role: Role): number {
     if (role == Role.ROLE_BUILDER) {
       if (this.room.memory.extraBuilders) {
@@ -157,10 +144,10 @@ export class Employment extends Process {
       if (creep.room.name === this.room.name) {
         logger.debug(`worker counting: ${logger.json(creep)};`);
 
-        const unemployed = this.workerCounter(creep.memory.role || -1);
+        const unemployed = this.workerCounter(creep.memory.role);
         if (unemployed) {
           this.unemployed.push(creep);
-          logger.info("Unemployed creep: %s", logger.json(creep));
+          logger.warning("Unemployed creep: %s", logger.json(creep));
         }
 
       }
