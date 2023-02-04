@@ -1,6 +1,6 @@
 {
     "name": "screeps-slowdeath-ai",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "main": "index.js",
     "scripts": {
         "build": "tsc -p .",
