@@ -45,11 +45,8 @@ export class Employment extends Process {
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
-    if (totWorkers < MaxPopulationPerRoom[this.rcl] + MaxRolePopulation.continuousHarvester+this.room.memory.spawnQueue.length) {
+    if (totWorkers + this.room.memory.spawnQueue.length < MaxPopulationPerRoom[this.rcl]) {
       this.createWorkers(employ);
-    }
-    if (this.unemployed.length > 0) {
-      this.employWorkers(employ);
     }
 
     function employ(cur: number, max: number) {
@@ -58,22 +55,27 @@ export class Employment extends Process {
     }
   }
   createWorkers(employ: (cur: number, max: number) => boolean) {
+
     // FIXME: Improve this logic
+    const spawnQueue = this.room.memory.spawnQueue;
+
+    spawnQueue.forEach((role)=>{this.workerCounter(role);})
+
     const buildersRequired = (this.rcl >= 7 && this.numBuilders >= 1) ? false : true;
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !this.room.memory.continuousHarvestingStarted
     ) {
-      this.room.memory.spawnQueue.push(Role.ROLE_HARVESTER);
+      spawnQueue.push(Role.ROLE_HARVESTER);
     } else if (
       employ(this.numHaulers, MaxRolePopulation.haulers) &&
       this.room.memory.continuousHarvestingStarted
     ) {
-      this.room.memory.spawnQueue.push(Role.ROLE_HAULER);
+      spawnQueue.push(Role.ROLE_HAULER);
     } else if (employ(this.numBuilders, this.dynamicEmployer(Role.ROLE_BUILDER)) && buildersRequired) {
-      this.room.memory.spawnQueue.push(Role.ROLE_BUILDER);
+      spawnQueue.push(Role.ROLE_BUILDER);
     } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.ROLE_UPGRADER))) {
-      this.room.memory.spawnQueue.push(Role.ROLE_UPGRADER);
+      spawnQueue.push(Role.ROLE_UPGRADER);
     }
   }
 
@@ -131,24 +133,6 @@ export class Employment extends Process {
         Memory.needBuilder.sent = creep.name;
       }
     }
-    // FIXME: Improve this logic
-    const buildersRequired = (this.rcl >= 7 && this.numBuilders >= 1) ? false : true;
-
-    if (
-      employ(this.numHarversters, MaxRolePopulation.harvesters) &&
-      !this.room.memory.continuousHarvestingStarted
-    ) {
-      this.assignRole(Role.ROLE_HARVESTER);
-    } else if (
-      employ(this.numHaulers, MaxRolePopulation.haulers) &&
-      this.room.memory.continuousHarvestingStarted
-    ) {
-      this.assignRole(Role.ROLE_HAULER);
-    } else if (employ(this.numBuilders, this.dynamicEmployer(Role.ROLE_BUILDER)) && buildersRequired) {
-      this.assignRole(Role.ROLE_BUILDER);
-    } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.ROLE_UPGRADER))) {
-      this.assignRole(Role.ROLE_UPGRADER);
-    }
   }
 
   private dynamicEmployer(role: Role): number {
@@ -168,46 +152,17 @@ export class Employment extends Process {
     return 0;
   }
 
-  private assignRole(role: Role) {
-    //this.room.memory.spawnQueue.push(role);
-
-    const creep = this.unemployed.shift();
-    if (creep) {
-      logger.debug(`employing ${creep.name} in role ${role}`);
-      creep.memory.role = role;
-    }
-  }
-
   private getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
       if (creep.room.name === this.room.name) {
         logger.debug(`worker counting: ${logger.json(creep)};`);
 
-        switch (creep.memory.role) {
-          case Role.ROLE_HARVESTER:
-            this.numHarversters++;
-            break;
-          case Role.ROLE_UPGRADER:
-            this.numUpgraders++;
-            break;
-          case Role.ROLE_HAULER:
-            this.numHaulers++;
-            break;
-          case Role.ROLE_BUILDER:
-            this.numBuilders++;
-            break;
-          case Role.ROLE_CONTINUOUS_HARVESTER:
-            this.numContinuousHarvesters++;
-            break;
-          case Role.ROLE_CLAIMER:
-            this.numClaimer++;
-            break;
-          case Role.ROLE_DISMANTLER:
-            break;
-          default:
-            this.unemployed.push(creep);
-            logger.info("Unemployed creep: %s", logger.json(creep));
+        const unemployed = this.workerCounter(creep.memory.role || -1);
+        if (unemployed) {
+          this.unemployed.push(creep);
+          logger.info("Unemployed creep: %s", logger.json(creep));
         }
+
       }
     }
     logger.info(
@@ -215,6 +170,36 @@ export class Employment extends Process {
     );
     new RoomVisual(this.room.name).text(`Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`, 25, 4);
   };
+
+  private workerCounter(role: Role) {
+    let unemployed = false;
+    switch (role) {
+      case Role.ROLE_HARVESTER:
+        this.numHarversters++;
+        break;
+      case Role.ROLE_UPGRADER:
+        this.numUpgraders++;
+        break;
+      case Role.ROLE_HAULER:
+        this.numHaulers++;
+        break;
+      case Role.ROLE_BUILDER:
+        this.numBuilders++;
+        break;
+      case Role.ROLE_CONTINUOUS_HARVESTER:
+        this.numContinuousHarvesters++;
+        break;
+      case Role.ROLE_CLAIMER:
+        this.numClaimer++;
+        break;
+      case Role.ROLE_DISMANTLER:
+        break;
+      default:
+        unemployed = true;
+        break;
+    }
+    return unemployed;
+  }
 
   private runCreepActions() {
     for (const creep of this.myCreeps) {
