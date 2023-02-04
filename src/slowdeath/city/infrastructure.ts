@@ -12,7 +12,58 @@ export class Infrastructure extends Process {
   private buildMoreRoads = true;
   private spawns: StructureSpawn[] = [];
   private room!: Room;
-  private towers:StructureTower[] = [] 
+  private towers: StructureTower[] = []
+  private constructionSites: ConstructionSite<BuildableStructureConstant>[] = [];
+
+  private init() {
+    this.metadata = this.data as CityData;
+    this.room = Game.rooms[this.metadata.roomName];
+
+    if (this.room) {
+      this.spawns = spawnsInRoom(this.room);
+      const myStructures = this.room.find(FIND_MY_STRUCTURES);
+      this.extensionsCreated = myStructures.filter(
+        structure => structure.structureType === STRUCTURE_EXTENSION
+      );
+
+      this.constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      this.extensionsUnderConstruction = this.room.find(FIND_CONSTRUCTION_SITES, {
+        filter: { structureType: STRUCTURE_EXTENSION }
+      });
+
+      const roadsUnderConstruction = this.room.find(FIND_CONSTRUCTION_SITES, {
+        filter: { structureType: STRUCTURE_ROAD }
+      });
+
+      this.towers = this.room.find(FIND_MY_STRUCTURES, {
+        filter: { structureType: STRUCTURE_TOWER }
+      });
+
+      const linksCreated = myStructures.filter(structure => structure.structureType === STRUCTURE_LINK);
+      logger.debug(`links: ${linksCreated}`);
+      if (linksCreated.length >= 3) {
+        this.room.memory.linksCreated = true;
+        if (this.room.controller && this.room.controller.level >= 5) {
+          const upgraderLink = this.room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } });
+          this.room.memory.upgraderLink = upgraderLink?.id as Id<StructureLink>;
+        }
+      }
+      else {
+        this.room.memory.linksCreated = false;
+      }
+      this.buildMoreRoads = roadsUnderConstruction.length === 0;
+      logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
+    }
+  }
+
+  private requestExtraBuilders() {
+    if (this.constructionSites.length > 1) {
+      this.room.memory.extraBuilders = true;
+    } else {
+      this.room.memory.extraBuilders = false;
+    }
+  }
+
   public main() {
     this.init();
 
@@ -22,27 +73,10 @@ export class Infrastructure extends Process {
 
     if (this.room.controller?.my) {
       this.requestRemoteBuilders(this.room.controller.pos);
-      if (this.room.controller.level === 2) {
-        this.createExtensions(this.room, this.spawns[0].pos, 2);
-      }
-      if (this.room.controller.level === 3) {
-        const pos = this.room.getPositionAt(this.spawns[0].pos.x + 5, this.spawns[0].pos.y - 5);
-        if (pos) {
-          this.createExtensions(this.room, pos, 3);
-        }
-      }
-      if (this.room.controller.level >= 3) {
-        if (this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller.level]) {
-          logger.info("time to build a tower");
-          this.room.createConstructionSite(25, 25, STRUCTURE_TOWER);
-        }
-      }
-      if (this.room.controller.level === 4) {
-        const pos = this.room.getPositionAt(this.spawns[0].pos.x - 5, this.spawns[0].pos.y);
-        if (pos) {
-          const ret = this.room.createConstructionSite(pos.x, pos.y, STRUCTURE_STORAGE);
-        }
-      }
+      this.requestExtraBuilders();
+      this.buildExtensions();
+      this.buildTowers();
+      this.buildStorage();
 
       if (this.spawns.length > 0) {
         logger.info("Build More Roads:", this.buildMoreRoads);
@@ -56,6 +90,48 @@ export class Infrastructure extends Process {
             this.buildMoreRoadsToStorage(this.room);
           }
         }
+      }
+    }
+  }
+
+  private buildRoadsToTowers(pos: RoomPosition) {
+    if (pos) {
+      this.buildRoads(this.room, pos);
+    }
+  }
+
+  private buildExtensions() {
+    if (this.room.controller!.level === 2) {
+      this.createExtensions(this.room, this.spawns[0].pos, 2);
+    }
+    if (this.room.controller!.level === 3) {
+      const pos = this.room.getPositionAt(this.spawns[0].pos.x + 5, this.spawns[0].pos.y - 5);
+      if (pos) {
+        this.createExtensions(this.room, pos, 3);
+      }
+    }
+  }
+
+  private buildTowers() {
+    if (this.room.controller!.level >= 3) {
+      if (this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller!.level]) {
+        logger.info("time to build a tower");
+        const towerPos = getTowerPosition(this.room.name);
+        this.room.createConstructionSite(towerPos, STRUCTURE_TOWER);
+        this.buildRoadsToTowers(towerPos);
+      }
+    }
+
+    function getTowerPosition(roomName:string) {
+      return new RoomPosition(25, 25, roomName);
+    }
+  }
+
+  private buildStorage() {
+    if (this.room.controller!.level === 4) {
+      const pos = this.room.getPositionAt(this.spawns[0].pos.x - 5, this.spawns[0].pos.y);
+      if (pos) {
+        const ret = this.room.createConstructionSite(pos.x, pos.y, STRUCTURE_STORAGE);
       }
     }
   }
@@ -148,51 +224,6 @@ export class Infrastructure extends Process {
     }
   }
 
-  private init() {
-    this.metadata = this.data as CityData;
-    this.room = Game.rooms[this.metadata.roomName];
-
-    if (this.room) {
-      this.spawns = spawnsInRoom(this.room);
-      const myStructures = this.room.find(FIND_MY_STRUCTURES);
-      this.extensionsCreated = myStructures.filter(
-        structure => structure.structureType === STRUCTURE_EXTENSION
-      );
-
-      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
-      this.extensionsUnderConstruction = constructionSites.filter(
-        site => site.structureType === STRUCTURE_EXTENSION
-      );
-
-      const roadsUnderConstruction = constructionSites.filter(
-        site => site.structureType === STRUCTURE_ROAD
-      );
-      this.towers = this.room.find(FIND_MY_STRUCTURES, {
-        filter: { structureType: STRUCTURE_TOWER }
-      });
-
-      const linksCreated = myStructures.filter(structure =>structure.structureType === STRUCTURE_LINK);
-      logger.info(`links: ${linksCreated}`);
-      if(linksCreated.length >= 3){
-        this.room.memory.linksCreated = true;
-        if(this.room.controller && this.room.controller.level>=5){
-          const upgraderLink = this.room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, {filter:{structureType: STRUCTURE_LINK}});
-          this.room.memory.upgraderLink = upgraderLink?.id as Id<StructureLink>;
-        }
-      }
-      else{
-        this.room.memory.linksCreated = false;
-      }
-      this.buildMoreRoads = roadsUnderConstruction.length === 0;
-      if(constructionSites.length>1){
-        this.room.memory.extraBuilders = true;
-      } else{
-        this.room.memory.extraBuilders = false;
-      }
-      logger.info(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
-    }
-  }
-
   private getTotalExtensions(): number {
     return this.extensionsUnderConstruction.length + this.extensionsCreated.length;
   }
@@ -215,7 +246,7 @@ export class Infrastructure extends Process {
         loc.splice(i, 1);
         --i;
       }
-      if(loc.length==0){
+      if (loc.length == 0) {
         break;
       }
     }
