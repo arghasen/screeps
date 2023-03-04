@@ -188,11 +188,31 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
     structure => ((structure.hits < structure.hitsMax - 300) &&
       structure.structureType !== STRUCTURE_WALL &&
       structure.structureType !== STRUCTURE_RAMPART) ||
-      (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000) ||
-      (structure.structureType === STRUCTURE_WALL && structure.hits < 15000)
+      (structure.structureType === STRUCTURE_RAMPART && structure.hits < getRampartMaxHits(room.controller?.level)) ||
+      (structure.structureType === STRUCTURE_WALL && structure.hits < getWallMaxHits(room.controller?.level))
   );
   const targetStructure = pos.findClosestByRange(targetStructures);
   return targetStructure;
+}
+
+function getWallMaxHits(level:number|undefined):number {
+  if(level){
+    switch(level){
+      case 6:
+        return 25000;
+      case 7:
+        return 100000;
+      case 8:
+        return 1000000;
+      default: 
+        return 15000;
+    }
+  }
+  return 0;
+}
+
+function getRampartMaxHits(level:number|undefined):number {
+  return getWallMaxHits(level)
 }
 
 export function transferEnergyFromCreep(creep: Creep) {
