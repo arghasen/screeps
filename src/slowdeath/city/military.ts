@@ -2,7 +2,7 @@ import { Role } from "slowdeath/creepActions/constants";
 import { Dismantler } from "slowdeath/creepActions/Dismantler";
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
-import { findStructureNeedingRepair } from "../creepActions/CommonActions"
+import { findStructureNeedingRepair } from "../creepActions/CommonActions";
 
 export class Military extends Process {
   protected className = "military";
@@ -16,7 +16,7 @@ export class Military extends Process {
     this.towers = room.find(FIND_MY_STRUCTURES, {
       filter: { structureType: STRUCTURE_TOWER }
     });
-    
+
     this.defendRoom(room);
     if (!this.defendedRoomThisTick) {
       this.repairRoom(room);

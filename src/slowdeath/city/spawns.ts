@@ -20,12 +20,16 @@ export class Spawns extends Process {
   private room!: Room;
   public main() {
     this.metadata = this.data as CityData;
-    logger.info(`${this.className}: Starting spawnner`);
+    logger.info(`${this.className}: Starting spawnner in ${this.metadata.roomName}`);
+
     if (!Game.rooms[this.metadata.roomName]) {
       return this.suicide();
     }
 
     this.room = Game.rooms[this.metadata.roomName];
+    logger.info(
+      ` energy Available: ${this.room.energyAvailable} capacity: ${this.room.energyCapacityAvailable}`
+    );
     if (this.room.controller) {
       const spawns = spawnsInRoom(this.room);
       const roomName = this.room.name;
@@ -46,18 +50,31 @@ export class Spawns extends Process {
         const creep = this.getCreepToSpawn(energyCapacityAvailable);
 
         if (creep) {
+          //this.createCreep(spawn, creep);
           if (getSpawnCost(creep.build) <= this.room.energyAvailable) {
             logger.info(`got creep to create: ${logger.json(creep)}`);
             this.createCreep(spawn, creep);
           } else {
+            logger.debug(
+              `queuing creep to create: ${logger.json(creep)} and energy available: ${
+                this.room.energyAvailable
+              }`
+            );
             this.queueCreep(creep);
           }
+        } else {
+          logger.debug("invalid creep to create");
         }
       }
     }
   }
   private queueCreep(creep: CreepSpawnData) {
-    creep.name = `${creep.name}_ ${Math.random()}`;
+    const pos = creep.name.lastIndexOf("_");
+    if (pos != -1) {
+      creep.name = `${creep.name.substring(0, pos)}_${Math.random().toFixed(2)}`;
+    } else {
+      creep.name = `${creep.name}_ ${Math.random().toFixed(2)}`;
+    }
     this.room.memory.spawnNext = creep;
   }
 
@@ -74,7 +91,11 @@ export class Spawns extends Process {
   private onCreateSuccess(creep: CreepSpawnData) {
     if (Memory.createClaimer && creep.options.memory?.role == Role.ROLE_CLAIMER) {
       Memory.createClaimer.done = creep.name;
-    } else if (Memory.needBuilder.sent == "" && creep.options.memory?.role == Role.ROLE_BUILDER) {
+    } else if (
+      Memory.needBuilder &&
+      Memory.needBuilder.sent == "" &&
+      creep.options.memory?.role == Role.ROLE_BUILDER
+    ) {
       Memory.needBuilder.sent = creep.name;
     } else if (creep.options.memory?.role == Role.ROLE_CONTINUOUS_HARVESTER) {
       this.room.memory.createContinuousHarvester = false;
@@ -96,7 +117,7 @@ export class Spawns extends Process {
       return this.getRemoteBuilder(energyCapacityAvailable);
     } else {
       const creepRole = this.room.memory.spawnQueue[0];
-      if (creepRole) {
+      if (creepRole != undefined) {
         logger.debug(`Using spawn queue to create creep: ${roleNames[creepRole]}`);
         return this.getQueuedCreep(this.room.name, energyCapacityAvailable, creepRole);
       }
@@ -167,8 +188,8 @@ export class Spawns extends Process {
       myCreeps.length <=
         MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
       this.room.memory.createContinuousHarvester ||
-      !Memory.createClaimer?.done ||
-      Memory.needBuilder?.sent == ""
+      (Memory.createClaimer && !Memory.createClaimer.done) ||
+      (Memory.needBuilder && Memory.needBuilder?.sent == "")
     );
   }
 

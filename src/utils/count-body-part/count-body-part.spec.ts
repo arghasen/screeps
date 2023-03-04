@@ -1,21 +1,21 @@
-import countBodyPart from './'
+import countBodyPart from "./";
 
-import stubCreep from '../../../tests/stub/creep'
-import stubConstants from '../../../tests/stub/constants'
+import stubCreep from "../../../tests/stub/creep";
+import stubConstants from "../../../tests/stub/constants";
 
-describe('Count Body part', () => {
+describe("Count Body part", () => {
   beforeAll(() => {
-    stubConstants()
-  })
+    stubConstants();
+  });
 
-  it('should count the body parts', () => {
+  it("should count the body parts", () => {
     let creep = stubCreep({
-      name: 'test',
+      name: "test",
       body: [MOVE, MOVE, CARRY]
-    })
+    });
 
-    expect(countBodyPart(creep, MOVE)).toBe(2)
-    expect(countBodyPart(creep, CARRY)).toBe(1)
-    expect(countBodyPart(creep, ATTACK)).toBe(0)
-  })
-})
+    expect(countBodyPart(creep, MOVE)).toBe(2);
+    expect(countBodyPart(creep, CARRY)).toBe(1);
+    expect(countBodyPart(creep, ATTACK)).toBe(0);
+  });
+});

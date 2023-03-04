@@ -12,7 +12,6 @@ import { Dismantler } from "slowdeath/creepActions/Dismantler";
 export class Employment extends Process {
   protected className = "employment";
   private myCreeps: Creep[] = [];
-  private sources: Source[] = [];
   private numHarversters = 0;
   private numBuilders = 0;
   private numHaulers = 0;
@@ -32,7 +31,7 @@ export class Employment extends Process {
     }
     logger.debug(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
-
+    logger.info(`${this.room.name} energy Available: ${this.room.energyAvailable} capacity: ${this.room.energyCapacityAvailable}`);
     this.getWorkerCounts();
     this.populationBasedEmployer();
     this.runCreepActions();
@@ -54,7 +53,8 @@ export class Employment extends Process {
       return cur < max * scale;
     }
   }
-  createWorkers(employ: (cur: number, max: number) => boolean) {
+  
+  private createWorkers(employ: (cur: number, max: number) => boolean) {
 
     // FIXME: Improve this logic
     const spawnQueue = this.room.memory.spawnQueue;

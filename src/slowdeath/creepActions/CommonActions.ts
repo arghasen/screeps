@@ -148,7 +148,7 @@ export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
 
   logger.debug(creep.name + logger.json(targets));
   const target = creep.pos.findClosestByPath(targets);
-  logger.debug(`closest spawn or extension :  ${logger.json(target)}`);
+  logger.debug(`${creep.name} pos: ${logger.json(creep.pos)}  closest spawn or extension :  ${logger.json(target)}`);
 
   if (!target) {
     const targets2 = structures.filter(structure => {
@@ -158,7 +158,7 @@ export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
     });
     const target2 = creep.pos.findClosestByPath(targets2);
-    logger.debug(`closest container or tower: ${logger.json(target2)}`);
+    logger.debug(`${creep.name} pos: ${logger.json(creep.pos)} closest container or tower: ${logger.json(target2)}`);
     return target2;
   }
   return target;
@@ -188,7 +188,8 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
     structure => ((structure.hits < structure.hitsMax - 300) &&
       structure.structureType !== STRUCTURE_WALL &&
       structure.structureType !== STRUCTURE_RAMPART) ||
-      (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000)
+      (structure.structureType === STRUCTURE_RAMPART && structure.hits < 15000) ||
+      (structure.structureType === STRUCTURE_WALL && structure.hits < 15000)
   );
   const targetStructure = pos.findClosestByRange(targetStructures);
   return targetStructure;

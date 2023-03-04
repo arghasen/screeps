@@ -3,7 +3,7 @@
     "version": "0.8.1",
     "main": "index.js",
     "scripts": {
-        "build": "tsc -p .",
+        "build": "bash src/utils/version.sh && tsc -p .",
         "lint": "eslint \"src/**/*.ts\"",
         "clean": "rm -rf tsc-out && rm -rf dist",
         "compile": "rollup -c",

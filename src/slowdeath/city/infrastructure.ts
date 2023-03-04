@@ -12,7 +12,7 @@ export class Infrastructure extends Process {
   private buildMoreRoads = true;
   private spawns: StructureSpawn[] = [];
   private room!: Room;
-  private towers: StructureTower[] = []
+  private towers: StructureTower[] = [];
   private constructionSites: ConstructionSite<BuildableStructureConstant>[] = [];
 
   private init() {
@@ -39,16 +39,19 @@ export class Infrastructure extends Process {
         filter: { structureType: STRUCTURE_TOWER }
       });
 
-      const linksCreated = myStructures.filter(structure => structure.structureType === STRUCTURE_LINK);
+      const linksCreated = myStructures.filter(
+        structure => structure.structureType === STRUCTURE_LINK
+      );
       logger.debug(`links: ${linksCreated}`);
       if (linksCreated.length >= 3) {
         this.room.memory.linksCreated = true;
         if (this.room.controller && this.room.controller.level >= 5) {
-          const upgraderLink = this.room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_LINK } });
+          const upgraderLink = this.room.controller.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+            filter: { structureType: STRUCTURE_LINK }
+          });
           this.room.memory.upgraderLink = upgraderLink?.id as Id<StructureLink>;
         }
-      }
-      else {
+      } else {
         this.room.memory.linksCreated = false;
       }
       this.buildMoreRoads = roadsUnderConstruction.length === 0;
@@ -144,25 +147,26 @@ export class Infrastructure extends Process {
 
   private buildTowers() {
     if (this.room.controller!.level >= 3) {
-      if (this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller!.level]) {
+      if (
+        this.towers.length < CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller!.level]
+      ) {
         logger.info("time to build a tower");
         const towerPos = getTowerPosition(this.room.name, this.towers);
         if (towerPos) {
           this.room.createConstructionSite(towerPos, STRUCTURE_TOWER);
           this.buildRoadsFromSource(this.room, towerPos);
-        }
-        else {
+        } else {
           logger.warning(" tower position is invalid");
         }
       }
     }
 
     function getTowerPosition(roomName: string, towers: StructureTower[]) {
-      if(towers.length == 0){
+      if (towers.length == 0) {
         return new RoomPosition(25, 25, roomName);
-      } else if(towers.length == 1){
+      } else if (towers.length == 1) {
         return new RoomPosition(15, 20, roomName);
-      } else if(towers.length == 2){
+      } else if (towers.length == 2) {
         return new RoomPosition(30, 20, roomName);
       }
       return null;
