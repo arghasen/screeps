@@ -5,26 +5,16 @@ import { harvest, transfer } from "./CommonActions";
 export class ContinuousHarvester {
   public static run = (creep: Creep): void => {
     if (!creep.memory.source) {
-      const sources: Source[] = creep.room.find(FIND_SOURCES);
-      sources.sort();
-      const source = sources[creep.room.memory.continuousHarvesterCount % 2];
-      creep.memory.source = source.id;
-      creep.room.memory.continuousHarvesterCount++;
-      const link = source.pos.findInRange(FIND_MY_STRUCTURES, 2, { filter: { structureType: STRUCTURE_LINK } })[0];
-      if (link) {
-        creep.memory.link = link.id as Id<StructureLink>;
-      }
+      initializeCreepMemory(creep);
     }
-    const source = objectFromId(creep.memory.source);
+
+    const source = objectFromId(creep.memory.source!);
     harvest(creep, source);
+   
     if(creep.ticksToLive == 1){
-      const startTime = creep.room.memory.harvesterStartTime[source!.id];
-      if(startTime.length>=10){
-        startTime.shift();
-      }
-      startTime.push(creep.memory.harvestStartTime!)
-      startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
+      handleCreepDeath(creep, source);
     }
+   
     if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() == 0) {
       if (creep.room.memory.linksCreated == true) {
         logger.debug("link mining");
@@ -36,6 +26,27 @@ export class ContinuousHarvester {
     }
   }
 };
+
+function initializeCreepMemory(creep: Creep) {
+  const sources: Source[] = creep.room.find(FIND_SOURCES);
+  sources.sort();
+  const source = sources[creep.room.memory.continuousHarvesterCount % 2];
+  creep.memory.source = source.id;
+  creep.room.memory.continuousHarvesterCount++;
+  const link = source.pos.findInRange(FIND_MY_STRUCTURES, 2, { filter: { structureType: STRUCTURE_LINK } })[0];
+  if (link) {
+    creep.memory.link = link.id as Id<StructureLink>;
+  }
+}
+
+function handleCreepDeath(creep: Creep, source: Source | null) {
+  const startTime = creep.room.memory.harvesterStartTime[source!.id];
+  if (startTime.length >= 10) {
+    startTime.shift();
+  }
+  startTime.push(creep.memory.harvestStartTime!);
+  startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
+}
 
 function handleLinkMining(creep: Creep) {
   if (creep.memory.link) {

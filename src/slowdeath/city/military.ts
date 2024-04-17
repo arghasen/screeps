@@ -8,19 +8,20 @@ export class Military extends Process {
   protected className = "military";
   private metadata?: CityData;
   private towers: StructureTower[] = [];
-  private defendedRoomThisTick: boolean = false;
   public main() {
     this.metadata = this.data as CityData;
     logger.debug(`${this.className}: Starting military for ${this.metadata.roomName}`);
     const room = Game.rooms[this.metadata.roomName];
-    this.towers = room.find(FIND_MY_STRUCTURES, {
-      filter: { structureType: STRUCTURE_TOWER }
-    });
-
-    this.defendRoom(room);
-    if (!this.defendedRoomThisTick) {
+    this.towers = this.findTowers(room);
+    if (!this.defendRoom(room)) {
       this.repairRoom(room);
     }
+  }
+
+  private findTowers(room: Room): StructureTower[] {
+    return room.find(FIND_MY_STRUCTURES, {
+      filter: { structureType: STRUCTURE_TOWER }
+    });
   }
 
   private repairRoom(room: Room): void {
@@ -33,17 +34,20 @@ export class Military extends Process {
     }
   }
 
-  private defendRoom(room: Room): void {
+  private defendRoom(room: Room): boolean {
     const hostiles: Creep[] = room.find(FIND_HOSTILE_CREEPS);
-    if (hostiles.length > 0) {
+    const hasHostiles = hostiles.length > 0;
+    if (hasHostiles) {
       Game.notify(`enemy spotted in room ${room.name}`);
-
-      this.towers.forEach((tower: AnyOwnedStructure): void => {
-        if (tower.structureType === STRUCTURE_TOWER) {
-          tower.attack(hostiles[0]);
-        }
-      });
-      this.defendedRoomThisTick = true;
+      this.attackHostiles(hostiles);
     }
+    return hasHostiles;
+  }
+  private attackHostiles(hostiles: Creep[]): void {
+    this.towers.forEach((tower: AnyOwnedStructure): void => {
+      if (tower.structureType === STRUCTURE_TOWER) {
+        tower.attack(hostiles[0]);
+      }
+    });
   }
 }

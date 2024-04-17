@@ -2,7 +2,7 @@ import objectFromId from "utils/object-from-id";
 import { logger } from "../../utils/logger";
 import { Role } from "./constants";
 
-export function moveToOtherRoom(creep: Creep, moveLoc:MoveLoc) {
+export function moveToOtherRoom(creep: Creep, moveLoc: MoveLoc) {
   const target = new RoomPosition(moveLoc.x, moveLoc.y, moveLoc.roomName);
   logger.debug("Moving.location", logger.json(target));
   creep.moveTo(target);
@@ -140,28 +140,28 @@ function getEnergyStore(creep: Creep) {
 
 export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
   const structures = creep.room.find(FIND_STRUCTURES);
-  const targets = structures.filter(structure => {
+  const primaryTargets = structures.filter(structure => {
     return ((structure.structureType === STRUCTURE_EXTENSION ||
       structure.structureType === STRUCTURE_SPAWN) &&
       structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
   });
 
-  logger.debug(creep.name + logger.json(targets));
-  const target = creep.pos.findClosestByPath(targets);
-  logger.debug(`${creep.name} pos: ${logger.json(creep.pos)}  closest spawn or extension :  ${logger.json(target)}`);
-
-  if (!target) {
-    const targets2 = structures.filter(structure => {
-      return (
-        (structure.structureType === STRUCTURE_CONTAINER ||
-          structure.structureType === STRUCTURE_TOWER) &&
-        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-    });
-    const target2 = creep.pos.findClosestByPath(targets2);
-    logger.debug(`${creep.name} pos: ${logger.json(creep.pos)} closest container or tower: ${logger.json(target2)}`);
-    return target2;
+  logger.debug(creep.name + logger.json(primaryTargets));
+  const primaryTarget = creep.pos.findClosestByPath(primaryTargets);
+  if (primaryTarget) {
+    logger.debug(`${creep.name} pos: ${logger.json(creep.pos)}  closest spawn or extension :  ${logger.json(primaryTarget)}`);
+    return primaryTarget;
   }
-  return target;
+
+  const secondaryTargets = structures.filter(structure => {
+    return (
+      (structure.structureType === STRUCTURE_CONTAINER ||
+        structure.structureType === STRUCTURE_TOWER) &&
+      structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+  });
+  const secondaryTarget = creep.pos.findClosestByPath(secondaryTargets);
+  logger.debug(`${creep.name} pos: ${logger.json(creep.pos)} closest container or tower: ${logger.json(secondaryTarget)}`);
+  return secondaryTarget;
 }
 
 export function pickupOrHarvest(creep: Creep) {
@@ -176,7 +176,7 @@ export function pickupOrHarvest(creep: Creep) {
 export function getCreepNeedingEnergy(creep: Creep) {
   return creep.pos.findClosestByRange(FIND_CREEPS, {
     filter: creepTo =>
-      creepTo.memory.role !== Role.ROLE_HAULER &&
+      creepTo.memory.role !== Role.HAULER &&
       creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
   });
 }
@@ -191,27 +191,34 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
       (structure.structureType === STRUCTURE_RAMPART && structure.hits < getRampartMaxHits(room.controller?.level)) ||
       (structure.structureType === STRUCTURE_WALL && structure.hits < getWallMaxHits(room.controller?.level))
   );
-  const targetStructure = pos.findClosestByRange(targetStructures);
+
+  const obstacles = targetStructures.filter(structure => structure.structureType == STRUCTURE_RAMPART || structure.structureType == STRUCTURE_WALL);
+  obstacles.sort((a, b) => { return a.hits - b.hits });
+  let targetStructure = pos.findClosestByRange(targetStructures);
+  if (targetStructure && (targetStructure.structureType == STRUCTURE_WALL || targetStructure.structureType == STRUCTURE_RAMPART)) {
+    if (Game.time % 10 == 0) {
+      targetStructure = obstacles[0];
+    } else {
+      return null;
+    }
+  }
   return targetStructure;
 }
 
-function getWallMaxHits(level:number|undefined):number {
-  if(level){
-    switch(level){
-      case 6:
-        return 25000;
-      case 7:
-        return 100000;
-      case 8:
-        return 1000000;
-      default: 
-        return 15000;
-    }
-  }
-  return 0;
+const wallMaxHits: Record<number, number> = {
+  3: 20000,
+  4: 50000,
+  5: 125000,
+  6: 250000,
+  7: 1000000,
+  8: 10000000,
+};
+
+function getWallMaxHits(level: number | undefined): number {
+  return level ? wallMaxHits[level] || 70000 : 0;
 }
 
-function getRampartMaxHits(level:number|undefined):number {
+function getRampartMaxHits(level: number | undefined): number {
   return getWallMaxHits(level)
 }
 

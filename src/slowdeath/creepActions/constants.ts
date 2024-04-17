@@ -1,6 +1,23 @@
 export const ControllerConsts: Record<string, number> = {
-  lvl2extensions: 5
+  lvl2extensions: 5,
+  lvl3extensions: 10,
+  lvl4extensions: 20,
+  lvl5extensions: 30,
+  lvl6extensions: 40,
+  lvl7extensions: 50,
+  lvl8extensions: 60
 };
+export enum RoomLevel {
+  LEVEL_0,
+  LEVEL_1,
+  LEVEL_2,
+  LEVEL_3,
+  LEVEL_4,
+  LEVEL_5,
+  LEVEL_6,
+  LEVEL_7,
+  LEVEL_8
+}
 
 export const MaxRolePopulation = {
   continuousHarvester: 2,
@@ -33,38 +50,38 @@ export const MaxPopulationPerRoom: Record<number, number> = {
   8: 7
 };
 export enum Role {
-  ROLE_HARVESTER,
-  ROLE_UPGRADER,
-  ROLE_HAULER,
-  ROLE_BUILDER,
-  ROLE_CONTINUOUS_HARVESTER,
-  ROLE_REM_UPGRADER,
-  ROLE_CLAIMER,
-  ROLE_DISMANTLER
+  HARVESTER,
+  UPGRADER,
+  HAULER,
+  BUILDER,
+  CONTINUOUS_HARVESTER,
+  REM_UPGRADER,
+  CLAIMER,
+  DISMANTLER
 }
 
 type RolePriotity = { [key in Role]: number };
 export const rolePriotity: RolePriotity = {
-  [Role.ROLE_HARVESTER]: 10,
-  [Role.ROLE_UPGRADER]: 5,
-  [Role.ROLE_HAULER]: 8,
-  [Role.ROLE_BUILDER]: 6,
-  [Role.ROLE_CONTINUOUS_HARVESTER]: 20,
-  [Role.ROLE_REM_UPGRADER]: 2,
-  [Role.ROLE_CLAIMER]: 1,
-  [Role.ROLE_DISMANTLER]: 3
+  [Role.HARVESTER]: 10,
+  [Role.UPGRADER]: 5,
+  [Role.HAULER]: 8,
+  [Role.BUILDER]: 6,
+  [Role.CONTINUOUS_HARVESTER]: 20,
+  [Role.REM_UPGRADER]: 2,
+  [Role.CLAIMER]: 1,
+  [Role.DISMANTLER]: 3
 };
 
 type RoleNames = { [key in Role]: string };
 export const roleNames: RoleNames = {
-  [Role.ROLE_HARVESTER]: "harvester",
-  [Role.ROLE_UPGRADER]: "upgrader",
-  [Role.ROLE_HAULER]: "hauler",
-  [Role.ROLE_BUILDER]: "builder",
-  [Role.ROLE_CONTINUOUS_HARVESTER]: "continuous_harvester",
-  [Role.ROLE_REM_UPGRADER]: "remUpgrader",
-  [Role.ROLE_CLAIMER]: "claimer",
-  [Role.ROLE_DISMANTLER]: "dismantler"
+  [Role.HARVESTER]: "harvester",
+  [Role.UPGRADER]: "upgrader",
+  [Role.HAULER]: "hauler",
+  [Role.BUILDER]: "builder",
+  [Role.CONTINUOUS_HARVESTER]: "continuous_harvester",
+  [Role.REM_UPGRADER]: "remUpgrader",
+  [Role.CLAIMER]: "claimer",
+  [Role.DISMANTLER]: "dismantler"
 };
 
 export enum actions {

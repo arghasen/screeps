@@ -1,3 +1,4 @@
+import { Role, roleNames } from "slowdeath/creepActions/constants";
 export function getContinuousHarvesterBody(energyCapacityAvailable: number): BodyPartConstant[] {
   let body: BodyPartConstant[] = [];
   if (energyCapacityAvailable > 1000) {
@@ -80,4 +81,62 @@ export function getSpawnCost(body: BodyPartConstant[]) {
     cost += BODYPART_COST[part];
   }
   return cost;
+}
+
+export function getContinuousHarvestor(energyCapacityAvailable: number): CreepSpawnData {
+  return {
+    build: getContinuousHarvesterBody(energyCapacityAvailable),
+    name: `cont_harv-${Game.time}`,
+    options: { memory: { role: Role.CONTINUOUS_HARVESTER, harvesting: false } }
+  };
+}
+
+export function getClaimer(energyCapacityAvailable: number): CreepSpawnData | null {
+  let body: BodyPartConstant[] = [];
+  if (energyCapacityAvailable >= 650) {
+    body = [CLAIM, MOVE];
+    return {
+      build: body,
+      name: `creep-${Game.time}`,
+      options: {
+        memory: {
+          role: Role.CLAIMER,
+          moveLoc: Memory.createClaimer?.loc,
+          identifier: Memory.createClaimer?.identifier,
+          harvesting: false
+        }
+      }
+    };
+  }
+  return null;
+}
+
+export function getHauler(energyCapacityAvailable: number, role: Role): CreepSpawnData {
+  return {
+    build: getHaulerBody(energyCapacityAvailable),
+    name: `${roleNames[role]}-${Game.time}`,
+    options: { memory: { role: role, harvesting: false } }
+  };
+}
+
+export function getRemoteBuilder(energyCapacityAvailable: number): CreepSpawnData {
+  return {
+    build: getBuilderBody(energyCapacityAvailable),
+    name: `rembuilder-${Game.time}`,
+    options: {
+      memory: {
+        role: Role.BUILDER,
+        moveLoc: Memory.needBuilder.moveLoc,
+        harvesting: false
+      }
+    }
+  };
+}
+
+export function getEmergencyCreep(): CreepSpawnData {
+  return {
+    build: [WORK, CARRY, MOVE],
+    name: `$emergency-${Game.time}`,
+    options: { memory: { role: Role.HARVESTER, harvesting: false } }
+  };
 }

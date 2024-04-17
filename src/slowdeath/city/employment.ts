@@ -24,6 +24,13 @@ export class Employment extends Process {
   private rcl = 0;
 
   public main() {
+    this.initilize();
+    this.getWorkerCounts();
+    this.populationBasedEmployer();
+    this.runCreepActions();
+  }
+
+  private initilize() {
     this.metadata = this.data as CityData;
     this.room = Game.rooms[this.metadata.roomName];
     if (this.room.controller) {
@@ -32,9 +39,6 @@ export class Employment extends Process {
     logger.debug(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
     logger.info(`${this.room.name} energy Available: ${this.room.energyAvailable} capacity: ${this.room.energyCapacityAvailable}`);
-    this.getWorkerCounts();
-    this.populationBasedEmployer();
-    this.runCreepActions();
   }
 
   private populationBasedEmployer() {
@@ -53,42 +57,32 @@ export class Employment extends Process {
       return cur < max * scale;
     }
   }
-  
+
   private createWorkers(employ: (cur: number, max: number) => boolean) {
 
     // FIXME: Improve this logic
     const spawnQueue = this.room.memory.spawnQueue;
-
-    spawnQueue.forEach((role)=>{this.workerCounter(role);})
-
-    const buildersRequired = (this.rcl >= 5 && this.numBuilders >= 1) ? false : true;
+    spawnQueue.forEach((role) => { this.workerCounter(role); })
+    const buildersRequired = !(this.rcl >= 4 && this.numBuilders >= 1 && !this.room.memory.extraBuilders);
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !this.room.memory.continuousHarvestingStarted
     ) {
-      spawnQueue.push(Role.ROLE_HARVESTER);
+      spawnQueue.push(Role.HARVESTER);
     } else if (
       employ(this.numHaulers, MaxRolePopulation.haulers) &&
       this.room.memory.continuousHarvestingStarted
     ) {
-      spawnQueue.push(Role.ROLE_HAULER);
-    } else if (employ(this.numBuilders, this.dynamicEmployer(Role.ROLE_BUILDER)) && buildersRequired) {
-      spawnQueue.push(Role.ROLE_BUILDER);
-    } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.ROLE_UPGRADER))) {
-      spawnQueue.push(Role.ROLE_UPGRADER);
+      spawnQueue.push(Role.HAULER);
+    } else if (employ(this.numBuilders, this.dynamicEmployer(Role.BUILDER)) && buildersRequired) {
+      spawnQueue.push(Role.BUILDER);
+    } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.UPGRADER))) {
+      spawnQueue.push(Role.UPGRADER);
     }
   }
 
   private checkEmemrgencySituation(totWorkers: number) {
-    if (totWorkers < PopulationScaler[this.rcl] && this.rcl <= 2) {
-      this.room.memory.critical = true;
-    }
-    else if (totWorkers < PopulationScaler[this.rcl] * 2 && this.rcl >= 3) {
-      this.room.memory.critical = true;
-    }
-    else {
-      this.room.memory.critical = false;
-    }
+    this.room.memory.critical = (totWorkers < PopulationScaler[this.rcl]);
   }
 
   private waitForContiniousHarvester(totWorkers: number) {
@@ -115,21 +109,17 @@ export class Employment extends Process {
   }
 
   private storeHarvestingStatus() {
-    if (this.numContinuousHarvesters >= 1) {
-      this.room.memory.continuousHarvestingStarted = true;
-    } else {
-      this.room.memory.continuousHarvestingStarted = false;
-    }
+    this.room.memory.continuousHarvestingStarted = (this.numContinuousHarvesters >= 1)
   }
 
   private dynamicEmployer(role: Role): number {
-    if (role == Role.ROLE_BUILDER) {
+    if (role == Role.BUILDER) {
       if (this.room.memory.extraBuilders) {
         return MaxRolePopulation.builders + 1;
       } else {
         return MaxRolePopulation.builders;
       }
-    } else if (role == Role.ROLE_UPGRADER) {
+    } else if (role == Role.UPGRADER) {
       if (this.room.memory.extraBuilders) {
         return MaxRolePopulation.upgrader - 1;
       } else {
@@ -159,63 +149,44 @@ export class Employment extends Process {
   };
 
   private workerCounter(role: Role) {
-    let unemployed = false;
-    switch (role) {
-      case Role.ROLE_HARVESTER:
-        this.numHarversters++;
-        break;
-      case Role.ROLE_UPGRADER:
-        this.numUpgraders++;
-        break;
-      case Role.ROLE_HAULER:
-        this.numHaulers++;
-        break;
-      case Role.ROLE_BUILDER:
-        this.numBuilders++;
-        break;
-      case Role.ROLE_CONTINUOUS_HARVESTER:
-        this.numContinuousHarvesters++;
-        break;
-      case Role.ROLE_CLAIMER:
-        this.numClaimer++;
-        break;
-      case Role.ROLE_DISMANTLER:
-        break;
-      default:
-        unemployed = true;
-        break;
+    const roleCounters: Record<Role, () => void> = {
+      [Role.HARVESTER]: () => this.numHarversters++,
+      [Role.UPGRADER]: () => this.numUpgraders++,
+      [Role.HAULER]: () => this.numHaulers++,
+      [Role.BUILDER]: () => this.numBuilders++,
+      [Role.CONTINUOUS_HARVESTER]: () => this.numContinuousHarvesters++,
+      [Role.CLAIMER]: () => this.numClaimer++,
+      [Role.DISMANTLER]: () => { },
+      [Role.REM_UPGRADER]: () => { },
+    };
+
+    if (role in roleCounters) {
+      roleCounters[role]();
+      return false;
     }
-    return unemployed;
+
+    return true;
   }
 
   private runCreepActions() {
+    const creepActions: Record<Role, (creep: Creep) => void> = {
+      [Role.HARVESTER]: Harvester.run,
+      [Role.HAULER]: Hauler.run,
+      [Role.BUILDER]: Builder.run,
+      [Role.UPGRADER]: Upgrader.run,
+      [Role.CONTINUOUS_HARVESTER]: ContinuousHarvester.run,
+      [Role.CLAIMER]: Claimer.run,
+      [Role.DISMANTLER]: Dismantler.run,
+      [Role.REM_UPGRADER]: () => { },
+    };
+
     for (const creep of this.myCreeps) {
       if (creep.pos.roomName !== this.room.name) {
         continue;
       }
-      switch (creep.memory.role) {
-        case Role.ROLE_HARVESTER:
-          Harvester.run(creep);
-          break;
-        case Role.ROLE_HAULER:
-          Hauler.run(creep);
-          break;
-        case Role.ROLE_BUILDER:
-          Builder.run(creep);
-          break;
-        case Role.ROLE_UPGRADER:
-          Upgrader.run(creep);
-          break;
-        case Role.ROLE_CONTINUOUS_HARVESTER:
-          ContinuousHarvester.run(creep);
-          break;
-        case Role.ROLE_CLAIMER:
-          Claimer.run(creep);
-          break;
-        case Role.ROLE_DISMANTLER:
-        //  Dismantler.run(creep);
-        default:
-          _.noop();
+
+      if (creep.memory.role in creepActions) {
+        creepActions[creep.memory.role as Role](creep);
       }
     }
   }
