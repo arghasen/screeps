@@ -11,7 +11,13 @@ export class ContinuousHarvester {
       return;
     }
 
-    const source = objectFromId(creep.memory.source);
+    const source = objectFromId<Source>(creep.memory.source);
+    if (!source) {
+      logger.debug(`Invalid source ID for harvester: ${creep.name}`);
+      delete creep.memory.source;
+      return;
+    }
+
     harvest(creep, source);
 
     if (creep.ticksToLive === 1) {
@@ -44,40 +50,51 @@ function initializeCreepMemory(creep: Creep) {
   }
 }
 
-function handleCreepDeath(creep: Creep, source: Source | null) {
-  if (!source) {
-    return;
+function handleCreepDeath(creep: Creep, source: Source) {
+  if (!creep.room.memory.harvesterStartTime || !creep.room.memory.harvesterStartTime[source.id]) {
+    creep.room.memory.harvesterStartTime = creep.room.memory.harvesterStartTime || {};
+    creep.room.memory.harvesterStartTime[source.id] = [];
   }
+
   const startTime = creep.room.memory.harvesterStartTime[source.id];
   if (startTime.length >= 10) {
     startTime.shift();
   }
+
   if (creep.memory.harvestStartTime) {
     startTime.push(creep.memory.harvestStartTime);
-    startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
+    if (startTime.length > 0) {
+      startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
+    }
   }
 }
 
 function handleLinkMining(creep: Creep) {
   if (creep.memory.link) {
-    const link = objectFromId(creep.memory.link);
-    logger.debug(`link to be used ${String(link)}`);
-    if (link) {
-      transfer(creep, link);
-      if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
-        logger.debug("link more than 50% full");
-        transferToUpgraderLink(link);
-      }
+    const link = objectFromId<StructureLink>(creep.memory.link);
+    if (!link) {
+      delete creep.memory.link;
+      return;
+    }
+
+    logger.debug(`link to be used ${link.id}`);
+    transfer(creep, link);
+    if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
+      logger.debug("link more than 50% full");
+      transferToUpgraderLink(link);
     }
   }
 
   function transferToUpgraderLink(link: StructureLink) {
-    if (creep.room.memory.upgraderLink) {
-      const upgraderLink = objectFromId(creep.room.memory.upgraderLink);
-      if (upgraderLink) {
-        const ret = link.transferEnergy(upgraderLink);
-        logger.debug(`link result: ${ret}`);
-      }
+    if (!creep.room.memory.upgraderLink) return;
+
+    const upgraderLink = objectFromId<StructureLink>(creep.room.memory.upgraderLink);
+    if (!upgraderLink) {
+      delete creep.room.memory.upgraderLink;
+      return;
     }
+
+    const ret = link.transferEnergy(upgraderLink);
+    logger.debug(`link result: ${ret}`);
   }
 }

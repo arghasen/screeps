@@ -47,7 +47,9 @@ export function transfer(creep: Creep, target: AnyCreep | Structure) {
   }
 }
 
-export function build(creep: Creep, target: ConstructionSite) {
+export function build(creep: Creep, target: ConstructionSite | null) {
+  if (!target) return;
+
   if (creep.build(target) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
     creep.moveTo(target, {
       visualizePathStyle: { stroke: "#ffffff" }
@@ -95,10 +97,8 @@ function extractTarget<T extends _HasId>(creep: Creep): T | null {
   let target: T | null = null;
   if (creep.memory.target) {
     target = objectFromId<T>(creep.memory.target as Id<T>);
-    if (!target || !(target instanceof Resource)) {
-      logger.debug(
-        `creep memory has invalid target ${logger.json(creep)} target: ${String(target)}`
-      );
+    if (!target) {
+      logger.debug(`creep memory has invalid target ${logger.json(creep)}`);
       creep.memory.target = undefined;
     }
   }
