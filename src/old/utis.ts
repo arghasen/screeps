@@ -13,8 +13,6 @@ export function nearbyTerrain(room: Room): void {
         possibleFreeLocations.push(loc);
       }
       console.log("Possible Free Locations:", possibleFreeLocations);
-      // const closestSource = PathFinder.search(this.spawns[0].pos, possibleMiningLocations);
-      // console.log("closest path to source")
     }
   }
 }
@@ -22,7 +20,7 @@ export function nearbyTerrain(room: Room): void {
 function setupMineContainers(room: Room) {
   const sources = room.find(FIND_SOURCES);
   for (const source of sources) {
-    const possibleMiningLocations:number[][] = [];
+    const possibleMiningLocations: number[][] = [];
     for (const loc of directionsArray) {
       const x = source.pos.x + loc[0];
       const y = source.pos.y + loc[1];
@@ -32,8 +30,6 @@ function setupMineContainers(room: Room) {
         possibleMiningLocations.push(loc);
       }
       console.log("Possible Mining Locations:", possibleMiningLocations);
-      // const closestSource = PathFinder.search(this.spawns[0].pos, possibleMiningLocations);
-      // console.log("closest path to source")
     }
   }
 }

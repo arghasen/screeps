@@ -37,6 +37,7 @@ export class Kernel {
             err.message
           } stacktrace: ${err.stack || "no stack available"} " `
         );
+        currentProcess.suicide();
       }
     }
   }

@@ -2,7 +2,7 @@ type ScreepsPrometheus = import("@brainwart/screeps-prometheus-game").ScreepsPro
 type PromDict = ReturnType<ScreepsPrometheus["build"]>;
 
 type Pid = import("os/process").Pid;
-type Role = import ("slowdeath/creepActions/constants").Role ;
+type Role = import("slowdeath/creepActions/constants").Role;
 
 interface CreepSpawnData {
   build: BodyPartConstant[];
@@ -50,7 +50,7 @@ interface RoomMemory {
 }
 
 interface Memory {
-  gcl: Record<GlobalControlLevel["level"],number>;
+  gcl: Record<GlobalControlLevel["level"], number>;
   rooms: Record<string, RoomMemory>;
   stats: PromDict;
   version: string;
@@ -79,7 +79,7 @@ interface Memory {
 }
 interface CreepMemory {
   harvestStartTime?: number;
-  target?: any;
+  target?: Id<_HasId>;
   link?: Id<StructureLink>;
   identifier?: number;
   targetRoom?: string;

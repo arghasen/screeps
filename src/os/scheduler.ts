@@ -57,7 +57,9 @@ export class Scheduler {
     this.memory.processes.completed = [];
   }
 
-  public getPriorityForPid(pid: Pid) {}
+  public getPriorityForPid(pid: Pid) {
+    return 0;
+  }
 
   public getNextPid(): Pid {
     if (!this.memory.lastPid) {

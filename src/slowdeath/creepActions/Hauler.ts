@@ -21,10 +21,9 @@ export class Hauler {
         } // no target exist, then transfer energy to storage
       } else if (storage && storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
         transfer(creep, storage);
-      } else if (terminal && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0){
-        transfer(creep,terminal);
-      } 
-      else {
+      } else if (terminal && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+        transfer(creep, terminal);
+      } else {
         // no target exist, then transfer energy to creeps
         transferEnergyFromCreep(creep);
       }

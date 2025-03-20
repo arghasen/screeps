@@ -7,16 +7,19 @@ export class ContinuousHarvester {
     if (!creep.memory.source) {
       initializeCreepMemory(creep);
     }
+    if (!creep.memory.source) {
+      return;
+    }
 
-    const source = objectFromId(creep.memory.source!);
+    const source = objectFromId(creep.memory.source);
     harvest(creep, source);
-   
-    if(creep.ticksToLive == 1){
+
+    if (creep.ticksToLive === 1) {
       handleCreepDeath(creep, source);
     }
-   
-    if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() == 0) {
-      if (creep.room.memory.linksCreated == true) {
+
+    if (creep.store.getCapacity() > 0 && creep.store.getFreeCapacity() === 0) {
+      if (creep.room.memory.linksCreated === true) {
         logger.debug("link mining");
         // FIXME: a poor emergency mode
         if (creep.room.energyAvailable > 2000) {
@@ -24,8 +27,8 @@ export class ContinuousHarvester {
         }
       }
     }
-  }
-};
+  };
+}
 
 function initializeCreepMemory(creep: Creep) {
   const sources: Source[] = creep.room.find(FIND_SOURCES);
@@ -33,25 +36,32 @@ function initializeCreepMemory(creep: Creep) {
   const source = sources[creep.room.memory.continuousHarvesterCount % 2];
   creep.memory.source = source.id;
   creep.room.memory.continuousHarvesterCount++;
-  const link = source.pos.findInRange(FIND_MY_STRUCTURES, 2, { filter: { structureType: STRUCTURE_LINK } })[0];
+  const link = source.pos.findInRange(FIND_MY_STRUCTURES, 2, {
+    filter: { structureType: STRUCTURE_LINK }
+  })[0];
   if (link) {
     creep.memory.link = link.id as Id<StructureLink>;
   }
 }
 
 function handleCreepDeath(creep: Creep, source: Source | null) {
-  const startTime = creep.room.memory.harvesterStartTime[source!.id];
+  if (!source) {
+    return;
+  }
+  const startTime = creep.room.memory.harvesterStartTime[source.id];
   if (startTime.length >= 10) {
     startTime.shift();
   }
-  startTime.push(creep.memory.harvestStartTime!);
-  startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
+  if (creep.memory.harvestStartTime) {
+    startTime.push(creep.memory.harvestStartTime);
+    startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
+  }
 }
 
 function handleLinkMining(creep: Creep) {
   if (creep.memory.link) {
     const link = objectFromId(creep.memory.link);
-    logger.debug(`link to be used ${link}`)
+    logger.debug(`link to be used ${String(link)}`);
     if (link) {
       transfer(creep, link);
       if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
@@ -64,8 +74,10 @@ function handleLinkMining(creep: Creep) {
   function transferToUpgraderLink(link: StructureLink) {
     if (creep.room.memory.upgraderLink) {
       const upgraderLink = objectFromId(creep.room.memory.upgraderLink);
-      const ret = link.transferEnergy(upgraderLink!);
-      logger.debug(`link result: ${ret}`)
+      if (upgraderLink) {
+        const ret = link.transferEnergy(upgraderLink);
+        logger.debug(`link result: ${ret}`);
+      }
     }
   }
 }

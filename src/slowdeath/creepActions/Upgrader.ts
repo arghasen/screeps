@@ -7,10 +7,10 @@ export class Upgrader {
 
     if (!creep.memory.harvesting && creep.room.controller !== undefined) {
       // TODO: Ignore if target too far away
-      if(creep.ticksToLive! <= 5 && creep.store.energy > 15){
+      if (creep.ticksToLive! <= 5 && creep.store.energy > 15) {
         const target = getCreepNeedingEnergy(creep);
-        if(target){
-          transfer(creep,target);
+        if (target) {
+          transfer(creep, target);
         }
       }
 
@@ -22,15 +22,13 @@ export class Upgrader {
           visualizePathStyle: { stroke: "#ffffff" }
         });
       }
-    } else if(creep.room.memory.upgraderLink){
+    } else if (creep.room.memory.upgraderLink) {
       const upgraderLink = Game.getObjectById(creep.room.memory.upgraderLink);
       if (upgraderLink instanceof Structure && upgraderLink.structureType === STRUCTURE_LINK) {
-        withdraw(creep,upgraderLink);
+        withdraw(creep, upgraderLink);
       }
-
     } else {
       getEnergy(creep);
     }
   };
 }
-
