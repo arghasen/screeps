@@ -1,5 +1,3 @@
-import { Role } from "slowdeath/creepActions/constants";
-import { Dismantler } from "slowdeath/creepActions/Dismantler";
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
 import { findStructureNeedingRepair } from "../creepActions/CommonActions";

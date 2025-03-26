@@ -1,4 +1,4 @@
-import objectFromId from "utils/object-from-id";
+import { objectFromId } from "utils/screeps-fns";
 import { logger } from "../../utils/logger";
 import { Role } from "./constants";
 

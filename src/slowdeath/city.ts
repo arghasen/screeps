@@ -1,4 +1,4 @@
-import sourcesInRoom from "utils/sources-in-room";
+import { sourcesInRoom } from "utils/screeps-fns";
 import { Process } from "../os/process";
 import { logger } from "../utils/logger";
 import { RoadStatus } from "./creepActions/constants";
