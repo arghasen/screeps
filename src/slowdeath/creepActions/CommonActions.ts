@@ -18,6 +18,12 @@ export function pickup(creep: Creep, closestSource: Resource) {
   }
 }
 
+export function upgradeController(creep: Creep, controller: StructureController) {
+  if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
+    creep.moveTo(controller, { visualizePathStyle: { stroke: "#ffaa00" } });
+  }
+}
+
 export function harvest(creep: Creep, source: Source | null) {
   if (source) {
     const res = creep.harvest(source);

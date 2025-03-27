@@ -47,6 +47,11 @@ interface RoomMemory {
   critical: boolean;
   linksCreated: boolean;
   harvesterStartTime: Record<string, number[]>;
+  remoteMining: {
+    creepCost: number;
+    energyHarvested: number;
+    energyTransferred: number;
+  };
 }
 
 interface Memory {
@@ -87,6 +92,7 @@ interface CreepMemory {
   role: number;
   source?: Id<Source>;
   moveLoc?: MoveLoc;
+  homeRoom?: string;
 }
 
 interface ProcessData {

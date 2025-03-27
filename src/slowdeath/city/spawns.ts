@@ -14,6 +14,7 @@ import {
   getEmergencyCreep,
   getHauler,
   getRemoteBuilder,
+  getRemoteMiner,
   getSpawnCost
 } from "./creepBuilder";
 
@@ -26,6 +27,7 @@ export class Spawns extends Process {
     logger.info(`${this.className}: Starting spawnner in ${this.metadata.roomName}`);
 
     if (!this.roomExists()) {
+      logger.info(`${this.className}: Room ${this.metadata.roomName} does not exist`);
       return this.suicide();
     }
 
@@ -37,11 +39,11 @@ export class Spawns extends Process {
       return;
     }
     const spawns = spawnsInRoom(this.room);
-    if (spawns.length == 0) {
-      return
+    if (spawns.length === 0) {
+      return;
     }
     const roomName = this.room.name;
-    const myCreeps = _.filter(Game.creeps, creep => {
+    const myCreeps = _.filter(Game.creeps, (creep: Creep) => {
       return creep.pos.roomName === roomName;
     });
 
@@ -50,7 +52,6 @@ export class Spawns extends Process {
     }
 
     this.spawnCreeps(spawns);
-
   }
 
   private spawnCreeps(spawns: StructureSpawn[]) {
@@ -63,13 +64,14 @@ export class Spawns extends Process {
       const creep = this.getCreepToSpawn(energyCapacityAvailable);
 
       if (creep) {
-        //this.createCreep(spawn, creep);
         if (getSpawnCost(creep.build) <= this.room.energyAvailable) {
           logger.info(`got creep to create: ${logger.json(creep)}`);
           this.createCreep(spawn, creep);
         } else {
           logger.debug(
-            `queuing creep to create: ${logger.json(creep)} and energy available: ${this.room.energyAvailable}`
+            `queuing creep to create: ${logger.json(creep)} and energy available: ${
+              this.room.energyAvailable
+            }`
           );
           this.queueCreep(creep);
         }
@@ -89,7 +91,7 @@ export class Spawns extends Process {
 
     function getName(): string {
       const pos = creep.name.lastIndexOf("_");
-      if (pos != -1) {
+      if (pos !== -1) {
         return `${creep.name.substring(0, pos)}_${Math.random().toFixed(2)}`;
       } else {
         return `${creep.name}_ ${Math.random().toFixed(2)}`;
@@ -108,15 +110,15 @@ export class Spawns extends Process {
   }
 
   private onCreateSuccess(creep: CreepSpawnData) {
-    if (Memory.createClaimer && creep.options.memory?.role == Role.CLAIMER) {
+    if (Memory.createClaimer && creep.options.memory?.role === Role.CLAIMER) {
       Memory.createClaimer.done = creep.name;
     } else if (
       Memory.needBuilder &&
-      Memory.needBuilder.sent == "" &&
-      creep.options.memory?.role == Role.BUILDER
+      Memory.needBuilder.sent === "" &&
+      creep.options.memory?.role === Role.BUILDER
     ) {
       Memory.needBuilder.sent = creep.name;
-    } else if (creep.options.memory?.role == Role.CONTINUOUS_HARVESTER) {
+    } else if (creep.options.memory?.role === Role.CONTINUOUS_HARVESTER) {
       this.room.memory.createContinuousHarvester = false;
     } else {
       this.room.memory.spawnQueue.shift();
@@ -140,8 +142,19 @@ export class Spawns extends Process {
       return getRemoteBuilder(energyCapacityAvailable);
     }
 
+    // Check if we need remote miners
+    const remoteMiners = _.filter(
+      Game.creeps,
+      (creep: Creep) => creep.memory.role === Role.REMOTE_MINER
+    );
+    const numRemoteMiners = 2 + (this.room.memory.continuousHarvestingStarted ? 2 : 0);
+    if (remoteMiners.length < numRemoteMiners) {
+      // Maintain 2 remote miners
+      return getRemoteMiner(energyCapacityAvailable);
+    }
+
     const creepRole = this.room.memory.spawnQueue[0];
-    if (creepRole != undefined) {
+    if (creepRole !== undefined) {
       logger.debug(`Using spawn queue to create creep: ${roleNames[creepRole]}`);
       return this.getQueuedCreep(this.room.name, energyCapacityAvailable, creepRole);
     }
@@ -152,10 +165,10 @@ export class Spawns extends Process {
   private needSpawning(myCreeps: Creep[]) {
     return (
       myCreeps.length <=
-      MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
+        MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
       this.room.memory.createContinuousHarvester ||
       (Memory.createClaimer && !Memory.createClaimer.done) ||
-      (Memory.needBuilder && Memory.needBuilder?.sent == "")
+      (Memory.needBuilder && Memory.needBuilder?.sent === "")
     );
   }
 
@@ -169,7 +182,7 @@ export class Spawns extends Process {
       delete this.room.memory.spawnNext;
       return next;
     }
-    if (role == Role.HAULER) {
+    if (role === Role.HAULER) {
       return getHauler(energyCapacityAvailable, role);
     }
     const body = getBuilderBody(energyCapacityAvailable);
@@ -177,7 +190,7 @@ export class Spawns extends Process {
     return {
       build: body,
       name: `${roleNames[role]}-${Game.time}`,
-      options: { memory: { role: role, harvesting: false } }
+      options: { memory: { role, harvesting: false } }
     };
   }
 }

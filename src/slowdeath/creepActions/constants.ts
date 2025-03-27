@@ -44,7 +44,7 @@ export const MaxPopulationPerRoom: Record<number, number> = {
   2: 16,
   3: 16,
   4: 16,
-  5: 10,
+  5: 7,
   6: 7,
   7: 7,
   8: 7
@@ -57,7 +57,8 @@ export enum Role {
   CONTINUOUS_HARVESTER,
   REM_UPGRADER,
   CLAIMER,
-  DISMANTLER
+  DISMANTLER,
+  REMOTE_MINER
 }
 
 type RolePriotity = { [key in Role]: number };
@@ -69,7 +70,8 @@ export const rolePriotity: RolePriotity = {
   [Role.CONTINUOUS_HARVESTER]: 20,
   [Role.REM_UPGRADER]: 2,
   [Role.CLAIMER]: 1,
-  [Role.DISMANTLER]: 3
+  [Role.DISMANTLER]: 3,
+  [Role.REMOTE_MINER]: 4
 };
 
 type RoleNames = { [key in Role]: string };
@@ -81,7 +83,8 @@ export const roleNames: RoleNames = {
   [Role.CONTINUOUS_HARVESTER]: "continuous_harvester",
   [Role.REM_UPGRADER]: "remUpgrader",
   [Role.CLAIMER]: "claimer",
-  [Role.DISMANTLER]: "dismantler"
+  [Role.DISMANTLER]: "dismantler",
+  [Role.REMOTE_MINER]: "remote_miner"
 };
 
 export enum actions {
@@ -102,28 +105,42 @@ export const directionsArray: number[][] = [
   [0, -1]
 ];
 
-export const extensionLoc: Record<number, number[][]> = {
-  2: [
-    [1, 1],
-    [1, -1],
-    [-1, -1],
-    [-1, 1],
-    [1, 0],
-    [0, 1],
-    [-1, 0],
-    [0, -1],
-    [1, 2],
-    [2, 1],
-    [-1, 2],
-    [2, 2],
-    [-2, -2],
-    [-1, -2],
-    [0, 2],
-    [0, -2],
-    [-2, 0],
-    [2, 0]
-  ]
-};
+export function calculateExtensionPositions(level: number): number[][] {
+  const positions: number[][] = [];
+  const maxExtensions = ControllerConsts[`lvl${level}extensions`] || 0;
+
+  // Calculate how many rings we need based on the number of extensions
+  // Each ring can hold 8 * ringNumber extensions
+  let currentRing = 1;
+  let extensionsInRings = 0;
+
+  while (extensionsInRings < maxExtensions) {
+    extensionsInRings += 8 * currentRing;
+    currentRing++;
+  }
+
+  // Generate positions for each ring
+  for (let ring = 1; ring < currentRing; ring++) {
+    // For each ring, we need to generate positions in a clockwise pattern
+    // starting from top-right
+    const ringSize = ring;
+
+    // Generate positions for each side of the ring
+    for (let i = 0; i < ringSize; i++) {
+      // Top side
+      positions.push([i, -ringSize]);
+      // Right side
+      positions.push([ringSize, -i]);
+      // Bottom side
+      positions.push([i, ringSize]);
+      // Left side
+      positions.push([-ringSize, -i]);
+    }
+  }
+
+  // Trim to exact number needed
+  return positions.slice(0, maxExtensions);
+}
 
 export enum RoadStatus {
   NONE,

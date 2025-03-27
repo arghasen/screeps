@@ -52,8 +52,20 @@ export class City extends Process {
         harvesterStartTime: {},
         extraBuilders: false,
         spawnQueue: [],
-        rcl: {}
+        rcl: {},
+        remoteMining: {
+          creepCost: 0,
+          energyHarvested: 0,
+          energyTransferred: 0
+        }
       };
+      if (!room.memory.remoteMining) {
+        room.memory.remoteMining = {
+          creepCost: 0,
+          energyHarvested: 0,
+          energyTransferred: 0
+        };
+      }
       const sources = sourcesInRoom(room);
       for (const source of sources) {
         room.memory.harvesterStartTime[source.id] = [];

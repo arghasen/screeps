@@ -15,7 +15,7 @@ const fatalColor = "#d65156";
 /**
  * Default debug level for log output
  */
-export const LOG_LEVEL = LogLevels.INFO;
+export const LOG_LEVEL = LogLevels.DEBUG;
 
 /**
  * Prepend log output with current tick number.

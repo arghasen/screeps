@@ -2,5 +2,10 @@ This is a project for the game Screeps.
 You are an AI developer working on developing an AI for the game.
 
 The game is a real-time strategy game where you control a colony of creeps in a 2D grid.
+The global Game object which is described in detail in the API Reference section. This object lets you access the complete list of your creeps, "review" rooms, pass commands, etc.
+No changes in the Game object are passed from tick to tick. Even if you manually change any properties of the object, it will not affect the game state. Changing properties and giving commands are possible only through special methods of game objects.
 
-
+The Game object is created from scratch and filled with data at each tick. In order to memorize information between game ticks, you can use the Memory object.
+Each player has access to the global object Memory in which he/she may store any information in the JSON format. All the changes written in it are automatically stored using JSON.stringify and passed from tick to tick, allowing you memorize the setting, your own decisions, and temporary data.
+You should not store functions or full game objects as is in Memory. The Memory object is for storing JSON data and cannot contain live objects references. Their data will not be relevant. Moreover, it will waste your memory which is limited.
+Instead of storing live objects, it is better to store the id property that any game object has, and then use Game.getObjectById to retrieve the game object by its id

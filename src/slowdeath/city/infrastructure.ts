@@ -1,6 +1,10 @@
 import { Process } from "../../os/process";
 import { logger } from "../../utils/logger";
-import { extensionLoc, RoadStatus } from "../creepActions/constants";
+import {
+  calculateExtensionPositions,
+  RoadStatus,
+  ControllerConsts
+} from "../creepActions/constants";
 import { isCreepAlive, spawnsInRoom } from "utils/screeps-fns";
 
 export class Infrastructure extends Process {
@@ -43,52 +47,9 @@ export class Infrastructure extends Process {
         site => site.structureType === STRUCTURE_ROAD
       );
 
-      // Update link network status
-      this.updateLinkNetwork();
-
       this.buildMoreRoads = roadsUnderConstruction.length === 0;
       logger.debug(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
     }
-  }
-
-  private updateLinkNetwork() {
-    if (this.links.length >= 3) {
-      this.room.memory.linksCreated = true;
-      if (this.room.controller && this.room.controller.level >= 5) {
-        // Find optimal upgrader link position
-        const upgraderLink = this.findOptimalUpgraderLink();
-        if (upgraderLink) {
-          this.room.memory.upgraderLink = upgraderLink.id;
-        }
-      }
-    } else {
-      this.room.memory.linksCreated = false;
-    }
-  }
-
-  private findOptimalUpgraderLink(): StructureLink | null {
-    if (!this.room.controller) return null;
-
-    // Find link closest to controller but also near storage
-    const storage = this.room.storage;
-    const controller = this.room.controller;
-
-    return this.links.reduce((closest, link) => {
-      const currentDist = link.pos.getRangeTo(controller.pos);
-      const currentStorageDist = storage ? link.pos.getRangeTo(storage.pos) : 0;
-
-      if (!closest) return link;
-
-      const closestDist = closest.pos.getRangeTo(controller.pos);
-      const closestStorageDist = storage ? closest.pos.getRangeTo(storage.pos) : 0;
-
-      // Prefer links that are close to both controller and storage
-      if (currentDist < closestDist && currentStorageDist < closestStorageDist) {
-        return link;
-      }
-
-      return closest;
-    }, null as StructureLink | null);
   }
 
   private requestExtraBuilders() {
@@ -228,6 +189,7 @@ export class Infrastructure extends Process {
     const towerPos = this.findOptimalTowerPosition();
     if (towerPos) {
       this.room.createConstructionSite(towerPos, STRUCTURE_TOWER);
+      console.log(`${this.className}: Building tower at ${towerPos.toString()}`);
       this.buildRoadsFromSource(this.room, towerPos);
     }
   }
@@ -381,46 +343,81 @@ export class Infrastructure extends Process {
     if (!this.room.controller) return;
 
     const level = this.room.controller.level;
-    if (level < 2 || level > 3) return;
+    if (level < 2 || level > 8) return;
 
-    const maxExtensions = CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
-    if (this.getTotalExtensions() >= maxExtensions) return;
+    const maxExtensions = ControllerConsts[`lvl${level}extensions`] || 0;
+    const currentExtensions = this.getTotalExtensions();
 
-    const pos =
-      level === 2
-        ? this.spawns[0].pos
-        : new RoomPosition(this.spawns[0].pos.x + 5, this.spawns[0].pos.y - 5, this.room.name);
+    // If we already have all extensions for this level, don't build more
+    if (currentExtensions >= maxExtensions) return;
+
+    // Calculate how many new extensions we need to build
+    const extensionsToBuild = maxExtensions - currentExtensions;
+
+    // Get the base position for this level's extensions
+    let pos: RoomPosition;
+    switch (level) {
+      case 2:
+        pos = this.spawns[0].pos;
+        break;
+      case 3:
+        pos = new RoomPosition(this.spawns[0].pos.x + 5, this.spawns[0].pos.y - 5, this.room.name);
+        break;
+      case 4:
+        pos = new RoomPosition(this.spawns[0].pos.x - 5, this.spawns[0].pos.y + 5, this.room.name);
+        break;
+      case 5:
+        pos = new RoomPosition(this.spawns[0].pos.x + 5, this.spawns[0].pos.y + 5, this.room.name);
+        break;
+      case 6:
+        pos = new RoomPosition(this.spawns[0].pos.x - 5, this.spawns[0].pos.y - 5, this.room.name);
+        break;
+      case 7:
+        pos = new RoomPosition(this.spawns[0].pos.x + 3, this.spawns[0].pos.y + 3, this.room.name);
+        break;
+      case 8:
+        pos = new RoomPosition(this.spawns[0].pos.x - 3, this.spawns[0].pos.y - 3, this.room.name);
+        break;
+      default:
+        return;
+    }
 
     if (pos) {
-      this.createExtensions(this.room, pos, level);
+      this.createExtensions(this.room, pos, level, currentExtensions, extensionsToBuild);
+    }
+  }
+
+  private createExtensions(
+    room: Room,
+    pos: RoomPosition,
+    level: number,
+    currentExtensions: number,
+    extensionsToBuild: number
+  ) {
+    const loc: number[][] = calculateExtensionPositions(level);
+    let builtCount = 0;
+    let i = 0;
+
+    while (builtCount < extensionsToBuild && i < loc.length) {
+      const res: ScreepsReturnCode = room.createConstructionSite(
+        pos.x + loc[i][0],
+        pos.y + loc[i][1],
+        STRUCTURE_EXTENSION
+      );
+
+      if (res === OK) {
+        builtCount++;
+        i++;
+      } else {
+        // If we can't build here, remove this position and try the next one
+        loc.splice(i, 1);
+        // Don't increment i since we want to try the next position that moved into this slot
+      }
     }
   }
 
   private getTotalExtensions(): number {
     return this.extensionsUnderConstruction.length + this.extensionsCreated.length;
-  }
-
-  private createExtensions(room: Room, pos: RoomPosition, level: number) {
-    const loc = _.cloneDeep(extensionLoc[2]);
-    for (
-      let i: number = this.getTotalExtensions();
-      i < CONTROLLER_STRUCTURES[STRUCTURE_EXTENSION][level];
-      i++
-    ) {
-      const res: ScreepsReturnCode = room.createConstructionSite(
-        pos.x + loc[i % loc.length][0],
-        pos.y + loc[i % loc.length][1],
-        STRUCTURE_EXTENSION
-      );
-
-      if (res !== 0) {
-        loc.splice(i, 1);
-        --i;
-      }
-      if (loc.length === 0) {
-        break;
-      }
-    }
   }
 
   private checkStatus(status: RoadStatus) {

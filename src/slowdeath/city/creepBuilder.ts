@@ -115,7 +115,7 @@ export function getHauler(energyCapacityAvailable: number, role: Role): CreepSpa
   return {
     build: getHaulerBody(energyCapacityAvailable),
     name: `${roleNames[role]}-${Game.time}`,
-    options: { memory: { role: role, harvesting: false } }
+    options: { memory: { role, harvesting: false } }
   };
 }
 
@@ -138,5 +138,17 @@ export function getEmergencyCreep(): CreepSpawnData {
     build: [WORK, CARRY, MOVE],
     name: `$emergency-${Game.time}`,
     options: { memory: { role: Role.HARVESTER, harvesting: false } }
+  };
+}
+
+export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartConstant[] {
+  return [WORK, CARRY, MOVE];
+}
+
+export function getRemoteMiner(energyCapacityAvailable: number): CreepSpawnData {
+  return {
+    build: getRemoteMinerBody(energyCapacityAvailable),
+    name: `rem_miner-${Game.time}`,
+    options: { memory: { role: Role.REMOTE_MINER, harvesting: false } }
   };
 }

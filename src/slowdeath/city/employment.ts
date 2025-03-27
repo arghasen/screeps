@@ -1,4 +1,9 @@
-import { MaxPopulationPerRoom, MaxRolePopulation, PopulationScaler, Role } from "../creepActions/constants";
+import {
+  MaxPopulationPerRoom,
+  MaxRolePopulation,
+  PopulationScaler,
+  Role
+} from "../creepActions/constants";
 import { Builder } from "../creepActions/Builder";
 import { Claimer } from "slowdeath/creepActions/claimer";
 import { ContinuousHarvester } from "../creepActions/ContinuousHarvester";
@@ -8,6 +13,7 @@ import { Process } from "../../os/process";
 import { Upgrader } from "../creepActions/Upgrader";
 import { logger } from "../../utils/logger";
 import { Dismantler } from "slowdeath/creepActions/Dismantler";
+import { RemoteMiner } from "../creepActions/RemoteMiner";
 
 export class Employment extends Process {
   protected className = "employment";
@@ -17,6 +23,7 @@ export class Employment extends Process {
   private numHaulers = 0;
   private numUpgraders = 0;
   private numContinuousHarvesters = 0;
+  private numRemoteMiners = 0;
   private unemployed: Creep[] = [];
   private room!: Room;
   private metadata?: CityData;
@@ -36,15 +43,20 @@ export class Employment extends Process {
     if (this.room.controller) {
       this.rcl = this.room.controller.level;
     }
-    logger.debug(`${this.className}: Starting employment in ${this.metadata.roomName}`);
+    logger.info(`${this.className}: Starting employment in ${this.metadata.roomName}`);
     this.myCreeps = _.values(Game.creeps);
-    logger.info(`${this.room.name} energy Available: ${this.room.energyAvailable} capacity: ${this.room.energyCapacityAvailable}`);
+    logger.info(
+      `${this.room.name} energy Available: ${this.room.energyAvailable} capacity: ${this.room.energyCapacityAvailable}`
+    );
   }
 
   private populationBasedEmployer() {
     const totWorkers = this.getTotalWorkers();
     this.checkEmemrgencySituation(totWorkers);
-    const scale = Math.max(Math.floor(MaxPopulationPerRoom[this.rcl] / PopulationScaler[this.rcl]), 1);
+    const scale = Math.max(
+      Math.floor(MaxPopulationPerRoom[this.rcl] / PopulationScaler[this.rcl]),
+      1
+    );
 
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
@@ -59,11 +71,16 @@ export class Employment extends Process {
   }
 
   private createWorkers(employ: (cur: number, max: number) => boolean) {
-
     // FIXME: Improve this logic
     const spawnQueue = this.room.memory.spawnQueue;
-    spawnQueue.forEach((role) => { this.workerCounter(role); })
-    const buildersRequired = !(this.rcl >= 4 && this.numBuilders >= 1 && !this.room.memory.extraBuilders);
+    spawnQueue.forEach(role => {
+      this.workerCounter(role);
+    });
+    const buildersRequired = !(
+      this.rcl >= 4 &&
+      this.numBuilders >= 1 &&
+      !this.room.memory.extraBuilders
+    );
     if (
       employ(this.numHarversters, MaxRolePopulation.harvesters) &&
       !this.room.memory.continuousHarvestingStarted
@@ -82,7 +99,7 @@ export class Employment extends Process {
   }
 
   private checkEmemrgencySituation(totWorkers: number) {
-    this.room.memory.critical = (totWorkers < PopulationScaler[this.rcl]);
+    this.room.memory.critical = totWorkers < PopulationScaler[this.rcl];
   }
 
   private waitForContiniousHarvester(totWorkers: number) {
@@ -109,17 +126,17 @@ export class Employment extends Process {
   }
 
   private storeHarvestingStatus() {
-    this.room.memory.continuousHarvestingStarted = (this.numContinuousHarvesters >= 1)
+    this.room.memory.continuousHarvestingStarted = this.numContinuousHarvesters >= 1;
   }
 
   private dynamicEmployer(role: Role): number {
-    if (role == Role.BUILDER) {
+    if (role === Role.BUILDER) {
       if (this.room.memory.extraBuilders) {
         return MaxRolePopulation.builders + 1;
       } else {
         return MaxRolePopulation.builders;
       }
-    } else if (role == Role.UPGRADER) {
+    } else if (role === Role.UPGRADER) {
       if (this.room.memory.extraBuilders) {
         return MaxRolePopulation.upgrader - 1;
       } else {
@@ -139,13 +156,16 @@ export class Employment extends Process {
           this.unemployed.push(creep);
           logger.warning("Unemployed creep: %s", logger.json(creep));
         }
-
       }
     }
     logger.info(
       `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
     );
-    new RoomVisual(this.room.name).text(`Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`, 25, 4);
+    new RoomVisual(this.room.name).text(
+      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`,
+      25,
+      4
+    );
   };
 
   private workerCounter(role: Role) {
@@ -156,8 +176,9 @@ export class Employment extends Process {
       [Role.BUILDER]: () => this.numBuilders++,
       [Role.CONTINUOUS_HARVESTER]: () => this.numContinuousHarvesters++,
       [Role.CLAIMER]: () => this.numClaimer++,
-      [Role.DISMANTLER]: () => { },
-      [Role.REM_UPGRADER]: () => { },
+      [Role.DISMANTLER]: () => {},
+      [Role.REM_UPGRADER]: () => {},
+      [Role.REMOTE_MINER]: () => this.numRemoteMiners++
     };
 
     if (role in roleCounters) {
@@ -177,11 +198,13 @@ export class Employment extends Process {
       [Role.CONTINUOUS_HARVESTER]: ContinuousHarvester.run,
       [Role.CLAIMER]: Claimer.run,
       [Role.DISMANTLER]: Dismantler.run,
-      [Role.REM_UPGRADER]: () => { },
+      [Role.REM_UPGRADER]: () => {},
+      [Role.REMOTE_MINER]: RemoteMiner.run
     };
 
     for (const creep of this.myCreeps) {
-      if (creep.pos.roomName !== this.room.name) {
+      logger.info(`${this.className}: Running creep action for ${creep.name}`);
+      if (creep.pos.roomName !== this.room.name && creep.memory.role !== Role.REMOTE_MINER) {
         continue;
       }
 
