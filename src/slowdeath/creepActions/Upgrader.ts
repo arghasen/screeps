@@ -8,7 +8,7 @@ export class Upgrader {
     setCreepState(creep);
     if (!creep.memory.harvesting && creep.room.controller !== undefined) {
       // TODO: Ignore if target too far away
-      if (creep.ticksToLive! <= 5 && creep.store.energy > 15) {
+      if (creep.ticksToLive && creep.ticksToLive <= 5 && creep.store.energy > 15) {
         const target = getCreepNeedingEnergy(creep);
         if (target) {
           transfer(creep, target);

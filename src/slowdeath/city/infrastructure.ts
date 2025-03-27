@@ -112,33 +112,78 @@ export class Infrastructure extends Process {
   }
 
   private buildOptimizedRoadNetwork() {
+    this.moveToNextStage();
     // Build roads in order of importance
     if (this.checkStatus(RoadStatus.NONE)) {
       // First connect sources to spawn
       this.buildRoadsFromSource(this.room, this.spawns[0].pos);
       this.setStatus(RoadStatus.BUILDING_TO_SOURCES);
-    }
-
-    if (this.checkStatus(RoadStatus.TO_SOURCES)) {
+    } else if (this.checkStatus(RoadStatus.TO_SOURCES)) {
       // Then connect controller
       if (this.room.controller) {
         this.buildRoadsFromSource(this.room, this.room.controller.pos);
       }
       this.setStatus(RoadStatus.BUILDING_TO_CONTROLLER);
-    }
-
-    if (this.checkStatus(RoadStatus.TO_CONTROLLER)) {
+    } else if (this.checkStatus(RoadStatus.BUILDING_TO_CONTROLLER)) {
+      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      if (constructionSites.length === 0) {
+        this.setStatus(RoadStatus.TO_CONTROLLER);
+      }
+    } else if (this.checkStatus(RoadStatus.TO_CONTROLLER)) {
       // Then connect extensions
       for (const extension of this.extensionsCreated) {
         this.buildRoadsFromSource(this.room, extension.pos);
       }
       this.setStatus(RoadStatus.BUILDING_TO_LVL3EXT);
-    }
-
-    if (this.checkStatus(RoadStatus.TO_LVL3EXT) && this.room.storage) {
-      // Finally connect storage
+    } else if (this.checkStatus(RoadStatus.BUILDING_TO_LVL3EXT)) {
+      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      if (constructionSites.length === 0) {
+        this.setStatus(RoadStatus.TO_LVL3EXT);
+      }
+    } else if (this.checkStatus(RoadStatus.TO_LVL3EXT)) {
+      // Finally connect exits
+      this.buildRoadsToExits();
+      this.setStatus(RoadStatus.BUILDING_TO_EXITS);
+    } else if (this.checkStatus(RoadStatus.BUILDING_TO_EXITS)) {
+      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      if (constructionSites.length === 0) {
+        this.setStatus(RoadStatus.TO_EXITS);
+      }
+    } else if (this.checkStatus(RoadStatus.TO_EXITS) && this.room.storage) {
+      // Then connect storage
       this.buildRoadsFromSource(this.room, this.room.storage.pos);
       this.setStatus(RoadStatus.BUILDING_TO_STORAGE);
+    } else if (this.checkStatus(RoadStatus.BUILDING_TO_STORAGE)) {
+      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      if (constructionSites.length === 0) {
+        this.setStatus(RoadStatus.TO_STORAGE);
+      }
+    }
+  }
+  private getNextStatus(currentStatus: RoadStatus): RoadStatus | undefined {
+    switch (currentStatus) {
+      case RoadStatus.BUILDING_TO_SOURCES:
+        return RoadStatus.TO_SOURCES;
+      case RoadStatus.BUILDING_TO_CONTROLLER:
+        return RoadStatus.TO_CONTROLLER;
+      case RoadStatus.BUILDING_TO_LVL3EXT:
+        return RoadStatus.TO_LVL3EXT;
+      case RoadStatus.BUILDING_TO_EXITS:
+        return RoadStatus.TO_EXITS;
+      case RoadStatus.BUILDING_TO_STORAGE:
+        return RoadStatus.TO_STORAGE;
+      default:
+        return undefined;
+    }
+  }
+  private moveToNextStage() {
+    const currentStatus = this.room.memory.roadsDone;
+    const nextStatus = this.getNextStatus(currentStatus);
+    if (nextStatus) {
+      const constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
+      if (constructionSites.length === 0) {
+        this.setStatus(nextStatus);
+      }
     }
   }
 
@@ -431,6 +476,44 @@ export class Infrastructure extends Process {
   private updateStatusToDone(from: RoadStatus, to: RoadStatus) {
     if (this.buildMoreRoads && this.checkStatus(from)) {
       this.setStatus(to);
+    }
+  }
+
+  private buildRoadsToExits() {
+    if (!this.spawns[0]) return;
+
+    const exits = this.room.find(FIND_EXIT);
+    for (const exit of exits) {
+      // Use PathFinder for optimal road placement to each exit
+      const path = PathFinder.search(this.spawns[0].pos, exit, {
+        plainCost: 2,
+        swampCost: 10,
+        roomCallback: (roomName: string) => {
+          const targetRoom = Game.rooms[roomName];
+          if (!targetRoom) return false;
+
+          const costs = new PathFinder.CostMatrix();
+
+          // Avoid existing roads and structures
+          targetRoom.find(FIND_STRUCTURES).forEach(struct => {
+            if (struct.structureType === STRUCTURE_ROAD) {
+              costs.set(struct.pos.x, struct.pos.y, 1);
+            } else if (
+              struct.structureType !== STRUCTURE_CONTAINER &&
+              (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
+            ) {
+              costs.set(struct.pos.x, struct.pos.y, 0xff);
+            }
+          });
+
+          return costs;
+        }
+      });
+
+      // Place roads along the path
+      for (const step of path.path) {
+        this.room.createConstructionSite(step.x, step.y, STRUCTURE_ROAD);
+      }
     }
   }
 }

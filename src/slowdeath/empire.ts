@@ -22,6 +22,15 @@ export class Empire extends Process {
     }
     if (Game.time % 100 === 0) {
       clearDeadCreepsFromMemory();
+      this.cleanupOldRooms();
+    }
+  }
+  private cleanupOldRooms() {
+    const rooms = Memory.rooms;
+    for (const room of Object.keys(rooms)) {
+      if (!(room in Game.rooms)) {
+        delete Memory.rooms[room];
+      }
     }
   }
 

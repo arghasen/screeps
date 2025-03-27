@@ -1,5 +1,5 @@
 import { logger } from "../../utils/logger";
-import { harvest, moveToOtherRoom, upgradeController } from "./CommonActions";
+import { harvest, moveToOtherRoom, transfer, upgradeController } from "./CommonActions";
 
 // Extend CreepMemory interface to include our custom properties
 interface RemoteMinerMemory extends CreepMemory {
@@ -7,6 +7,7 @@ interface RemoteMinerMemory extends CreepMemory {
   targetRoom?: string;
   source?: Id<Source>;
   homeRoom?: string;
+  energyHarvested: number;
 }
 
 function setupMoveLoc(roomName: string) {
@@ -45,8 +46,14 @@ export class RemoteMiner {
     if (!creepMemory.homeRoom) {
       creepMemory.homeRoom = creep.room.name;
     }
+    // If creep is about to die, keep metrics in memory
+    if (creep.ticksToLive && creep.ticksToLive <= 1) {
+      Game.rooms[creepMemory.homeRoom].memory.remoteMining.energyHarvested +=
+        creepMemory.energyHarvested;
+      creepMemory.energyHarvested = 0;
+    }
     if (creep.memory.moveLoc) {
-      moveToOtherRoom(creep, creep.memory.moveLoc);
+      return moveToOtherRoom(creep, creep.memory.moveLoc);
     }
 
     const remoteMining = Game.rooms[creepMemory.homeRoom].memory.remoteMining;
@@ -56,7 +63,7 @@ export class RemoteMiner {
           remoteMining.energyTransferred += creep.store.energy;
           creep.drop(RESOURCE_ENERGY);
         } else if (creep.room.storage) {
-          creep.transfer(creep.room.storage, RESOURCE_ENERGY);
+          transfer(creep, creep.room.storage);
         } else {
           logger.info(`Upgrading controller for ${creep.name}`);
           upgradeController(creep, creep.room.controller);
@@ -82,7 +89,10 @@ export class RemoteMiner {
         harvest(creep, sources[0]);
       } else {
         // Move to home room
-        creepMemory.moveLoc = setupMoveLoc(creepMemory.homeRoom);
+        if (!creepMemory.moveLoc) {
+          creepMemory.moveLoc = setupMoveLoc(creepMemory.homeRoom);
+          creepMemory.energyHarvested += creep.store.energy;
+        }
       }
     }
   };

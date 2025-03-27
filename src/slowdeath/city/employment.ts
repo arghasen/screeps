@@ -203,7 +203,6 @@ export class Employment extends Process {
     };
 
     for (const creep of this.myCreeps) {
-      logger.info(`${this.className}: Running creep action for ${creep.name}`);
       if (creep.pos.roomName !== this.room.name && creep.memory.role !== Role.REMOTE_MINER) {
         continue;
       }
