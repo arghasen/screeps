@@ -58,7 +58,8 @@ export enum Role {
   REM_UPGRADER,
   CLAIMER,
   DISMANTLER,
-  REMOTE_MINER
+  REMOTE_MINER,
+  MINERAL_MINER
 }
 
 type RolePriotity = { [key in Role]: number };
@@ -71,7 +72,8 @@ export const rolePriotity: RolePriotity = {
   [Role.REM_UPGRADER]: 2,
   [Role.CLAIMER]: 1,
   [Role.DISMANTLER]: 3,
-  [Role.REMOTE_MINER]: 4
+  [Role.REMOTE_MINER]: 4,
+  [Role.MINERAL_MINER]: 2
 };
 
 type RoleNames = { [key in Role]: string };
@@ -84,7 +86,8 @@ export const roleNames: RoleNames = {
   [Role.REM_UPGRADER]: "remUpgrader",
   [Role.CLAIMER]: "claimer",
   [Role.DISMANTLER]: "dismantler",
-  [Role.REMOTE_MINER]: "remote_miner"
+  [Role.REMOTE_MINER]: "remote_miner",
+  [Role.MINERAL_MINER]: "mineral_miner"
 };
 
 export enum actions {

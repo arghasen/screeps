@@ -38,6 +38,14 @@ export class Infrastructure extends Process {
         structure => structure.structureType === STRUCTURE_LINK
       ) as StructureLink[];
 
+      const extractors = myStructures.filter(
+        structure => structure.structureType === STRUCTURE_EXTRACTOR
+      ) as StructureExtractor[];
+
+      if (extractors.length > 0 && this.room.storage) {
+        this.room.memory.mineMinerals = true;
+      }
+
       this.constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
       this.extensionsUnderConstruction = this.constructionSites.filter(
         site => site.structureType === STRUCTURE_EXTENSION

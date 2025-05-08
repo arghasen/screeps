@@ -13,6 +13,7 @@ import {
   getContinuousHarvestor,
   getEmergencyCreep,
   getHauler,
+  getMineralMinerBody,
   getRemoteBuilder,
   getRemoteMiner,
   getSpawnCost
@@ -32,6 +33,9 @@ export class Spawns extends Process {
     }
 
     this.room = Game.rooms[this.metadata.roomName];
+    if (!this.room.memory.spawnQueue) {
+      this.room.memory.spawnQueue = [];
+    }
     logger.info(
       ` energy Available: ${this.room.energyAvailable} capacity: ${this.room.energyCapacityAvailable}`
     );
@@ -153,6 +157,7 @@ export class Spawns extends Process {
       return getRemoteMiner(energyCapacityAvailable);
     }
 
+
     const creepRole = this.room.memory.spawnQueue[0];
     if (creepRole !== undefined) {
       logger.debug(`Using spawn queue to create creep: ${roleNames[creepRole]}`);
@@ -184,6 +189,13 @@ export class Spawns extends Process {
     }
     if (role === Role.HAULER) {
       return getHauler(energyCapacityAvailable, role);
+    }
+    if (role === Role.MINERAL_MINER) {
+      return {
+        build: getMineralMinerBody(energyCapacityAvailable),
+        name: `${roleNames[role]}-${Game.time}`,
+        options: { memory: { role, harvesting: false } }
+      };
     }
     const body = getBuilderBody(energyCapacityAvailable);
 

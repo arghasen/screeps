@@ -24,7 +24,7 @@ export function upgradeController(creep: Creep, controller: StructureController)
   }
 }
 
-export function harvest(creep: Creep, source: Source | null) {
+export function harvest(creep: Creep, source: Source | Deposit | null) {
   if (source) {
     const res = creep.harvest(source);
     if (res === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
@@ -113,8 +113,7 @@ function extractTarget<T extends _HasId>(creep: Creep): T | null {
 
 function getDroppedEnergySources(creep: Creep) {
   const droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
-  const energyResources = _.filter(
-    droppedResources,
+  const energyResources = droppedResources.filter(
     (droppedResource: Resource) => droppedResource.resourceType === RESOURCE_ENERGY
   );
   if (energyResources.length >= 2) {

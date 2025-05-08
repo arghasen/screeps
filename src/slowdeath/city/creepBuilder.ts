@@ -142,6 +142,13 @@ export function getEmergencyCreep(): CreepSpawnData {
 }
 
 export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartConstant[] {
+  if (energyCapacityAvailable >= 1000) {  
+    return [WORK, WORK, CARRY, CARRY, MOVE, MOVE];
+  }
+  return [WORK, CARRY, MOVE];
+}
+
+export function getMineralMinerBody(energyCapacityAvailable: number): BodyPartConstant[] {
   return [WORK, CARRY, MOVE];
 }
 

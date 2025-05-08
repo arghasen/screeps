@@ -14,6 +14,7 @@ import { Upgrader } from "../creepActions/Upgrader";
 import { logger } from "../../utils/logger";
 import { Dismantler } from "slowdeath/creepActions/Dismantler";
 import { RemoteMiner } from "../creepActions/RemoteMiner";
+import { MineralMiner } from "slowdeath/creepActions/MineralMiner";
 
 export class Employment extends Process {
   protected className = "employment";
@@ -24,6 +25,7 @@ export class Employment extends Process {
   private numUpgraders = 0;
   private numContinuousHarvesters = 0;
   private numRemoteMiners = 0;
+  private numMineralMiners = 0;
   private unemployed: Creep[] = [];
   private room!: Room;
   private metadata?: CityData;
@@ -62,6 +64,11 @@ export class Employment extends Process {
     this.storeHarvestingStatus();
     if (totWorkers + this.room.memory.spawnQueue.length < MaxPopulationPerRoom[this.rcl]) {
       this.createWorkers(employ);
+    } else if (this.room.memory.mineMinerals && !this.room.memory.critical && this.numMineralMiners!=1) {
+      const spawnQueue = this.room.memory.spawnQueue;
+      if (spawnQueue.indexOf(Role.MINERAL_MINER) === -1) {
+        spawnQueue.push(Role.MINERAL_MINER);
+      }
     }
 
     function employ(cur: number, max: number) {
@@ -162,7 +169,7 @@ export class Employment extends Process {
       `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`
     );
     new RoomVisual(this.room.name).text(
-      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} unemployed:${this.unemployed.length}`,
+      `Workers:, harv:${this.numHarversters} build: ${this.numBuilders} upgrade: ${this.numUpgraders} haul:${this.numHaulers}  claimer: ${this.numClaimer} cont_harv: ${this.numContinuousHarvesters} remote_miner: ${this.numRemoteMiners} mineral_miner: ${this.numMineralMiners} unemployed:${this.unemployed.length}`,
       25,
       4
     );
@@ -178,7 +185,8 @@ export class Employment extends Process {
       [Role.CLAIMER]: () => this.numClaimer++,
       [Role.DISMANTLER]: () => {},
       [Role.REM_UPGRADER]: () => {},
-      [Role.REMOTE_MINER]: () => this.numRemoteMiners++
+      [Role.REMOTE_MINER]: () => this.numRemoteMiners++,
+      [Role.MINERAL_MINER]: () => this.numMineralMiners++
     };
 
     if (role in roleCounters) {
@@ -199,7 +207,8 @@ export class Employment extends Process {
       [Role.CLAIMER]: Claimer.run,
       [Role.DISMANTLER]: Dismantler.run,
       [Role.REM_UPGRADER]: () => {},
-      [Role.REMOTE_MINER]: RemoteMiner.run
+      [Role.REMOTE_MINER]: RemoteMiner.run,
+      [Role.MINERAL_MINER]: MineralMiner.run
     };
 
     for (const creep of this.myCreeps) {

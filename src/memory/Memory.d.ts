@@ -52,6 +52,7 @@ interface RoomMemory {
     energyHarvested: number;
     energyTransferred: number;
   };
+  mineMinerals: boolean;
 }
 
 interface Memory {
