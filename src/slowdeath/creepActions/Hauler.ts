@@ -4,13 +4,14 @@ import {
   transfer,
   transferEnergyFromCreep
 } from "./CommonActions";
+import { CreepTask } from "./constants";
 import { setCreepState } from "./creepState";
 
 export class Hauler {
   public static run = (creep: Creep): void => {
     setCreepState(creep);
 
-    if (!creep.memory.harvesting) {
+    if (creep.memory.task != CreepTask.HARVEST) {
       const target = getStructuresNeedingEnergy(creep);
       const storage = creep.room.storage;
       const terminal = creep.room.terminal;
@@ -28,7 +29,6 @@ export class Hauler {
         transferEnergyFromCreep(creep);
       }
     } else {
-      creep.memory.harvesting = true;
       pickupDroppedEnergy(creep);
     }
   };

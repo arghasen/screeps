@@ -1,5 +1,6 @@
 import { Process } from "../../os/process";
 import {
+  CreepTask,
   MaxPopulationPerRoom,
   MaxRolePopulation,
   Role,
@@ -73,8 +74,7 @@ export class Spawns extends Process {
           this.createCreep(spawn, creep);
         } else {
           logger.debug(
-            `queuing creep to create: ${logger.json(creep)} and energy available: ${
-              this.room.energyAvailable
+            `queuing creep to create: ${logger.json(creep)} and energy available: ${this.room.energyAvailable
             }`
           );
           this.queueCreep(creep);
@@ -168,9 +168,12 @@ export class Spawns extends Process {
   }
 
   private needSpawning(myCreeps: Creep[]) {
+    if (this.room.memory.spawnQueue?.length > 0) {
+      return true;
+    }
     return (
       myCreeps.length <=
-        MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
+      MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
       this.room.memory.createContinuousHarvester ||
       (Memory.createClaimer && !Memory.createClaimer.done) ||
       (Memory.needBuilder && Memory.needBuilder?.sent === "")
@@ -194,7 +197,7 @@ export class Spawns extends Process {
       return {
         build: getMineralMinerBody(energyCapacityAvailable),
         name: `${roleNames[role]}-${Game.time}`,
-        options: { memory: { role, harvesting: false } }
+        options: { memory: { role, task: CreepTask.UNKNOWN } }
       };
     }
     const body = getBuilderBody(energyCapacityAvailable);
@@ -202,7 +205,7 @@ export class Spawns extends Process {
     return {
       build: body,
       name: `${roleNames[role]}-${Game.time}`,
-      options: { memory: { role, harvesting: false } }
+      options: { memory: { role, task: CreepTask.UNKNOWN } }
     };
   }
 }

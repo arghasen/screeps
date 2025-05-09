@@ -89,13 +89,14 @@ export const roleNames: RoleNames = {
   [Role.REMOTE_MINER]: "remote_miner",
   [Role.MINERAL_MINER]: "mineral_miner"
 };
-
-export enum actions {
-  ACTION_HARVEST,
-  ACTION_BUILD,
-  ACTION_UPGRADE,
-  ACTION_REPAIR,
-  ACTION_TRANSFER
+export enum CreepTask {
+  UNKNOWN,
+  HARVEST,
+  BUILD,
+  UPGRADE,
+  REPAIR,
+  TRANSFER,
+  RENEW
 }
 export const directionsArray: number[][] = [
   [1, 1],

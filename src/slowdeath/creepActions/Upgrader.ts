@@ -1,12 +1,13 @@
 import { logger } from "utils/logger";
 import { getCreepNeedingEnergy, getEnergy, transfer, withdraw } from "./CommonActions";
 import { setCreepState } from "./creepState";
+import { CreepTask } from "./constants";
 
 export class Upgrader {
   public static run = (creep: Creep): void => {
     logger.info(`Upgrader run: ${creep.name}`);
     setCreepState(creep);
-    if (!creep.memory.harvesting && creep.room.controller !== undefined) {
+    if (creep.memory.task != CreepTask.HARVEST && creep.room.controller !== undefined) {
       // TODO: Ignore if target too far away
       if (creep.ticksToLive && creep.ticksToLive <= 5 && creep.store.energy > 15) {
         const target = getCreepNeedingEnergy(creep);

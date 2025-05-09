@@ -1,4 +1,4 @@
-import { Role, roleNames } from "slowdeath/creepActions/constants";
+import { CreepTask, Role, roleNames } from "slowdeath/creepActions/constants";
 export function getContinuousHarvesterBody(energyCapacityAvailable: number): BodyPartConstant[] {
   let body: BodyPartConstant[] = [];
   if (energyCapacityAvailable > 1000) {
@@ -87,7 +87,7 @@ export function getContinuousHarvestor(energyCapacityAvailable: number): CreepSp
   return {
     build: getContinuousHarvesterBody(energyCapacityAvailable),
     name: `cont_harv-${Game.time}`,
-    options: { memory: { role: Role.CONTINUOUS_HARVESTER, harvesting: false } }
+    options: { memory: { role: Role.CONTINUOUS_HARVESTER, task: CreepTask.UNKNOWN } }
   };
 }
 
@@ -103,7 +103,7 @@ export function getClaimer(energyCapacityAvailable: number): CreepSpawnData | nu
           role: Role.CLAIMER,
           moveLoc: Memory.createClaimer?.loc,
           identifier: Memory.createClaimer?.identifier,
-          harvesting: false
+          task: CreepTask.UNKNOWN
         }
       }
     };
@@ -115,7 +115,7 @@ export function getHauler(energyCapacityAvailable: number, role: Role): CreepSpa
   return {
     build: getHaulerBody(energyCapacityAvailable),
     name: `${roleNames[role]}-${Game.time}`,
-    options: { memory: { role, harvesting: false } }
+    options: { memory: { role, task: CreepTask.UNKNOWN } }
   };
 }
 
@@ -127,7 +127,7 @@ export function getRemoteBuilder(energyCapacityAvailable: number): CreepSpawnDat
       memory: {
         role: Role.BUILDER,
         moveLoc: Memory.needBuilder.moveLoc,
-        harvesting: false
+        task: CreepTask.UNKNOWN
       }
     }
   };
@@ -137,12 +137,12 @@ export function getEmergencyCreep(): CreepSpawnData {
   return {
     build: [WORK, CARRY, MOVE],
     name: `$emergency-${Game.time}`,
-    options: { memory: { role: Role.HARVESTER, harvesting: false } }
+    options: { memory: { role: Role.HARVESTER, task: CreepTask.UNKNOWN } }
   };
 }
 
 export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartConstant[] {
-  if (energyCapacityAvailable >= 1000) {  
+  if (energyCapacityAvailable >= 1000) {
     return [WORK, WORK, CARRY, CARRY, MOVE, MOVE];
   }
   return [WORK, CARRY, MOVE];
@@ -156,6 +156,6 @@ export function getRemoteMiner(energyCapacityAvailable: number): CreepSpawnData 
   return {
     build: getRemoteMinerBody(energyCapacityAvailable),
     name: `rem_miner-${Game.time}`,
-    options: { memory: { role: Role.REMOTE_MINER, harvesting: false } }
+    options: { memory: { role: Role.REMOTE_MINER, task: CreepTask.UNKNOWN } }
   };
 }

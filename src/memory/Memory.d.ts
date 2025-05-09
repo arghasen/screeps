@@ -89,7 +89,7 @@ interface CreepMemory {
   link?: Id<StructureLink>;
   identifier?: number;
   targetRoom?: string;
-  harvesting: boolean;
+  task: import("slowdeath/creepActions/constants").CreepTask;
   role: number;
   source?: Id<Source>;
   moveLoc?: MoveLoc;

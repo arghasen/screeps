@@ -64,7 +64,7 @@ export class Employment extends Process {
     this.storeHarvestingStatus();
     if (totWorkers + this.room.memory.spawnQueue.length < MaxPopulationPerRoom[this.rcl]) {
       this.createWorkers(employ);
-    } else if (this.room.memory.mineMinerals && !this.room.memory.critical && this.numMineralMiners!=1) {
+    } else if (this.room.memory.mineMinerals && !this.room.memory.critical && this.numMineralMiners < 1) {
       const spawnQueue = this.room.memory.spawnQueue;
       if (spawnQueue.indexOf(Role.MINERAL_MINER) === -1) {
         spawnQueue.push(Role.MINERAL_MINER);
@@ -183,8 +183,8 @@ export class Employment extends Process {
       [Role.BUILDER]: () => this.numBuilders++,
       [Role.CONTINUOUS_HARVESTER]: () => this.numContinuousHarvesters++,
       [Role.CLAIMER]: () => this.numClaimer++,
-      [Role.DISMANTLER]: () => {},
-      [Role.REM_UPGRADER]: () => {},
+      [Role.DISMANTLER]: () => { },
+      [Role.REM_UPGRADER]: () => { },
       [Role.REMOTE_MINER]: () => this.numRemoteMiners++,
       [Role.MINERAL_MINER]: () => this.numMineralMiners++
     };
@@ -206,7 +206,7 @@ export class Employment extends Process {
       [Role.CONTINUOUS_HARVESTER]: ContinuousHarvester.run,
       [Role.CLAIMER]: Claimer.run,
       [Role.DISMANTLER]: Dismantler.run,
-      [Role.REM_UPGRADER]: () => {},
+      [Role.REM_UPGRADER]: () => { },
       [Role.REMOTE_MINER]: RemoteMiner.run,
       [Role.MINERAL_MINER]: MineralMiner.run
     };

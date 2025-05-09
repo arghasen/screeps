@@ -24,7 +24,7 @@ export function upgradeController(creep: Creep, controller: StructureController)
   }
 }
 
-export function harvest(creep: Creep, source: Source | Deposit | null) {
+export function harvest(creep: Creep, source: Source | Deposit | Mineral | null) {
   if (source) {
     const res = creep.harvest(source);
     if (res === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
@@ -203,35 +203,28 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
   // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
   const targetStructures = myStructures.filter(
     structure =>
-      (structure.hits < structure.hitsMax - 300 &&
-        structure.structureType !== STRUCTURE_WALL &&
-        structure.structureType !== STRUCTURE_RAMPART) ||
+    (structure.hits < structure.hitsMax - 300 &&
+      structure.structureType !== STRUCTURE_WALL &&
+      structure.structureType !== STRUCTURE_RAMPART)
+  );
+
+  const obstacles = myStructures.filter(
+    structure =>
       (structure.structureType === STRUCTURE_RAMPART &&
         structure.hits < getRampartMaxHits(room.controller?.level)) ||
       (structure.structureType === STRUCTURE_WALL &&
         structure.hits < getWallMaxHits(room.controller?.level))
   );
 
-  const obstacles = targetStructures.filter(
-    structure =>
-      structure.structureType === STRUCTURE_RAMPART || structure.structureType === STRUCTURE_WALL
-  );
-  obstacles.sort((a, b) => {
-    return a.hits - b.hits;
-  });
-  let targetStructure = pos.findClosestByRange(targetStructures);
-  if (
-    targetStructure &&
-    (targetStructure.structureType === STRUCTURE_WALL ||
-      targetStructure.structureType === STRUCTURE_RAMPART)
-  ) {
-    if (Game.time % 10 === 0) {
-      targetStructure = obstacles[0];
-    } else {
-      return null;
-    }
+  if (Game.time % 10 === 0) {
+    obstacles.sort((a, b) => {
+      return a.hits - b.hits;
+    });
+    return obstacles[0];
+  } else {
+    const targetStructure = pos.findClosestByRange(targetStructures);
+    return targetStructure;
   }
-  return targetStructure;
 }
 
 const wallMaxHits: Record<number, number> = {

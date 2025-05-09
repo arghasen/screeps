@@ -23,7 +23,8 @@ export class Military extends Process {
   }
 
   private repairRoom(room: Room): void {
-    const repairTower = this.towers[0];
+    const repairTower = this.towers.reduce((highest, tower) =>
+      tower.store[RESOURCE_ENERGY] > highest.store[RESOURCE_ENERGY] ? tower : highest, this.towers[0]);
     if (repairTower) {
       const targetStructure = findStructureNeedingRepair(room, repairTower.pos);
       if (targetStructure) {

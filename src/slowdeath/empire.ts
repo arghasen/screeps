@@ -3,7 +3,7 @@ import { Process } from "../os/process";
 
 import { logger } from "../utils/logger";
 import { Claimer } from "./creepActions/claimer";
-import { Role } from "./creepActions/constants";
+import { CreepTask, Role } from "./creepActions/constants";
 import { Dismantler } from "./creepActions/Dismantler";
 
 /**
@@ -78,8 +78,8 @@ export class Empire extends Process {
           return creep.memory.role === Role.DISMANTLER;
         });
         if (creep_.length < 1) {
-          Game.spawns.Spawn3.spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE], "das1", {
-            memory: { role: 7, harvesting: false }
+          Game.spawns.Spawn1.spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE], "das1", {
+            memory: { role: Role.DISMANTLER, task: CreepTask.UNKNOWN }
           });
         }
         for (const c of creep_) {
