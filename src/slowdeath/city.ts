@@ -58,7 +58,9 @@ export class City extends Process {
           energyHarvested: 0,
           energyTransferred: 0
         },
-        mineMinerals: false
+        mineMinerals: false,
+        energyContainers: [],
+        enemy: false
       };
       if (!room.memory.remoteMining) {
         room.memory.remoteMining = {

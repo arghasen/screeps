@@ -4,16 +4,17 @@ import {
   getEnergy,
   moveToOtherRoom,
   repair,
-  transferEnergyFromCreep
+  transferEnergyFromCreep,
 } from "../../slowdeath/creepActions/CommonActions";
 import { CreepTask } from "./constants";
-import { setCreepState } from "./creepState";
+import { Actor } from "./Actor";
 
-export class Builder {
+export class Builder extends Actor {
   public static run = (creep: Creep): void => {
-    setCreepState(creep);
-
-    if (creep.memory.task != CreepTask.HARVEST) {
+    super.setTask(creep);
+    if (creep.memory.task == CreepTask.RENEW) {
+      super.renewCreep(creep);
+    } else if (creep.memory.task != CreepTask.HARVEST) {
       if (creep.memory.moveLoc) {
         moveToOtherRoom(creep, creep.memory.moveLoc);
       } else {

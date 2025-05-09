@@ -31,6 +31,11 @@ export class ContinuousHarvester {
         if (creep.room.energyAvailable > 2000) {
           handleLinkMining(creep);
         }
+      } else if (creep.memory.link) {
+        const link = objectFromId<StructureLink>(creep.memory.link);
+        if (link && link.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+          transfer(creep, link);
+        }
       }
     }
   };
@@ -77,10 +82,10 @@ function handleLinkMining(creep: Creep) {
       return;
     }
 
-    logger.debug(`link to be used ${link.id}`);
+    logger.info(`link to be used ${link.id}`);
     transfer(creep, link);
     if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
-      logger.debug("link more than 50% full");
+      logger.info("link more than 50% full");
       transferToUpgraderLink(link);
     }
   }
@@ -92,9 +97,9 @@ function handleLinkMining(creep: Creep) {
     if (!upgraderLink) {
       delete creep.room.memory.upgraderLink;
       return;
+    } else if (upgraderLink.store.getFreeCapacity(RESOURCE_ENERGY) > 400) {
+      const ret = link.transferEnergy(upgraderLink, 400);
+      logger.debug(`link result: ${ret}`);
     }
-
-    const ret = link.transferEnergy(upgraderLink);
-    logger.debug(`link result: ${ret}`);
   }
 }

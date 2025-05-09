@@ -53,6 +53,8 @@ interface RoomMemory {
     energyTransferred: number;
   };
   mineMinerals: boolean;
+  energyContainers: Id<StructureContainer>[];
+  enemy: boolean;
 }
 
 interface Memory {

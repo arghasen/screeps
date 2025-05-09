@@ -5,13 +5,26 @@ import {
   transferEnergyFromCreep
 } from "./CommonActions";
 import { CreepTask } from "./constants";
-import { setCreepState } from "./creepState";
+import { Actor } from "./Actor";
+import { logger } from "utils/logger";
 
-export class Hauler {
+export class Hauler extends Actor {
   public static run = (creep: Creep): void => {
-    setCreepState(creep);
-
-    if (creep.memory.task != CreepTask.HARVEST) {
+    super.setTask(creep);
+    if (creep.room.memory.enemy && creep.store.getUsedCapacity(RESOURCE_ENERGY) > creep.store.getCapacity(RESOURCE_ENERGY) * 0.5) {
+      const tower = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+        filter: (structure) => structure.structureType === STRUCTURE_TOWER
+      });
+      logger.warning(`${creep.name} found tower ${tower}`);
+      if (tower) {
+        creep.say("Enemy, energy to tower");
+        if (creep.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
+          creep.moveTo(tower, { visualizePathStyle: { stroke: "#ffffff" } });
+        }
+      }
+    } else if (creep.memory.task == CreepTask.RENEW) {
+      super.renewCreep(creep);
+    } else if (creep.memory.task != CreepTask.HARVEST) {
       const target = getStructuresNeedingEnergy(creep);
       const storage = creep.room.storage;
       const terminal = creep.room.terminal;

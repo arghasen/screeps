@@ -1,6 +1,6 @@
 import { objectFromId } from "utils/screeps-fns";
 import { logger } from "../../utils/logger";
-import { Role } from "./constants";
+import { CreepTask, Role } from "./constants";
 
 export function moveToOtherRoom(creep: Creep, moveLoc: MoveLoc) {
   const target = new RoomPosition(moveLoc.x, moveLoc.y, moveLoc.roomName);
@@ -63,40 +63,40 @@ export function build(creep: Creep, target: ConstructionSite | null) {
   }
 }
 
-export function pickupDroppedEnergy(creep: Creep) {
-  let target: Resource | null = null;
-  target = extractTarget(creep); // checks creep.memory internally and unsets it if target is null.
+const DROPPED_ENERGY_THRESHOLD = 500;
+
+function getDroppedEnergySources(creep: Creep): Resource[] {
+  const droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
+  return droppedResources
+    .filter((resource: Resource) => resource.resourceType === RESOURCE_ENERGY)
+    .sort((a: Resource, b: Resource) => b.amount - a.amount);
+}
+
+function getClosestDroppedEnergySource(creep: Creep, energyResources: Resource[]): Resource | null {
+  if (!energyResources.length) return null;
+  const largeDrops = energyResources.filter(resource => resource.amount >= DROPPED_ENERGY_THRESHOLD);
+  if (largeDrops.length > 0) {
+    return largeDrops[0];
+  }
+  return creep.pos.findClosestByPath(energyResources);
+}
+
+export function pickupDroppedEnergy(creep: Creep): boolean {
+  let target = extractTarget<Resource>(creep);
   if (!target) {
-    target = getDroppedEnergySource();
+    const energyResources = getDroppedEnergySources(creep);
+    target = getClosestDroppedEnergySource(creep, energyResources);
+
+    if (target) {
+      creep.memory.target = target.id;
+      logger.debug(`Creep ${creep.name} found new energy target: ${target.id} with amount ${target.amount}`);
+    }
   }
   if (target) {
     pickup(creep, target);
+    return true;
   }
-
-  function getDroppedEnergySource() {
-    let energyTarget: Resource | null = null;
-    const energyResources = getDroppedEnergySources(creep);
-    if (energyResources.length >= 1) {
-      energyTarget = getClosestDroppedEnergySource(energyResources);
-      if (energyTarget instanceof Resource) {
-        creep.memory.target = energyTarget.id;
-      }
-    }
-    return energyTarget;
-  }
-
-  function getClosestDroppedEnergySource(energyResources: Resource[]) {
-    let closestSource;
-    if (energyResources[0].amount > 1000) {
-      closestSource = energyResources[0];
-    } else {
-      closestSource = creep.pos.findClosestByPath(energyResources);
-    }
-    logger.debug(
-      `creep: ${creep.name} closest source: ${logger.json(closestSource)} of dropped energy`
-    );
-    return closestSource;
-  }
+  return false;
 }
 
 function extractTarget<T extends _HasId>(creep: Creep): T | null {
@@ -109,17 +109,6 @@ function extractTarget<T extends _HasId>(creep: Creep): T | null {
     }
   }
   return target;
-}
-
-function getDroppedEnergySources(creep: Creep) {
-  const droppedResources = creep.room.find(FIND_DROPPED_RESOURCES);
-  const energyResources = droppedResources.filter(
-    (droppedResource: Resource) => droppedResource.resourceType === RESOURCE_ENERGY
-  );
-  if (energyResources.length >= 2) {
-    energyResources.sort((a: Resource, b: Resource) => b.amount - a.amount);
-  }
-  return energyResources;
 }
 
 export function getEnergy(creep: Creep) {

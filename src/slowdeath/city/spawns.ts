@@ -152,7 +152,7 @@ export class Spawns extends Process {
       (creep: Creep) => creep.memory.role === Role.REMOTE_MINER
     );
     const numRemoteMiners = 2 + (this.room.memory.continuousHarvestingStarted ? 2 : 0);
-    if (remoteMiners.length < numRemoteMiners) {
+    if (remoteMiners.length < numRemoteMiners && !this.room.memory.enemy) {
       // Maintain 2 remote miners
       return getRemoteMiner(energyCapacityAvailable);
     }
@@ -193,7 +193,7 @@ export class Spawns extends Process {
     if (role === Role.HAULER) {
       return getHauler(energyCapacityAvailable, role);
     }
-    if (role === Role.MINERAL_MINER) {
+    if (role === Role.MINERAL_MINER && !this.room.memory.enemy) {
       return {
         build: getMineralMinerBody(energyCapacityAvailable),
         name: `${roleNames[role]}-${Game.time}`,

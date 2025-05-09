@@ -55,6 +55,21 @@ export class Infrastructure extends Process {
         site => site.structureType === STRUCTURE_ROAD
       );
 
+      if (this.room.controller?.my && this.room.controller.level >= 6 && !this.room.memory.upgraderLink) {
+        const links = myStructures.filter(
+          structure => structure.structureType === STRUCTURE_LINK
+        );
+        if (links.length >= 3) {
+          if (!this.room.memory.linksCreated) {
+            this.room.memory.linksCreated = true;
+          }
+          const link = this.room.controller.pos.findClosestByRange(links);
+          if (link) {
+            this.room.memory.upgraderLink = link.id as Id<StructureLink>;
+          }
+        }
+      }
+
       this.buildMoreRoads = roadsUnderConstruction.length === 0;
       logger.debug(`${this.className}: Starting infrastructure for ${this.metadata.roomName}`);
     }
