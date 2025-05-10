@@ -51,6 +51,7 @@ interface RoomMemory {
     creepCost: number;
     energyHarvested: number;
     energyTransferred: number;
+    rooms: string[];
   };
   mineMinerals: boolean;
   energyContainers: Id<StructureContainer>[];

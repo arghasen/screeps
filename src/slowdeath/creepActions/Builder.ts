@@ -24,7 +24,7 @@ export class Builder extends Actor {
         if (target) {
           build(creep, target);
         } else {
-          const targetStructure = findStructureNeedingRepair(creep.room, creep.pos);
+          const targetStructure = findStructureNeedingRepair(creep.room, creep.pos, 'creep');
           if (targetStructure) {
             repair(creep, targetStructure);
           } else {

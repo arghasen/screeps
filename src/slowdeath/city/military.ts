@@ -43,7 +43,7 @@ export class Military extends Process {
 
     logger.debug(`${this.className}: Selected tower ${repairTower.id} with ${repairTower.store[RESOURCE_ENERGY]}/${repairTower.store.getCapacity(RESOURCE_ENERGY)} energy`);
 
-    const targetStructure = findStructureNeedingRepair(room, repairTower.pos);
+    const targetStructure = findStructureNeedingRepair(room, repairTower.pos, 'tower');
     if (targetStructure) {
       repairTower.repair(targetStructure);
       logger.debug(`${this.className}: Repairing structure ${targetStructure.id} at ${targetStructure.pos}`);

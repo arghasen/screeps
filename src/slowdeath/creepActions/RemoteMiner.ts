@@ -20,12 +20,16 @@ function setupMoveLoc(roomName: string) {
 export class RemoteMiner {
   private static findTargetRoom(creep: Creep): string | null {
     // If no visible rooms with sources, try to explore
+    let rooms = Game.rooms[creep.room.name].memory.remoteMining.rooms;
+    if (rooms.length > 0) {
+      return rooms[Math.floor(Math.random() * rooms.length)];
+    }
     const exits = Game.map.describeExits(creep.room.name);
-    const reachableRooms = Object.values(exits).filter(roomName => roomName !== undefined);
-    logger.info(`Reachable rooms: ${reachableRooms.join(", ")}`);
+    const reachableRooms = Object.values(exits).filter(roomName => roomName !== undefined
+      && !Game.rooms[roomName]?.controller?.my);
     if (reachableRooms.length > 0) {
-      const randomRoom = reachableRooms[Math.floor(Math.random() * reachableRooms.length)];
-      return randomRoom;
+      Game.rooms[creep.room.name].memory.remoteMining.rooms = reachableRooms;
+      return reachableRooms[Math.floor(Math.random() * reachableRooms.length)];
     }
     return null;
   }
@@ -79,15 +83,28 @@ export class RemoteMiner {
       }
     } else {
       const sources = creep.room.find(FIND_SOURCES);
-      if (creep.store.getFreeCapacity() > 0) {
-        harvest(creep, sources[0]);
+      if (sources.length == 0) {
+        // Remove this room from remoteMining.rooms since it has no sources
+        const homeRoom = Game.rooms[creep.memory.homeRoom];
+        homeRoom.memory.remoteMining.rooms = homeRoom.memory.remoteMining.rooms.filter(
+          room => room !== creep.room.name
+        );
+        const targetRoom = RemoteMiner.findTargetRoom(creep);
+        if (targetRoom) {
+          creepMemory.targetRoom = targetRoom;
+          creepMemory.moveLoc = setupMoveLoc(targetRoom);
+        }
       } else {
-        // Move to home room
-        if (!creepMemory.moveLoc) {
-          creepMemory.moveLoc = setupMoveLoc(creepMemory.homeRoom);
-          creepMemory.energyHarvested += creep.store.energy;
+        if (creep.store.getFreeCapacity() > 0) {
+          harvest(creep, sources[0]);
+        } else {
+          // Move to home room
+          if (!creepMemory.moveLoc) {
+            creepMemory.moveLoc = setupMoveLoc(creepMemory.homeRoom);
+            creepMemory.energyHarvested += creep.store.energy;
+          }
         }
       }
     }
-  };
+  }
 }

@@ -189,12 +189,22 @@ export function getCreepNeedingEnergy(creep: Creep) {
   });
 }
 
-export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnyStructure | null {
+export function findStructureNeedingRepair(room: Room, pos: RoomPosition, type: 'tower' | 'creep'): AnyStructure | null {
   const myStructures = room.find(FIND_STRUCTURES);
   // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
+  // Towers healing is more expensive than builders so we repair if its getting low
+  let targetRatio = 0.4;
+  switch (type) {
+    case 'tower':
+      targetRatio = 0.4;
+      break;
+    case 'creep':
+      targetRatio = 0.9;
+      break;
+  }
   const targetStructures = myStructures.filter(
     structure =>
-      structure.hits < structure.hitsMax - 300 &&
+      structure.hits < structure.hitsMax * targetRatio &&
       structure.structureType !== STRUCTURE_WALL &&
       structure.structureType !== STRUCTURE_RAMPART
   );
@@ -207,7 +217,7 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
         structure.hits < getWallMaxHits(room.controller?.level))
   );
 
-  if (Game.time % 20 === 0) {
+  if (Game.time % 20 === 0 && type === 'tower') {
     obstacles.sort((a, b) => {
       return a.hits - b.hits;
     });

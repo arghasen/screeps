@@ -8,6 +8,8 @@ export class Harvester {
       const target = getStructuresNeedingEnergy(creep);
       if (target) {
         transfer(creep, target);
+      } else {
+
       }
     }
   };

@@ -56,18 +56,15 @@ export class City extends Process {
         remoteMining: {
           creepCost: 0,
           energyHarvested: 0,
-          energyTransferred: 0
+          energyTransferred: 0,
+          rooms: []
         },
         mineMinerals: false,
         energyContainers: [],
         enemy: false
       };
-      if (!room.memory.remoteMining) {
-        room.memory.remoteMining = {
-          creepCost: 0,
-          energyHarvested: 0,
-          energyTransferred: 0
-        };
+      if (!room.memory.remoteMining.rooms) {
+        room.memory.remoteMining.rooms = [];
       }
       const sources = sourcesInRoom(room);
       for (const source of sources) {
