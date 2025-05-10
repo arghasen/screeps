@@ -64,7 +64,11 @@ export class Employment extends Process {
     this.storeHarvestingStatus();
     if (totWorkers + this.room.memory.spawnQueue.length < MaxPopulationPerRoom[this.rcl]) {
       this.createWorkers(employ);
-    } else if (this.room.memory.mineMinerals && !this.room.memory.critical && this.numMineralMiners < 1) {
+    } else if (
+      this.room.memory.mineMinerals &&
+      !this.room.memory.critical &&
+      this.numMineralMiners < 1
+    ) {
       const spawnQueue = this.room.memory.spawnQueue;
       if (spawnQueue.indexOf(Role.MINERAL_MINER) === -1) {
         spawnQueue.push(Role.MINERAL_MINER);
@@ -155,9 +159,10 @@ export class Employment extends Process {
 
   private getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
-      if (creep.room.name === this.room.name) {
-        logger.debug(`worker counting: ${logger.json(creep)};`);
-
+      if (creep.room.name == this.room.name && !creep.memory.homeRoom) {
+        creep.memory.homeRoom = this.room.name;
+      }
+      if (creep.memory.homeRoom === this.room.name) {
         const unemployed = this.workerCounter(creep.memory.role);
         if (unemployed) {
           this.unemployed.push(creep);
@@ -212,7 +217,10 @@ export class Employment extends Process {
     };
 
     for (const creep of this.myCreeps) {
-      if (creep.pos.roomName !== this.room.name && creep.memory.role !== Role.REMOTE_MINER) {
+      if (
+        creep.pos.roomName !== this.room.name &&
+        !(creep.memory.role === Role.REMOTE_MINER || creep.memory.moveLoc)
+      ) {
         continue;
       }
 

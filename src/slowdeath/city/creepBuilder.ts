@@ -39,7 +39,12 @@ export function getHaulerBody(energyCapacityAvailable: number): BodyPartConstant
   }
   return body;
 }
-
+export function getUpgraderBody(energyCapacityAvailable: number, staticUpgrades: boolean): BodyPartConstant[] {
+  if (staticUpgrades) {
+    return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
+  }
+  return getBuilderBody(energyCapacityAvailable);
+}
 export function getBuilderBody(energyCapacityAvailable: number): BodyPartConstant[] {
   let body: BodyPartConstant[] = [];
 
@@ -83,15 +88,15 @@ export function getSpawnCost(body: BodyPartConstant[]) {
   return cost;
 }
 
-export function getContinuousHarvestor(energyCapacityAvailable: number): CreepSpawnData {
+export function getContinuousHarvestor(energyCapacityAvailable: number, roomName: string): CreepSpawnData {
   return {
     build: getContinuousHarvesterBody(energyCapacityAvailable),
     name: `cont_harv-${Game.time}`,
-    options: { memory: { role: Role.CONTINUOUS_HARVESTER, task: CreepTask.UNKNOWN } }
+    options: { memory: { role: Role.CONTINUOUS_HARVESTER, task: CreepTask.UNKNOWN, homeRoom: roomName } }
   };
 }
 
-export function getClaimer(energyCapacityAvailable: number): CreepSpawnData | null {
+export function getClaimer(energyCapacityAvailable: number, roomName: string): CreepSpawnData | null {
   let body: BodyPartConstant[] = [];
   if (energyCapacityAvailable >= 650) {
     body = [CLAIM, MOVE];
@@ -103,7 +108,8 @@ export function getClaimer(energyCapacityAvailable: number): CreepSpawnData | nu
           role: Role.CLAIMER,
           moveLoc: Memory.createClaimer?.loc,
           identifier: Memory.createClaimer?.identifier,
-          task: CreepTask.UNKNOWN
+          task: CreepTask.UNKNOWN,
+          homeRoom: roomName
         }
       }
     };
@@ -111,15 +117,15 @@ export function getClaimer(energyCapacityAvailable: number): CreepSpawnData | nu
   return null;
 }
 
-export function getHauler(energyCapacityAvailable: number, role: Role): CreepSpawnData {
+export function getHauler(energyCapacityAvailable: number, role: Role, roomName: string): CreepSpawnData {
   return {
     build: getHaulerBody(energyCapacityAvailable),
     name: `${roleNames[role]}-${Game.time}`,
-    options: { memory: { role, task: CreepTask.UNKNOWN } }
+    options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
   };
 }
 
-export function getRemoteBuilder(energyCapacityAvailable: number): CreepSpawnData {
+export function getRemoteBuilder(energyCapacityAvailable: number, roomName: string): CreepSpawnData {
   return {
     build: getBuilderBody(energyCapacityAvailable),
     name: `rembuilder-${Game.time}`,
@@ -127,17 +133,18 @@ export function getRemoteBuilder(energyCapacityAvailable: number): CreepSpawnDat
       memory: {
         role: Role.BUILDER,
         moveLoc: Memory.needBuilder.moveLoc,
-        task: CreepTask.UNKNOWN
+        task: CreepTask.UNKNOWN,
+        homeRoom: roomName
       }
     }
   };
 }
 
-export function getEmergencyCreep(): CreepSpawnData {
+export function getEmergencyCreep(roomName: string): CreepSpawnData {
   return {
     build: [WORK, CARRY, MOVE],
     name: `$emergency-${Game.time}`,
-    options: { memory: { role: Role.HARVESTER, task: CreepTask.UNKNOWN } }
+    options: { memory: { role: Role.HARVESTER, task: CreepTask.UNKNOWN, homeRoom: roomName } }
   };
 }
 
@@ -148,14 +155,14 @@ export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartCon
   return [WORK, CARRY, MOVE];
 }
 
-export function getMineralMinerBody(energyCapacityAvailable: number): BodyPartConstant[] {
+export function getMineralMinerBody(energyCapacityAvailable: number, roomName: string): BodyPartConstant[] {
   return [WORK, CARRY, MOVE];
 }
 
-export function getRemoteMiner(energyCapacityAvailable: number): CreepSpawnData {
+export function getRemoteMiner(energyCapacityAvailable: number, roomName: string): CreepSpawnData {
   return {
     build: getRemoteMinerBody(energyCapacityAvailable),
     name: `rem_miner-${Game.time}`,
-    options: { memory: { role: Role.REMOTE_MINER, task: CreepTask.UNKNOWN } }
+    options: { memory: { role: Role.REMOTE_MINER, task: CreepTask.UNKNOWN, homeRoom: roomName } }
   };
 }

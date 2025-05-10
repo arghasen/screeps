@@ -74,7 +74,9 @@ function getDroppedEnergySources(creep: Creep): Resource[] {
 
 function getClosestDroppedEnergySource(creep: Creep, energyResources: Resource[]): Resource | null {
   if (!energyResources.length) return null;
-  const largeDrops = energyResources.filter(resource => resource.amount >= DROPPED_ENERGY_THRESHOLD);
+  const largeDrops = energyResources.filter(
+    resource => resource.amount >= DROPPED_ENERGY_THRESHOLD
+  );
   if (largeDrops.length > 0) {
     return largeDrops[0];
   }
@@ -89,7 +91,9 @@ export function pickupDroppedEnergy(creep: Creep): boolean {
 
     if (target) {
       creep.memory.target = target.id;
-      logger.debug(`Creep ${creep.name} found new energy target: ${target.id} with amount ${target.amount}`);
+      logger.debug(
+        `Creep ${creep.name} found new energy target: ${target.id} with amount ${target.amount}`
+      );
     }
   }
   if (target) {
@@ -113,7 +117,6 @@ function extractTarget<T extends _HasId>(creep: Creep): T | null {
 
 export function getEnergy(creep: Creep) {
   const stores = getEnergyStore(creep);
-  logger.debug(`upgrader ${creep.name} energy stores:${logger.json(stores)}`);
   const store = creep.pos.findClosestByPath(stores);
   if (store) {
     withdraw(creep, store);
@@ -156,8 +159,7 @@ export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
 
   const secondaryTargets = structures.filter(structure => {
     return (
-      (structure.structureType === STRUCTURE_CONTAINER ||
-        structure.structureType === STRUCTURE_TOWER) &&
+      structure.structureType === STRUCTURE_TOWER &&
       structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
     );
   });
@@ -192,9 +194,9 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
   // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
   const targetStructures = myStructures.filter(
     structure =>
-    (structure.hits < structure.hitsMax - 300 &&
+      structure.hits < structure.hitsMax - 300 &&
       structure.structureType !== STRUCTURE_WALL &&
-      structure.structureType !== STRUCTURE_RAMPART)
+      structure.structureType !== STRUCTURE_RAMPART
   );
 
   const obstacles = myStructures.filter(
@@ -205,7 +207,7 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition): AnySt
         structure.hits < getWallMaxHits(room.controller?.level))
   );
 
-  if (Game.time % 10 === 0) {
+  if (Game.time % 20 === 0) {
     obstacles.sort((a, b) => {
       return a.hits - b.hits;
     });

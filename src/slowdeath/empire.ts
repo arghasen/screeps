@@ -79,7 +79,7 @@ export class Empire extends Process {
         });
         if (creep_.length < 1) {
           Game.spawns.Spawn1.spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, MOVE, MOVE], "das1", {
-            memory: { role: Role.DISMANTLER, task: CreepTask.UNKNOWN }
+            memory: { role: Role.DISMANTLER, task: CreepTask.UNKNOWN, homeRoom: "" }
           });
         }
         for (const c of creep_) {

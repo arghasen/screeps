@@ -95,7 +95,7 @@ interface CreepMemory {
   role: number;
   source?: Id<Source>;
   moveLoc?: MoveLoc;
-  homeRoom?: string;
+  homeRoom: string;
 }
 
 interface ProcessData {

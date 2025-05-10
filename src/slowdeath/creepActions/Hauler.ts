@@ -2,7 +2,8 @@ import {
   getStructuresNeedingEnergy,
   pickupDroppedEnergy,
   transfer,
-  transferEnergyFromCreep
+  transferEnergyFromCreep,
+  withdraw
 } from "./CommonActions";
 import { CreepTask } from "./constants";
 import { Actor } from "./Actor";
@@ -42,7 +43,16 @@ export class Hauler extends Actor {
         transferEnergyFromCreep(creep);
       }
     } else {
-      pickupDroppedEnergy(creep);
+      const containers = creep.room.find(FIND_STRUCTURES, {
+        filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+      }) as StructureContainer[];
+      const sortedContainers = containers.sort((a, b) => b.store.getUsedCapacity(RESOURCE_ENERGY) - a.store.getUsedCapacity(RESOURCE_ENERGY));
+      if (sortedContainers.length > 0) {
+        withdraw(creep, sortedContainers[0]);
+      }
+      else {
+        pickupDroppedEnergy(creep);
+      }
     }
   };
 }

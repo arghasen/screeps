@@ -6,7 +6,6 @@ interface RemoteMinerMemory extends CreepMemory {
   init: boolean;
   targetRoom?: string;
   source?: Id<Source>;
-  homeRoom?: string;
   energyHarvested: number;
 }
 
@@ -42,14 +41,9 @@ export class RemoteMiner {
       );
     }
 
-    // Initialize home room if not set
-    if (!creepMemory.homeRoom) {
-      creepMemory.homeRoom = creep.room.name;
-    }
     // If creep is about to die, keep metrics in memory
     if (creep.ticksToLive && creep.ticksToLive <= 1) {
-      Game.rooms[creepMemory.homeRoom].memory.remoteMining.energyHarvested +=
-        creepMemory.energyHarvested;
+      Game.rooms[creepMemory.homeRoom].memory.remoteMining.energyHarvested += (creepMemory.energyHarvested || 0);
       creepMemory.energyHarvested = 0;
     }
     if (creep.memory.moveLoc) {

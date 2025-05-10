@@ -3,10 +3,9 @@ import { getStructuresNeedingEnergy, harvest, pickupOrHarvest, transfer } from "
 export class Harvester {
   public static run = (creep: Creep): void => {
     if (creep.store.getFreeCapacity() > 0) {
-      harvest(creep, creep.pos.findClosestByRange(FIND_DEPOSITS));
+      pickupOrHarvest(creep);
     } else {
-      const structures = creep.room.find(FIND_STRUCTURES);
-      const target = structures.find(structure => structure.structureType === STRUCTURE_STORAGE);
+      const target = getStructuresNeedingEnergy(creep);
       if (target) {
         transfer(creep, target);
       }

@@ -17,7 +17,8 @@ import {
   getMineralMinerBody,
   getRemoteBuilder,
   getRemoteMiner,
-  getSpawnCost
+  getSpawnCost,
+  getUpgraderBody
 } from "./creepBuilder";
 
 export class Spawns extends Process {
@@ -132,18 +133,18 @@ export class Spawns extends Process {
   private getCreepToSpawn(energyCapacityAvailable: number): CreepSpawnData | null {
     const room = Game.rooms[this.room.name];
     if (room.memory.critical) {
-      return getEmergencyCreep();
+      return getEmergencyCreep(this.room.name);
     }
     if (this.room.memory.createContinuousHarvester) {
-      return getContinuousHarvestor(energyCapacityAvailable);
+      return getContinuousHarvestor(energyCapacityAvailable, this.room.name);
     }
 
     if (Memory.createClaimer && !Memory.createClaimer.done) {
-      return getClaimer(energyCapacityAvailable);
+      return getClaimer(energyCapacityAvailable, this.room.name);
     }
 
     if (Memory.needBuilder && Memory.needBuilder.sent === "") {
-      return getRemoteBuilder(energyCapacityAvailable);
+      return getRemoteBuilder(energyCapacityAvailable, this.room.name);
     }
 
     // Check if we need remote miners
@@ -154,7 +155,7 @@ export class Spawns extends Process {
     const numRemoteMiners = 2 + (this.room.memory.continuousHarvestingStarted ? 2 : 0);
     if (remoteMiners.length < numRemoteMiners && !this.room.memory.enemy) {
       // Maintain 2 remote miners
-      return getRemoteMiner(energyCapacityAvailable);
+      return getRemoteMiner(energyCapacityAvailable, this.room.name);
     }
 
 
@@ -191,13 +192,21 @@ export class Spawns extends Process {
       return next;
     }
     if (role === Role.HAULER) {
-      return getHauler(energyCapacityAvailable, role);
+      return getHauler(energyCapacityAvailable, role, roomName);
     }
     if (role === Role.MINERAL_MINER && !this.room.memory.enemy) {
       return {
-        build: getMineralMinerBody(energyCapacityAvailable),
+        build: getMineralMinerBody(energyCapacityAvailable, roomName),
         name: `${roleNames[role]}-${Game.time}`,
-        options: { memory: { role, task: CreepTask.UNKNOWN } }
+        options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
+      };
+    }
+    if (role === Role.UPGRADER) {
+      const staticUpgrades = this.room.memory.linksCreated
+      return {
+        build: getUpgraderBody(energyCapacityAvailable, staticUpgrades),
+        name: `${roleNames[role]}-${Game.time}`,
+        options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
       };
     }
     const body = getBuilderBody(energyCapacityAvailable);
@@ -205,7 +214,7 @@ export class Spawns extends Process {
     return {
       build: body,
       name: `${roleNames[role]}-${Game.time}`,
-      options: { memory: { role, task: CreepTask.UNKNOWN } }
+      options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
     };
   }
 }
