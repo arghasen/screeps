@@ -18,12 +18,14 @@ export class Infrastructure extends Process {
   private towers: StructureTower[] = [];
   private constructionSites: ConstructionSite<BuildableStructureConstant>[] = [];
   private links: StructureLink[] = [];
+  private rcl: number = 0;
 
   private init() {
     this.metadata = this.data as CityData;
     this.room = Game.rooms[this.metadata.roomName];
 
     if (this.room) {
+      this.rcl = this.room.controller?.level || 0;
       this.spawns = spawnsInRoom(this.room);
       const myStructures = this.room.find(FIND_MY_STRUCTURES);
 
@@ -55,7 +57,7 @@ export class Infrastructure extends Process {
         site => site.structureType === STRUCTURE_ROAD
       );
 
-      if (this.room.controller?.my && this.room.controller.level >= 6 && !this.room.memory.upgraderLink) {
+      if (this.room.controller?.my && this.rcl >= 6 && !this.room.memory.upgraderLink) {
         const links = myStructures.filter(
           structure => structure.structureType === STRUCTURE_LINK
         );
@@ -85,6 +87,9 @@ export class Infrastructure extends Process {
     );
 
     this.room.memory.extraBuilders = prioritySites.length > 1;
+    if (this.room?.controller && this.rcl >= 7 && this.constructionSites.length > 1) {
+      this.room.memory.extraBuilders = true;
+    }
   }
 
   private requestRemoteBuilders(pos: RoomPosition) {
@@ -249,9 +254,9 @@ export class Infrastructure extends Process {
   }
 
   private buildTowers() {
-    if (!this.room.controller || this.room.controller.level < 3) return;
+    if (!this.room.controller || this.rcl < 3) return;
 
-    const maxTowers = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.room.controller.level];
+    const maxTowers = CONTROLLER_STRUCTURES[STRUCTURE_TOWER][this.rcl];
     if (this.towers.length >= maxTowers) return;
 
     const towerPos = this.findOptimalTowerPosition();
@@ -303,7 +308,7 @@ export class Infrastructure extends Process {
   }
 
   private buildStorage() {
-    if (!this.room.controller || this.room.controller.level !== 4) return;
+    if (this.rcl !== 4) return;
 
     if (!this.room.storage) {
       const storagePos = this.findOptimalStoragePosition();
@@ -358,13 +363,13 @@ export class Infrastructure extends Process {
   }
 
   private buildLinks() {
-    if (!this.room.controller || this.room.controller.level < 5) return;
+    if (this.rcl < 5) return;
 
-    const maxLinks = CONTROLLER_STRUCTURES[STRUCTURE_LINK][this.room.controller.level];
+    const maxLinks = CONTROLLER_STRUCTURES[STRUCTURE_LINK][this.rcl];
     if (this.links.length >= maxLinks) return;
 
     // At level 5, place links next to sources
-    if (this.room.controller.level === 5) {
+    if (this.rcl === 5) {
       const sources = this.room.find(FIND_SOURCES);
       for (const source of sources) {
         if (this.links.length >= maxLinks) break;
@@ -410,10 +415,9 @@ export class Infrastructure extends Process {
   private buildExtensions() {
     if (!this.room.controller) return;
 
-    const level = this.room.controller.level;
-    if (level < 2 || level > 8) return;
+    if (this.rcl < 2 || this.rcl > 8) return;
 
-    const maxExtensions = ControllerConsts[`lvl${level}extensions`] || 0;
+    const maxExtensions = ControllerConsts[`lvl${this.rcl}extensions`] || 0;
     const currentExtensions = this.getTotalExtensions();
 
     // If we already have all extensions for this level, don't build more
@@ -424,7 +428,7 @@ export class Infrastructure extends Process {
 
     // Get the base position for this level's extensions
     let pos: RoomPosition;
-    switch (level) {
+    switch (this.rcl) {
       case 2:
         pos = this.spawns[0].pos;
         break;
@@ -451,7 +455,7 @@ export class Infrastructure extends Process {
     }
 
     if (pos) {
-      this.createExtensions(this.room, pos, level, currentExtensions, extensionsToBuild);
+      this.createExtensions(this.room, pos, this.rcl, currentExtensions, extensionsToBuild);
     }
   }
 

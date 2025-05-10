@@ -149,7 +149,11 @@ export class Employment extends Process {
       }
     } else if (role === Role.UPGRADER) {
       if (this.room.memory.extraBuilders) {
-        return MaxRolePopulation.upgrader - 1;
+        if (this.rcl >= 6) {
+          return MaxRolePopulation.upgrader - 2;
+        } else {
+          return MaxRolePopulation.upgrader - 1;
+        }
       } else {
         return MaxRolePopulation.upgrader;
       }

@@ -156,7 +156,13 @@ export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartCon
 }
 
 export function getMineralMinerBody(energyCapacityAvailable: number, roomName: string): BodyPartConstant[] {
-  return [WORK, CARRY, MOVE];
+  if (energyCapacityAvailable >= 1000) {
+    return [WORK, WORK, CARRY, CARRY, MOVE, MOVE];
+  } else if (energyCapacityAvailable >= 2000) {
+    return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE];
+  } else {
+    return [WORK, CARRY, MOVE];
+  }
 }
 
 export function getRemoteMiner(energyCapacityAvailable: number, roomName: string): CreepSpawnData {

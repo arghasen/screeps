@@ -20,11 +20,12 @@ function setupMoveLoc(roomName: string) {
 export class RemoteMiner {
   private static findTargetRoom(creep: Creep): string | null {
     // If no visible rooms with sources, try to explore
-    let rooms = Game.rooms[creep.room.name].memory.remoteMining.rooms;
-    if (rooms.length > 0) {
+    let rooms = Game.rooms[creep.room.name].memory.remoteMining?.rooms;
+    if (rooms && rooms.length > 0) {
       return rooms[Math.floor(Math.random() * rooms.length)];
     }
     const exits = Game.map.describeExits(creep.room.name);
+    logger.info(`Exits: ${JSON.stringify(exits)}`);
     const reachableRooms = Object.values(exits).filter(roomName => roomName !== undefined
       && !Game.rooms[roomName]?.controller?.my);
     if (reachableRooms.length > 0) {
@@ -89,11 +90,7 @@ export class RemoteMiner {
         homeRoom.memory.remoteMining.rooms = homeRoom.memory.remoteMining.rooms.filter(
           room => room !== creep.room.name
         );
-        const targetRoom = RemoteMiner.findTargetRoom(creep);
-        if (targetRoom) {
-          creepMemory.targetRoom = targetRoom;
-          creepMemory.moveLoc = setupMoveLoc(targetRoom);
-        }
+        creep.suicide();
       } else {
         if (creep.store.getFreeCapacity() > 0) {
           harvest(creep, sources[0]);

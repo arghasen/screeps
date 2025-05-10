@@ -63,9 +63,7 @@ export class City extends Process {
         energyContainers: [],
         enemy: false
       };
-      if (!room.memory.remoteMining.rooms) {
-        room.memory.remoteMining.rooms = [];
-      }
+
       const sources = sourcesInRoom(room);
       for (const source of sources) {
         room.memory.harvesterStartTime[source.id] = [];

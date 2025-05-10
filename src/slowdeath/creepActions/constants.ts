@@ -28,8 +28,8 @@ export const MaxRolePopulation = {
 };
 
 export const PopulationScaler: Record<number, number> = {
-  0: 4,
-  1: 4,
+  0: 3,
+  1: 3,
   2: 4,
   3: 4,
   4: 4,
@@ -39,9 +39,9 @@ export const PopulationScaler: Record<number, number> = {
   8: 3
 };
 export const MaxPopulationPerRoom: Record<number, number> = {
-  0: 16,
-  1: 16,
-  2: 16,
+  0: 12,
+  1: 12,
+  2: 12,
   3: 16,
   4: 16,
   5: 7,
