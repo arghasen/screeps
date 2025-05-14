@@ -39,7 +39,10 @@ export function getHaulerBody(energyCapacityAvailable: number): BodyPartConstant
   }
   return body;
 }
-export function getUpgraderBody(energyCapacityAvailable: number, staticUpgrades: boolean): BodyPartConstant[] {
+export function getUpgraderBody(
+  energyCapacityAvailable: number,
+  staticUpgrades: boolean
+): BodyPartConstant[] {
   if (staticUpgrades) {
     return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
   }
@@ -88,15 +91,23 @@ export function getSpawnCost(body: BodyPartConstant[]) {
   return cost;
 }
 
-export function getContinuousHarvestor(energyCapacityAvailable: number, roomName: string): CreepSpawnData {
+export function getContinuousHarvestor(
+  energyCapacityAvailable: number,
+  roomName: string
+): CreepSpawnData {
   return {
     build: getContinuousHarvesterBody(energyCapacityAvailable),
     name: `cont_harv-${Game.time}`,
-    options: { memory: { role: Role.CONTINUOUS_HARVESTER, task: CreepTask.UNKNOWN, homeRoom: roomName } }
+    options: {
+      memory: { role: Role.CONTINUOUS_HARVESTER, task: CreepTask.UNKNOWN, homeRoom: roomName }
+    }
   };
 }
 
-export function getClaimer(energyCapacityAvailable: number, roomName: string): CreepSpawnData | null {
+export function getClaimer(
+  energyCapacityAvailable: number,
+  roomName: string
+): CreepSpawnData | null {
   let body: BodyPartConstant[] = [];
   if (energyCapacityAvailable >= 650) {
     body = [CLAIM, MOVE];
@@ -117,7 +128,11 @@ export function getClaimer(energyCapacityAvailable: number, roomName: string): C
   return null;
 }
 
-export function getHauler(energyCapacityAvailable: number, role: Role, roomName: string): CreepSpawnData {
+export function getHauler(
+  energyCapacityAvailable: number,
+  role: Role,
+  roomName: string
+): CreepSpawnData {
   return {
     build: getHaulerBody(energyCapacityAvailable),
     name: `${roleNames[role]}-${Game.time}`,
@@ -125,7 +140,10 @@ export function getHauler(energyCapacityAvailable: number, role: Role, roomName:
   };
 }
 
-export function getRemoteBuilder(energyCapacityAvailable: number, roomName: string): CreepSpawnData {
+export function getRemoteBuilder(
+  energyCapacityAvailable: number,
+  roomName: string
+): CreepSpawnData {
   return {
     build: getBuilderBody(energyCapacityAvailable),
     name: `rembuilder-${Game.time}`,
@@ -155,11 +173,31 @@ export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartCon
   return [WORK, CARRY, MOVE];
 }
 
-export function getMineralMinerBody(energyCapacityAvailable: number, roomName: string): BodyPartConstant[] {
-  if (energyCapacityAvailable >= 1000) {
+export function getMineralMinerBody(
+  energyCapacityAvailable: number,
+  roomName: string
+): BodyPartConstant[] {
+  if (energyCapacityAvailable >= 2000) {
+    return [
+      WORK,
+      WORK,
+      WORK,
+      WORK,
+      WORK,
+      CARRY,
+      CARRY,
+      CARRY,
+      CARRY,
+      CARRY,
+      CARRY,
+      CARRY,
+      CARRY,
+      CARRY,
+      MOVE,
+      MOVE
+    ];
+  } else if (energyCapacityAvailable >= 1000) {
     return [WORK, WORK, CARRY, CARRY, MOVE, MOVE];
-  } else if (energyCapacityAvailable >= 2000) {
-    return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE];
   } else {
     return [WORK, CARRY, MOVE];
   }

@@ -36,7 +36,7 @@ export class RemoteMiner {
   }
 
   public static run = (creep: Creep): void => {
-    logger.info(`RemoteMiner run: ${creep.name}`);
+    logger.debug(`RemoteMiner run: ${creep.name}`);
     const creepMemory = creep.memory as RemoteMinerMemory;
     if (!creepMemory.init) {
       creepMemory.init = true;

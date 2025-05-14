@@ -12,9 +12,12 @@ import { logger } from "utils/logger";
 export class Hauler extends Actor {
   public static run = (creep: Creep): void => {
     super.setTask(creep);
-    if (creep.room.memory.enemy && creep.store.getUsedCapacity(RESOURCE_ENERGY) > creep.store.getCapacity(RESOURCE_ENERGY) * 0.5) {
+    if (
+      creep.room.memory.enemy &&
+      creep.store.getUsedCapacity(RESOURCE_ENERGY) > creep.store.getCapacity(RESOURCE_ENERGY) * 0.5
+    ) {
       const tower = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-        filter: (structure) => structure.structureType === STRUCTURE_TOWER
+        filter: structure => structure.structureType === STRUCTURE_TOWER
       });
       logger.warning(`${creep.name} found tower ${tower}`);
       if (tower) {
@@ -43,15 +46,19 @@ export class Hauler extends Actor {
         transferEnergyFromCreep(creep);
       }
     } else {
-      const containers = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0
-      }) as StructureContainer[];
-      const sortedContainers = containers.sort((a, b) => b.store.getUsedCapacity(RESOURCE_ENERGY) - a.store.getUsedCapacity(RESOURCE_ENERGY));
-      if (sortedContainers.length > 0) {
-        withdraw(creep, sortedContainers[0]);
-      }
-      else {
-        pickupDroppedEnergy(creep);
+      if (!pickupDroppedEnergy(creep)) {
+        const containers = creep.room.find(FIND_STRUCTURES, {
+          filter: structure =>
+            structure.structureType === STRUCTURE_CONTAINER &&
+            structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0
+        }) as StructureContainer[];
+        const sortedContainers = containers.sort(
+          (a, b) =>
+            b.store.getUsedCapacity(RESOURCE_ENERGY) - a.store.getUsedCapacity(RESOURCE_ENERGY)
+        );
+        if (sortedContainers.length > 0) {
+          withdraw(creep, sortedContainers[0]);
+        }
       }
     }
   };

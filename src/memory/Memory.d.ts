@@ -56,6 +56,7 @@ interface RoomMemory {
   mineMinerals: boolean;
   energyContainers: Id<StructureContainer>[];
   enemy: boolean;
+  heal: Id<Creep>[];
 }
 
 interface Memory {
@@ -97,6 +98,7 @@ interface CreepMemory {
   source?: Id<Source>;
   moveLoc?: MoveLoc;
   homeRoom: string;
+  _move?: RoomPosition;
 }
 
 interface ProcessData {

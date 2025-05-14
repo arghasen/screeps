@@ -56,11 +56,6 @@ function initializeCreepMemory(creep: Creep) {
 }
 
 function handleCreepDeath(creep: Creep, source: Source) {
-  if (!creep.room.memory.harvesterStartTime || !creep.room.memory.harvesterStartTime[source.id]) {
-    creep.room.memory.harvesterStartTime = creep.room.memory.harvesterStartTime || {};
-    creep.room.memory.harvesterStartTime[source.id] = [];
-  }
-
   const startTime = creep.room.memory.harvesterStartTime[source.id];
   if (startTime.length >= 10) {
     startTime.shift();
@@ -68,9 +63,7 @@ function handleCreepDeath(creep: Creep, source: Source) {
 
   if (creep.memory.harvestStartTime) {
     startTime.push(creep.memory.harvestStartTime);
-    if (startTime.length > 0) {
-      startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
-    }
+    startTime[0] = startTime.reduce((a, b) => a + b) / startTime.length;
   }
 }
 
@@ -85,7 +78,7 @@ function handleLinkMining(creep: Creep) {
     logger.info(`link to be used ${link.id}`);
     transfer(creep, link);
     if (link.store.getUsedCapacity(RESOURCE_ENERGY) >= 400 && link.cooldown === 0) {
-      logger.info("link more than 50% full");
+      logger.debug("link more than 50% full");
       transferToUpgraderLink(link);
     }
   }

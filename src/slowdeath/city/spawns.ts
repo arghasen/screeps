@@ -75,7 +75,8 @@ export class Spawns extends Process {
           this.createCreep(spawn, creep);
         } else {
           logger.debug(
-            `queuing creep to create: ${logger.json(creep)} and energy available: ${this.room.energyAvailable
+            `queuing creep to create: ${logger.json(creep)} and energy available: ${
+              this.room.energyAvailable
             }`
           );
           this.queueCreep(creep);
@@ -158,7 +159,6 @@ export class Spawns extends Process {
       return getRemoteMiner(energyCapacityAvailable, this.room.name);
     }
 
-
     const creepRole = this.room.memory.spawnQueue[0];
     if (creepRole !== undefined) {
       logger.debug(`Using spawn queue to create creep: ${roleNames[creepRole]}`);
@@ -174,7 +174,7 @@ export class Spawns extends Process {
     }
     return (
       myCreeps.length <=
-      MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
+        MaxPopulationPerRoom[this.room.controller!.level] + MaxRolePopulation.continuousHarvester ||
       this.room.memory.createContinuousHarvester ||
       (Memory.createClaimer && !Memory.createClaimer.done) ||
       (Memory.needBuilder && Memory.needBuilder?.sent === "")
@@ -202,7 +202,7 @@ export class Spawns extends Process {
       };
     }
     if (role === Role.UPGRADER) {
-      const staticUpgrades = this.room.memory.linksCreated
+      const staticUpgrades = this.room.memory.linksCreated;
       return {
         build: getUpgraderBody(energyCapacityAvailable, staticUpgrades),
         name: `${roleNames[role]}-${Game.time}`,

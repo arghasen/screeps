@@ -6,9 +6,9 @@ import { objectFromId } from "utils/screeps-fns";
 
 export class Upgrader {
   public static run = (creep: Creep): void => {
-    logger.info(`Upgrader run: ${creep.name}`);
+    logger.debug(`Upgrader run: ${creep.name}`);
     setCreepState(creep);
-    if (creep.memory.task != CreepTask.HARVEST && creep.room.controller?.my) {
+    if (creep.memory.task !== CreepTask.HARVEST && creep.room.controller?.my) {
       // TODO: Ignore if target too far away
       if (creep.ticksToLive && creep.ticksToLive <= 5 && creep.store.energy > 15) {
         const target = getCreepNeedingEnergy(creep);

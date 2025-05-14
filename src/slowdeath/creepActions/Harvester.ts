@@ -1,4 +1,4 @@
-import { getStructuresNeedingEnergy, harvest, pickupOrHarvest, transfer } from "./CommonActions";
+import { getStructuresNeedingEnergy, pickupOrHarvest, transfer } from "./CommonActions";
 
 export class Harvester {
   public static run = (creep: Creep): void => {
@@ -8,8 +8,6 @@ export class Harvester {
       const target = getStructuresNeedingEnergy(creep);
       if (target) {
         transfer(creep, target);
-      } else {
-
       }
     }
   };

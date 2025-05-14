@@ -61,13 +61,16 @@ export class City extends Process {
         },
         mineMinerals: false,
         energyContainers: [],
-        enemy: false
+        enemy: false,
+        heal: []
       };
-
       const sources = sourcesInRoom(room);
       for (const source of sources) {
         room.memory.harvesterStartTime[source.id] = [];
       }
+    }
+    if (!room.memory.heal) {
+      room.memory.heal = [];
     }
   }
 }

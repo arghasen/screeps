@@ -18,7 +18,7 @@ export class Infrastructure extends Process {
   private towers: StructureTower[] = [];
   private constructionSites: ConstructionSite<BuildableStructureConstant>[] = [];
   private links: StructureLink[] = [];
-  private rcl: number = 0;
+  private rcl = 0;
 
   private init() {
     this.metadata = this.data as CityData;
@@ -28,6 +28,7 @@ export class Infrastructure extends Process {
       this.rcl = this.room.controller?.level || 0;
       this.spawns = spawnsInRoom(this.room);
       const myStructures = this.room.find(FIND_MY_STRUCTURES);
+      const deposits = this.room.find(FIND_DEPOSITS);
 
       // Track all structures
       this.extensionsCreated = myStructures.filter(
@@ -44,7 +45,7 @@ export class Infrastructure extends Process {
         structure => structure.structureType === STRUCTURE_EXTRACTOR
       ) as StructureExtractor[];
 
-      if (extractors.length > 0 && this.room.storage) {
+      if (extractors.length > 0 && this.room.storage && deposits.length > 0) {
         this.room.memory.mineMinerals = true;
       }
 
@@ -58,9 +59,7 @@ export class Infrastructure extends Process {
       );
 
       if (this.room.controller?.my && this.rcl >= 6 && !this.room.memory.upgraderLink) {
-        const links = myStructures.filter(
-          structure => structure.structureType === STRUCTURE_LINK
-        );
+        const links = myStructures.filter(structure => structure.structureType === STRUCTURE_LINK);
         if (links.length >= 3) {
           if (!this.room.memory.linksCreated) {
             this.room.memory.linksCreated = true;
@@ -476,7 +475,6 @@ export class Infrastructure extends Process {
         pos.y + loc[i][1],
         STRUCTURE_EXTENSION
       );
-
       if (res === OK) {
         builtCount++;
         i++;

@@ -1,6 +1,6 @@
 import { objectFromId } from "utils/screeps-fns";
 import { logger } from "../../utils/logger";
-import { CreepTask, Role } from "./constants";
+import { Role } from "./constants";
 
 export function moveToOtherRoom(creep: Creep, moveLoc: MoveLoc) {
   const target = new RoomPosition(moveLoc.x, moveLoc.y, moveLoc.roomName);
@@ -36,7 +36,9 @@ export function harvest(creep: Creep, source: Source | Deposit | Mineral | null)
 }
 
 export function repair(creep: Creep, targetStructure: AnyStructure) {
-  if (creep.repair(targetStructure) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
+  if (creep.pos.inRangeTo(targetStructure, 3)) {
+    creep.repair(targetStructure);
+  } else if (creep.fatigue === 0) {
     creep.moveTo(targetStructure, { visualizePathStyle: { stroke: "#ffaa00" } });
   }
 }
@@ -53,13 +55,12 @@ export function transfer(creep: Creep, target: AnyCreep | Structure) {
   }
 }
 
-export function build(creep: Creep, target: ConstructionSite | null) {
+export function build(creep: Creep, target: ConstructionSite) {
   if (!target) return;
-
-  if (creep.build(target) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
-    creep.moveTo(target, {
-      visualizePathStyle: { stroke: "#ffffff" }
-    });
+  if (creep.pos.inRangeTo(target, 3)) {
+    creep.build(target);
+  } else if (creep.fatigue === 0) {
+    creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
   }
 }
 
@@ -189,16 +190,20 @@ export function getCreepNeedingEnergy(creep: Creep) {
   });
 }
 
-export function findStructureNeedingRepair(room: Room, pos: RoomPosition, type: 'tower' | 'creep'): AnyStructure | null {
+export function findStructureNeedingRepair(
+  room: Room,
+  pos: RoomPosition,
+  type: "tower" | "creep"
+): AnyStructure | null {
   const myStructures = room.find(FIND_STRUCTURES);
   // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
   // Towers healing is more expensive than builders so we repair if its getting low
   let targetRatio = 0.4;
   switch (type) {
-    case 'tower':
+    case "tower":
       targetRatio = 0.4;
       break;
-    case 'creep':
+    case "creep":
       targetRatio = 0.9;
       break;
   }
@@ -217,7 +222,7 @@ export function findStructureNeedingRepair(room: Room, pos: RoomPosition, type: 
         structure.hits < getWallMaxHits(room.controller?.level))
   );
 
-  if (Game.time % 20 === 0 && type === 'tower') {
+  if (Game.time % 20 === 0 && type === "tower") {
     obstacles.sort((a, b) => {
       return a.hits - b.hits;
     });

@@ -102,7 +102,7 @@ export class Employment extends Process {
       this.room.memory.continuousHarvestingStarted
     ) {
       spawnQueue.push(Role.HAULER);
-    } else if (employ(this.numBuilders, this.dynamicEmployer(Role.BUILDER)) && buildersRequired) {
+    } else if (employ(this.numBuilders, MaxRolePopulation.builders) && buildersRequired) {
       spawnQueue.push(Role.BUILDER);
     } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.UPGRADER))) {
       spawnQueue.push(Role.UPGRADER);
@@ -141,20 +141,13 @@ export class Employment extends Process {
   }
 
   private dynamicEmployer(role: Role): number {
-    if (role === Role.BUILDER) {
+    if (role === Role.UPGRADER) {
       if (this.room.memory.extraBuilders) {
-        return MaxRolePopulation.builders + 1;
+        return MaxRolePopulation.upgrader - 1;
       } else {
-        return MaxRolePopulation.builders;
-      }
-    } else if (role === Role.UPGRADER) {
-      if (this.room.memory.extraBuilders) {
-        if (this.rcl >= 6) {
-          return MaxRolePopulation.upgrader - 2;
-        } else {
-          return MaxRolePopulation.upgrader - 1;
+        if (this.room.storage && this.room.storage.store[RESOURCE_ENERGY] >= 100000) {
+          return MaxRolePopulation.upgrader + 1;
         }
-      } else {
         return MaxRolePopulation.upgrader;
       }
     }
@@ -163,7 +156,7 @@ export class Employment extends Process {
 
   private getWorkerCounts = () => {
     for (const creep of this.myCreeps) {
-      if (creep.room.name == this.room.name && !creep.memory.homeRoom) {
+      if (creep.room.name === this.room.name && !creep.memory.homeRoom) {
         creep.memory.homeRoom = this.room.name;
       }
       if (creep.memory.homeRoom === this.room.name) {
@@ -192,8 +185,8 @@ export class Employment extends Process {
       [Role.BUILDER]: () => this.numBuilders++,
       [Role.CONTINUOUS_HARVESTER]: () => this.numContinuousHarvesters++,
       [Role.CLAIMER]: () => this.numClaimer++,
-      [Role.DISMANTLER]: () => { },
-      [Role.REM_UPGRADER]: () => { },
+      [Role.DISMANTLER]: () => {},
+      [Role.REM_UPGRADER]: () => {},
       [Role.REMOTE_MINER]: () => this.numRemoteMiners++,
       [Role.MINERAL_MINER]: () => this.numMineralMiners++
     };
@@ -215,16 +208,13 @@ export class Employment extends Process {
       [Role.CONTINUOUS_HARVESTER]: ContinuousHarvester.run,
       [Role.CLAIMER]: Claimer.run,
       [Role.DISMANTLER]: Dismantler.run,
-      [Role.REM_UPGRADER]: () => { },
+      [Role.REM_UPGRADER]: () => {},
       [Role.REMOTE_MINER]: RemoteMiner.run,
       [Role.MINERAL_MINER]: MineralMiner.run
     };
 
     for (const creep of this.myCreeps) {
-      if (
-        creep.pos.roomName !== this.room.name &&
-        !(creep.memory.role === Role.REMOTE_MINER || creep.memory.moveLoc)
-      ) {
+      if (creep.memory.homeRoom !== this.room.name) {
         continue;
       }
 
