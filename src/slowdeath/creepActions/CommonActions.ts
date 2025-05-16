@@ -255,5 +255,11 @@ export function transferEnergyFromCreep(creep: Creep) {
   logger.debug(`targetCreep:${logger.json(targetCreep)} for hauler: ${logger.json(creep)}`);
   if (targetCreep) {
     transfer(creep, targetCreep);
+    return true;
   }
+  return false;
+}
+
+export function useUpEnergy(room: Room) {
+  return (room.storage?.store[RESOURCE_ENERGY] || 0) > 200000;
 }

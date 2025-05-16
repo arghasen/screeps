@@ -41,9 +41,13 @@ export function getHaulerBody(energyCapacityAvailable: number): BodyPartConstant
 }
 export function getUpgraderBody(
   energyCapacityAvailable: number,
-  staticUpgrades: boolean
+  staticUpgrades: boolean,
+  quickUpgrades: boolean
 ): BodyPartConstant[] {
   if (staticUpgrades) {
+    if (quickUpgrades) {
+      return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
+    }
     return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
   }
   return getBuilderBody(energyCapacityAvailable);

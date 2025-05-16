@@ -145,9 +145,6 @@ export class Employment extends Process {
       if (this.room.memory.extraBuilders) {
         return MaxRolePopulation.upgrader - 1;
       } else {
-        if (this.room.storage && this.room.storage.store[RESOURCE_ENERGY] >= 100000) {
-          return MaxRolePopulation.upgrader + 1;
-        }
         return MaxRolePopulation.upgrader;
       }
     }

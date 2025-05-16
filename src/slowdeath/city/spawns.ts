@@ -20,6 +20,7 @@ import {
   getSpawnCost,
   getUpgraderBody
 } from "./creepBuilder";
+import { useUpEnergy } from "slowdeath/creepActions/CommonActions";
 
 export class Spawns extends Process {
   protected className = "spawns";
@@ -108,9 +109,13 @@ export class Spawns extends Process {
   private createCreep(spawn: StructureSpawn, creep: CreepSpawnData) {
     const ret = spawn.spawnCreep(creep.build, creep.name, creep.options);
     if (ret !== OK) {
-      logger.error(`${ret} while spawning creep ${creep.name} in room ${this.metadata!.roomName}`);
+      logger.error(
+        `${ret} while spawning creep ${creep.name} in room ${this.metadata?.roomName || "unknown"}`
+      );
     } else {
-      logger.info(`Spawning successful creep ${creep.name} from ${this.metadata!.roomName}`);
+      logger.info(
+        `Spawning successful creep ${creep.name} from ${this.metadata?.roomName || "unknown"}`
+      );
       this.onCreateSuccess(creep);
     }
   }
@@ -204,7 +209,7 @@ export class Spawns extends Process {
     if (role === Role.UPGRADER) {
       const staticUpgrades = this.room.memory.linksCreated;
       return {
-        build: getUpgraderBody(energyCapacityAvailable, staticUpgrades),
+        build: getUpgraderBody(energyCapacityAvailable, staticUpgrades, useUpEnergy(this.room)),
         name: `${roleNames[role]}-${Game.time}`,
         options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
       };

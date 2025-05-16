@@ -45,9 +45,8 @@ export class Infrastructure extends Process {
         structure => structure.structureType === STRUCTURE_EXTRACTOR
       ) as StructureExtractor[];
 
-      if (extractors.length > 0 && this.room.storage && deposits.length > 0) {
-        this.room.memory.mineMinerals = true;
-      }
+      this.room.memory.mineMinerals =
+        extractors.length > 0 && this.room.storage !== undefined && deposits.length > 0;
 
       this.constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
       this.extensionsUnderConstruction = this.constructionSites.filter(
