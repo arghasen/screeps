@@ -185,7 +185,7 @@ export function pickupOrHarvest(creep: Creep) {
 export function getCreepNeedingEnergy(creep: Creep) {
   return creep.pos.findClosestByRange(FIND_CREEPS, {
     filter: creepTo =>
-      creepTo.memory.role !== Role.HAULER &&
+      [Role.UPGRADER, Role.BUILDER].includes(creepTo.memory.role) &&
       creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
   });
 }
@@ -196,6 +196,7 @@ export function findStructureNeedingRepair(
   type: "tower" | "creep"
 ): AnyStructure | null {
   const myStructures = room.find(FIND_STRUCTURES);
+  const energyMultiplier = useUpEnergy(room) ? 2 : 1;
   // FIXME: 300 is minumum a tower can heal, improve to a distance based logic
   // Towers healing is more expensive than builders so we repair if its getting low
   let targetRatio = 0.4;
@@ -217,9 +218,9 @@ export function findStructureNeedingRepair(
   const obstacles = myStructures.filter(
     structure =>
       (structure.structureType === STRUCTURE_RAMPART &&
-        structure.hits < getRampartMaxHits(room.controller?.level)) ||
+        structure.hits < getRampartMaxHits(room.controller?.level) * energyMultiplier) ||
       (structure.structureType === STRUCTURE_WALL &&
-        structure.hits < getWallMaxHits(room.controller?.level))
+        structure.hits < getWallMaxHits(room.controller?.level) * energyMultiplier)
   );
 
   if (Game.time % 20 === 0 && type === "tower") {

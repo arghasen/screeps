@@ -28,7 +28,7 @@ export class Infrastructure extends Process {
       this.rcl = this.room.controller?.level || 0;
       this.spawns = spawnsInRoom(this.room);
       const myStructures = this.room.find(FIND_MY_STRUCTURES);
-      const deposits = this.room.find(FIND_DEPOSITS);
+      const minerals = this.room.find(FIND_MINERALS);
 
       // Track all structures
       this.extensionsCreated = myStructures.filter(
@@ -46,7 +46,10 @@ export class Infrastructure extends Process {
       ) as StructureExtractor[];
 
       this.room.memory.mineMinerals =
-        extractors.length > 0 && this.room.storage !== undefined && deposits.length > 0;
+        extractors.length > 0 &&
+        this.room.storage !== undefined &&
+        minerals.length > 0 &&
+        minerals[0].mineralAmount > 0;
 
       this.constructionSites = this.room.find(FIND_CONSTRUCTION_SITES);
       this.extensionsUnderConstruction = this.constructionSites.filter(
