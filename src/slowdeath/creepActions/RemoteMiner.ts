@@ -20,14 +20,15 @@ function setupMoveLoc(roomName: string) {
 export class RemoteMiner {
   private static findTargetRoom(creep: Creep): string | null {
     // If no visible rooms with sources, try to explore
-    let rooms = Game.rooms[creep.room.name].memory.remoteMining?.rooms;
+    const rooms = Game.rooms[creep.room.name].memory.remoteMining?.rooms;
     if (rooms && rooms.length > 0) {
       return rooms[Math.floor(Math.random() * rooms.length)];
     }
     const exits = Game.map.describeExits(creep.room.name);
     logger.info(`Exits: ${JSON.stringify(exits)}`);
-    const reachableRooms = Object.values(exits).filter(roomName => roomName !== undefined
-      && !Game.rooms[roomName]?.controller?.my);
+    const reachableRooms = Object.values(exits).filter(
+      roomName => roomName !== undefined && !Game.rooms[roomName]?.controller?.my
+    );
     if (reachableRooms.length > 0) {
       Game.rooms[creep.room.name].memory.remoteMining.rooms = reachableRooms;
       return reachableRooms[Math.floor(Math.random() * reachableRooms.length)];
@@ -48,7 +49,8 @@ export class RemoteMiner {
 
     // If creep is about to die, keep metrics in memory
     if (creep.ticksToLive && creep.ticksToLive <= 1) {
-      Game.rooms[creepMemory.homeRoom].memory.remoteMining.energyHarvested += (creepMemory.energyHarvested || 0);
+      Game.rooms[creepMemory.homeRoom].memory.remoteMining.energyHarvested +=
+        creepMemory.energyHarvested || 0;
       creepMemory.energyHarvested = 0;
     }
     if (creep.memory.moveLoc) {
@@ -61,7 +63,7 @@ export class RemoteMiner {
         if (!creep.room.controller) {
           remoteMining.energyTransferred += creep.store.energy;
           creep.drop(RESOURCE_ENERGY);
-        } else if (creep.room.storage) {
+        } else if (creep.room.controller?.level >= 4 && creep.room.storage) {
           transfer(creep, creep.room.storage);
         } else {
           logger.info(`Upgrading controller for ${creep.name}`);
@@ -84,7 +86,7 @@ export class RemoteMiner {
       }
     } else {
       const sources = creep.room.find(FIND_SOURCES);
-      if (sources.length == 0) {
+      if (sources.length === 0) {
         // Remove this room from remoteMining.rooms since it has no sources
         const homeRoom = Game.rooms[creep.memory.homeRoom];
         homeRoom.memory.remoteMining.rooms = homeRoom.memory.remoteMining.rooms.filter(
@@ -103,5 +105,5 @@ export class RemoteMiner {
         }
       }
     }
-  }
+  };
 }

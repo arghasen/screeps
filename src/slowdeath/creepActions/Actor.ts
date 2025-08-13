@@ -1,7 +1,16 @@
 import { CreepTask } from "./constants";
-import { setCreepState } from "./creepState";
 
 export class Actor {
+  public static setCreepState(creep: Creep) {
+    if (!creep.memory.task && creep.store[RESOURCE_ENERGY] === 0) {
+      creep.memory.task = CreepTask.HARVEST;
+      creep.memory.target = undefined;
+    }
+    if (creep.memory.task === CreepTask.HARVEST && creep.store.getFreeCapacity() === 0) {
+      creep.memory.task = CreepTask.UNKNOWN;
+    }
+  }
+
   public static setTask(creep: Creep) {
     const aboutToDie = creep.ticksToLive && creep.ticksToLive < 100;
     const isInjured = creep.hits < creep.hitsMax;
@@ -11,7 +20,7 @@ export class Actor {
     if (aboutToDie && creep.room.controller?.my && creep.room.controller?.level >= 7) {
       creep.memory.task = CreepTask.RENEW;
     } else {
-      setCreepState(creep);
+      this.setCreepState(creep);
     }
   }
 
