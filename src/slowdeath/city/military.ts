@@ -12,6 +12,7 @@ export class Military extends Process {
     logger.debug(`${this.className}: Starting military for ${this.metadata.roomName}`);
     const room = Game.rooms[this.metadata.roomName];
     this.towers = this.findTowers(room);
+
     if (!this.defendRoom(room)) {
       this.repairRoom(room);
     }

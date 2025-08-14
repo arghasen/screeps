@@ -49,9 +49,26 @@ export function withdraw(creep: Creep, store: AnyStructure) {
   }
 }
 
-export function transfer(creep: Creep, target: AnyCreep | Structure) {
-  if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
+export function transfer(
+  creep: Creep,
+  target: AnyCreep | Structure,
+  resourceType: ResourceConstant = RESOURCE_ENERGY
+) {
+  if (creep.transfer(target, resourceType) === ERR_NOT_IN_RANGE && creep.fatigue === 0) {
     creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
+  }
+}
+
+export function transferAnyResource(creep: Creep, target: AnyCreep | Structure) {
+  for (const resourceType in creep.store) {
+    const amount = creep.store.getUsedCapacity(resourceType as ResourceConstant);
+    if (amount > 0) {
+      if (creep.transfer(target, resourceType as ResourceConstant) === OK) {
+        return;
+      }
+      transfer(creep, target, resourceType as ResourceConstant);
+      break; // Only try to transfer one resource type per tick
+    }
   }
 }
 
@@ -173,6 +190,45 @@ export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
   return secondaryTarget;
 }
 
+export function getStructuresNeedingResource(
+  creep: Creep,
+  resourceType: ResourceConstant
+): AnyStructure | null {
+  // For energy, use existing logic
+  if (resourceType === RESOURCE_ENERGY) {
+    return getStructuresNeedingEnergy(creep);
+  }
+
+  // For minerals and other resources, prioritize storage and terminal
+  const storage = creep.room.storage;
+  const terminal = creep.room.terminal;
+
+  if (storage && storage.store.getFreeCapacity(resourceType) > 0) {
+    return storage;
+  }
+
+  if (terminal && terminal.store.getFreeCapacity(resourceType) > 0) {
+    return terminal;
+  }
+
+  return null;
+}
+
+export function getStructuresWithResource(
+  creep: Creep,
+  resourceType: ResourceConstant
+): AnyStructure[] {
+  const structures = creep.room.find(FIND_STRUCTURES);
+
+  return structures.filter(
+    structure =>
+      (structure.structureType === STRUCTURE_CONTAINER ||
+        structure.structureType === STRUCTURE_STORAGE ||
+        structure.structureType === STRUCTURE_TERMINAL) &&
+      structure.store.getUsedCapacity(resourceType) > 0
+  );
+}
+
 export function pickupOrHarvest(creep: Creep) {
   if (creep.room.memory.continuousHarvestingStarted) {
     pickupDroppedEnergy(creep);
@@ -183,8 +239,9 @@ export function pickupOrHarvest(creep: Creep) {
 }
 
 export function getCreepNeedingEnergy(creep: Creep) {
-  return creep.pos.findClosestByRange(FIND_CREEPS, {
+  return creep.pos.findClosestByRange(FIND_MY_CREEPS, {
     filter: creepTo =>
+      creepTo &&
       [Role.UPGRADER, Role.BUILDER].includes(creepTo.memory.role) &&
       creepTo.store.getFreeCapacity() < creepTo.store.getCapacity() * 0.9
   });

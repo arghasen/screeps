@@ -12,6 +12,7 @@ import {
   getBuilderBody,
   getClaimer,
   getContinuousHarvestor,
+  getDefenderBody,
   getEmergencyCreep,
   getHauler,
   getMineralMinerBody,
@@ -201,7 +202,7 @@ export class Spawns extends Process {
     }
     if (role === Role.MINERAL_MINER && !this.room.memory.enemy) {
       return {
-        build: getMineralMinerBody(energyCapacityAvailable, roomName),
+        build: getMineralMinerBody(energyCapacityAvailable),
         name: `${roleNames[role]}-${Game.time}`,
         options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
       };
@@ -213,6 +214,9 @@ export class Spawns extends Process {
         name: `${roleNames[role]}-${Game.time}`,
         options: { memory: { role, task: CreepTask.UNKNOWN, homeRoom: roomName } }
       };
+    }
+    if (role === Role.DEFENDER) {
+      return getDefenderBody(energyCapacityAvailable, roomName);
     }
     const body = getBuilderBody(energyCapacityAvailable);
 

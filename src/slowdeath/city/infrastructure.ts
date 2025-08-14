@@ -46,6 +46,7 @@ export class Infrastructure extends Process {
       ) as StructureExtractor[];
 
       this.room.memory.mineMinerals =
+        this.rcl >= 6 &&
         extractors.length > 0 &&
         this.room.storage !== undefined &&
         minerals.length > 0 &&

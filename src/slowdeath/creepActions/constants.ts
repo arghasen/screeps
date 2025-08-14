@@ -59,7 +59,8 @@ export enum Role {
   CLAIMER,
   DISMANTLER,
   REMOTE_MINER,
-  MINERAL_MINER
+  MINERAL_MINER,
+  DEFENDER
 }
 
 type RolePriotity = { [key in Role]: number };
@@ -73,7 +74,8 @@ export const rolePriotity: RolePriotity = {
   [Role.CLAIMER]: 1,
   [Role.DISMANTLER]: 3,
   [Role.REMOTE_MINER]: 4,
-  [Role.MINERAL_MINER]: 2
+  [Role.MINERAL_MINER]: 2,
+  [Role.DEFENDER]: 15
 };
 
 type RoleNames = { [key in Role]: string };
@@ -87,7 +89,8 @@ export const roleNames: RoleNames = {
   [Role.CLAIMER]: "claimer",
   [Role.DISMANTLER]: "dismantler",
   [Role.REMOTE_MINER]: "remote_miner",
-  [Role.MINERAL_MINER]: "mineral_miner"
+  [Role.MINERAL_MINER]: "mineral_miner",
+  [Role.DEFENDER]: "defender"
 };
 export enum CreepTask {
   UNKNOWN,

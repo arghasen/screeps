@@ -26,6 +26,7 @@ export class Employment extends Process {
   private numContinuousHarvesters = 0;
   private numRemoteMiners = 0;
   private numMineralMiners = 0;
+  private numDefenders = 0;
   private unemployed: Creep[] = [];
   private room!: Room;
   private metadata?: CityData;
@@ -59,7 +60,9 @@ export class Employment extends Process {
       Math.floor(MaxPopulationPerRoom[this.rcl] / PopulationScaler[this.rcl]),
       1
     );
-
+    if (this.room.memory.enemy && this.numDefenders < 1) {
+      this.room.memory.spawnQueue.push(Role.DEFENDER);
+    }
     this.waitForContiniousHarvester(totWorkers);
     this.storeHarvestingStatus();
     if (totWorkers + this.room.memory.spawnQueue.length < MaxPopulationPerRoom[this.rcl]) {
@@ -182,10 +185,11 @@ export class Employment extends Process {
       [Role.BUILDER]: () => this.numBuilders++,
       [Role.CONTINUOUS_HARVESTER]: () => this.numContinuousHarvesters++,
       [Role.CLAIMER]: () => this.numClaimer++,
-      [Role.DISMANTLER]: () => {},
-      [Role.REM_UPGRADER]: () => {},
+      [Role.DISMANTLER]: () => _.noop(),
+      [Role.REM_UPGRADER]: () => _.noop(),
       [Role.REMOTE_MINER]: () => this.numRemoteMiners++,
-      [Role.MINERAL_MINER]: () => this.numMineralMiners++
+      [Role.MINERAL_MINER]: () => this.numMineralMiners++,
+      [Role.DEFENDER]: () => this.numDefenders++
     };
 
     if (role in roleCounters) {
@@ -205,9 +209,10 @@ export class Employment extends Process {
       [Role.CONTINUOUS_HARVESTER]: ContinuousHarvester.run,
       [Role.CLAIMER]: Claimer.run,
       [Role.DISMANTLER]: Dismantler.run,
-      [Role.REM_UPGRADER]: () => {},
+      [Role.REM_UPGRADER]: () => _.noop(),
       [Role.REMOTE_MINER]: RemoteMiner.run,
-      [Role.MINERAL_MINER]: MineralMiner.run
+      [Role.MINERAL_MINER]: MineralMiner.run,
+      [Role.DEFENDER]: () => _.noop()
     };
 
     for (const creep of this.myCreeps) {

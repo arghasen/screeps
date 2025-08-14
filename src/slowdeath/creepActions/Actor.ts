@@ -1,6 +1,11 @@
 import { CreepTask } from "./constants";
 
 export class Actor {
+  public static rcl = 0;
+
+  public static setRcl(creep: Creep) {
+    this.rcl = creep.room.controller?.my ? creep.room.controller?.level ?? 0 : 0;
+  }
   public static setCreepState(creep: Creep) {
     if (!creep.memory.task && creep.store[RESOURCE_ENERGY] === 0) {
       creep.memory.task = CreepTask.HARVEST;

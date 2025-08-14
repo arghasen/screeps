@@ -5,8 +5,14 @@ import { Actor } from "./Actor";
 
 export class Upgrader extends Actor {
   public static run = (creep: Creep): void => {
+    super.setRcl(creep);
     super.setCreepState(creep);
-    if (creep.memory.task !== CreepTask.HARVEST && creep.room.controller?.my) {
+    if (!creep.room.controller || !creep.room.controller.my) {
+      creep.say("No controller in room");
+      return;
+    }
+
+    if (creep.memory.task !== CreepTask.HARVEST) {
       // TODO: Ignore if target too far away
       if (creep.ticksToLive && creep.ticksToLive <= 5 && creep.store.energy > 15) {
         const target = getCreepNeedingEnergy(creep);
@@ -22,7 +28,7 @@ export class Upgrader extends Actor {
           visualizePathStyle: { stroke: "#ffffff" }
         });
       }
-    } else if (creep.room.memory.upgraderLink) {
+    } else if (super.rcl >= 5 && creep.room.memory.upgraderLink) {
       const upgraderLink = objectFromId<StructureLink>(creep.room.memory.upgraderLink);
       if (!upgraderLink) {
         delete creep.room.memory.upgraderLink;

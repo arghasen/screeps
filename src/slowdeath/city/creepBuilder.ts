@@ -177,10 +177,7 @@ export function getRemoteMinerBody(energyCapacityAvailable: number): BodyPartCon
   return [WORK, CARRY, MOVE];
 }
 
-export function getMineralMinerBody(
-  energyCapacityAvailable: number,
-  roomName: string
-): BodyPartConstant[] {
+export function getMineralMinerBody(energyCapacityAvailable: number): BodyPartConstant[] {
   if (energyCapacityAvailable >= 2000) {
     return [
       WORK,
@@ -212,5 +209,46 @@ export function getRemoteMiner(energyCapacityAvailable: number, roomName: string
     build: getRemoteMinerBody(energyCapacityAvailable),
     name: `rem_miner-${Game.time}`,
     options: { memory: { role: Role.REMOTE_MINER, task: CreepTask.UNKNOWN, homeRoom: roomName } }
+  };
+}
+
+export function getDefenderBody(energyCapacityAvailable: number, roomName: string): CreepSpawnData {
+  let body: BodyPartConstant[] = [];
+
+  if (energyCapacityAvailable >= 1300) {
+    // High-end defender with ranged attack capability
+    body = [
+      TOUGH,
+      TOUGH,
+      TOUGH,
+      TOUGH,
+      ATTACK,
+      ATTACK,
+      ATTACK,
+      RANGED_ATTACK,
+      RANGED_ATTACK,
+      MOVE,
+      MOVE,
+      MOVE,
+      MOVE,
+      MOVE,
+      MOVE,
+      MOVE
+    ];
+  } else if (energyCapacityAvailable >= 800) {
+    // Mid-tier defender with balanced attack and toughness
+    body = [TOUGH, TOUGH, TOUGH, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE];
+  } else if (energyCapacityAvailable >= 400) {
+    // Basic defender
+    body = [TOUGH, TOUGH, ATTACK, ATTACK, MOVE, MOVE];
+  } else {
+    // Emergency defender
+    body = [TOUGH, ATTACK, MOVE];
+  }
+
+  return {
+    build: body,
+    name: `defender-${Game.time}`,
+    options: { memory: { role: Role.DEFENDER, task: CreepTask.UNKNOWN, homeRoom: roomName } }
   };
 }
