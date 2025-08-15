@@ -55,7 +55,10 @@ interface RoomMemory {
   };
   mineMinerals: boolean;
   energyContainers: Id<StructureContainer>[];
-  enemy: boolean;
+  enemy?: {
+    s: boolean; // spotted
+    lS: number; // last spotted
+  };
   heal: Id<Creep>[];
 }
 

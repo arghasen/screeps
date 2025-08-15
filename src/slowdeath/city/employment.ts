@@ -60,7 +60,11 @@ export class Employment extends Process {
       Math.floor(MaxPopulationPerRoom[this.rcl] / PopulationScaler[this.rcl]),
       1
     );
-    if (this.room.memory.enemy && this.numDefenders < 1) {
+    if (
+      this.room.memory.enemy?.s &&
+      this.numDefenders < 1 &&
+      Game.time - this.room.memory.enemy.lS > 10
+    ) {
       this.room.memory.spawnQueue.push(Role.DEFENDER);
     }
     this.waitForContiniousHarvester(totWorkers);
@@ -108,6 +112,9 @@ export class Employment extends Process {
     } else if (employ(this.numBuilders, MaxRolePopulation.builders) && buildersRequired) {
       spawnQueue.push(Role.BUILDER);
     } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.UPGRADER))) {
+      if (this.rcl === 8 && this.numUpgraders === 1) {
+        return;
+      }
       spawnQueue.push(Role.UPGRADER);
     }
   }
