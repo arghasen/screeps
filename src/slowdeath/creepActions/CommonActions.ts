@@ -182,12 +182,29 @@ export function getStructuresNeedingEnergy(creep: Creep): AnyStructure | null {
     );
   });
   const secondaryTarget = creep.pos.findClosestByPath(secondaryTargets);
-  logger.debug(
-    `${creep.name} pos: ${logger.json(creep.pos)} closest container or tower: ${logger.json(
-      secondaryTarget
-    )}`
-  );
-  return secondaryTarget;
+  if (secondaryTarget) {
+    logger.debug(
+      `${creep.name} pos: ${logger.json(creep.pos)} closest container or tower: ${logger.json(
+        secondaryTarget
+      )}`
+    );
+    return secondaryTarget;
+  }
+  if (creep.room.controller?.my && creep.room.controller.level >= 8) {
+    const nuke = structures.filter(
+      structure =>
+        structure.structureType === STRUCTURE_NUKER &&
+        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+    );
+    return nuke[0];
+  }
+  if (creep.room.memory.upC) {
+    const upgradeContainer = objectFromId<StructureContainer>(creep.room.memory.upC);
+    if (upgradeContainer && upgradeContainer.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+      return upgradeContainer;
+    }
+  }
+  return null;
 }
 
 export function getStructuresNeedingResource(

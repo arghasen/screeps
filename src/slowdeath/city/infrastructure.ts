@@ -45,6 +45,14 @@ export class Infrastructure extends Process {
         structure => structure.structureType === STRUCTURE_EXTRACTOR
       ) as StructureExtractor[];
 
+      const upgradeContainer = this.room.controller?.pos.findClosestByRange(FIND_STRUCTURES, {
+        filter: structure => structure.structureType === STRUCTURE_CONTAINER
+      });
+
+      if (upgradeContainer) {
+        this.room.memory.upC = upgradeContainer.id as Id<StructureContainer>;
+      }
+
       this.room.memory.mineMinerals =
         this.rcl >= 6 &&
         extractors.length > 0 &&

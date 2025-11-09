@@ -112,7 +112,7 @@ export class Employment extends Process {
     } else if (employ(this.numBuilders, MaxRolePopulation.builders) && buildersRequired) {
       spawnQueue.push(Role.BUILDER);
     } else if (employ(this.numUpgraders, this.dynamicEmployer(Role.UPGRADER))) {
-      if (this.rcl === 8 && this.numUpgraders === 1) {
+      if (this.rcl === 8 && this.numUpgraders >= 1) {
         return;
       }
       spawnQueue.push(Role.UPGRADER);

@@ -39,6 +39,7 @@ interface RoomMemory {
   spawnQueue: Role[];
   extraBuilders: boolean;
   upgraderLink: Id<StructureLink> | undefined;
+  upC: Id<StructureContainer> | undefined; // upgraderContainer
   setup: any;
   roadsDone: number;
   continuousHarvestingStarted: boolean;

@@ -39,7 +39,8 @@ export class Military extends Process {
 
   private findTowers(room: Room): StructureTower[] {
     return room.find(FIND_MY_STRUCTURES, {
-      filter: { structureType: STRUCTURE_TOWER }
+      filter: (structure: Structure) =>
+        structure.structureType === STRUCTURE_TOWER && structure.isActive()
     });
   }
 

@@ -5,18 +5,11 @@ export class Defender extends Actor {
   private static readonly RAMPART_SEARCH_RANGE = 10;
 
   public static run = (creep: Creep): void => {
-    const hostiles = this.findHostiles(creep.room);
+    const hostiles = creep.room.find(FIND_HOSTILE_CREEPS);
     if (hostiles.length > 0) {
       this.engageHostiles(creep, hostiles);
     }
   };
-
-  /**
-   * Find hostile creeps in the room
-   */
-  private static findHostiles(room: Room): Creep[] {
-    return room.find(FIND_HOSTILE_CREEPS);
-  }
 
   /**
    * Engage hostile creeps

@@ -49,6 +49,7 @@ export class City extends Process {
         critical: false,
         linksCreated: false,
         upgraderLink: undefined,
+        upC: undefined,
         harvesterStartTime: {},
         extraBuilders: false,
         spawnQueue: [],
@@ -61,16 +62,16 @@ export class City extends Process {
         },
         mineMinerals: false,
         energyContainers: [],
-        enemy: false,
+        enemy: {
+          s: false,
+          lS: 0
+        },
         heal: []
       };
       const sources = sourcesInRoom(room);
       for (const source of sources) {
         room.memory.harvesterStartTime[source.id] = [];
       }
-    }
-    if (!room.memory.heal) {
-      room.memory.heal = [];
     }
   }
 }
